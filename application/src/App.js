@@ -1,26 +1,24 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { ratingContract } from "./setup";
-import {ShowMovies } from "./ShowMovies";
+import { apartmentContract } from "./setup";
+import { ShowApartments } from "./ShowApartments";
 
 class App extends Component {
   constructor(props){
     super(props)
-    this.state={
-      movies : [{name:'Star Wars',rating:0},{name:'Avatar',rating:0},{name:'Inception',rating:0}]
-    }
-    this.handleVoting = this.handleVoting.bind(this)
+    let length = apartmentContract.getNumberOfApartments().toNumber();
+    console.log(length);
+    let tuple = apartmentContract.getApartmentInfo.call(0, (error, result) => {
+        console.log(result);
+    });
+    this.state.apartments = [];
   }
 
-handleVoting(movie){
-    ratingContract.voteForMovie(movie)
-    let votes=ratingContract.totalVotesFor(movie).toNumber()
-    this.setState({movies:this.state.movies.map(
-      (el)=>el.name===movie? Object.assign({},el,{rating:votes}):el
-    
-    )});
-  }
+  payRent(apartment) {
+      console.log("Paying the rent...");
+    }
+
   render() {
     return (
       <div className="App">
@@ -29,10 +27,10 @@ handleVoting(movie){
           <h1 className="App-title">Welcome to Ethereum</h1>
         </header>
         <p className="App-intro">
-          Movie Rating Application in Ethereum and React
+          Blockchain based Smart Renting
         </p>
-        <div className="movie-table">
-          <ShowMovies movies={this.state.movies} vote={this.handleVoting}/>
+        <div>
+          <ShowApartments apartments={this.state.apartments} payRent={this.payRent}/>
         </div>
       </div>
     );

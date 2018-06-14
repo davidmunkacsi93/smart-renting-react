@@ -1,4 +1,4 @@
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.4.23;
 
 contract Apartment {
     uint counter;
@@ -6,6 +6,7 @@ contract Apartment {
     mapping(address => UserInfo) public userInfo;
     mapping(address => ApartmentInfo[]) private ownedApartments;
     mapping(address => ApartmentInfo[]) private rentedApartments;
+    mapping(address => uint) private iterator;
 
     struct UserInfo {
         string firstName;
@@ -65,9 +66,20 @@ contract Apartment {
         return ++counter;
     }
 
-    function getApartmentInfo() public view returns (ApartmentInfo[]) {
-        // TODO: Mock, use Id later.
-        return ownedApartments[msg.sender];
+    function setIterator() public payable returns (uint) {
+        uint _length = ownedApartments[msg.sender].length;
+
+        if (iterator[msg.sender] == _length - 1) {
+            iterator[msg.sender] = 0;
+        } else {
+            iterator[msg.sender]++;
+        }
+        return iterator[msg.sender]++;
+    }
+
+    function getApartmentInfo() public view returns (uint, string, uint256, uint256) {
+        ApartmentInfo storage _apartment = ownedApartments[msg.sender][iterator[msg.sender]];
+        return (_apartment.id, _apartment.city, _apartment.rent, _apartment.deposit);
     }
 
     function getNumberOfApartments() public view returns (uint256) {

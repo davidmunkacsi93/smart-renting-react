@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 
 export class ShowApartments extends Component{
     handleChange = (apartment) => {
-        let _apartment = apartment;
+        // let _apartment = apartment;
         // this.props.payRent(_apartment);
     }
 
     render() {
         let apartmentList = this.props.apartments.map((apartment, i) =>
-        <tr key={apartment.id}>
+        <tr key={i}>
             <td>{apartment.city}</td>
             <td>{apartment.rent}</td>
             <td>{apartment.deposit}</td>

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.17;
+pragma experimental ABIEncoderV2;
 
 contract Apartment {
     uint counter;
@@ -23,6 +23,8 @@ contract Apartment {
         // string houseNumber;
         // string street;
         // string zip;
+
+        // bool isRented;
 
         uint256 rent;
         uint256 deposit;
@@ -63,10 +65,9 @@ contract Apartment {
         return ++counter;
     }
 
-    function getApartmentInfo() public view returns (uint, string, uint256, uint256) {
+    function getApartmentInfo() public view returns (ApartmentInfo[]) {
         // TODO: Mock, use Id later.
-        ApartmentInfo storage apartment = ownedApartments[msg.sender][0];
-        return (apartment.id, apartment.city, apartment.rent, apartment.deposit);
+        return ownedApartments[msg.sender];
     }
 
     function getNumberOfApartments() public view returns (uint256) {

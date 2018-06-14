@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { apartmentContract } from "./setup";
+import { apartmentContract, currentUser } from "./setup";
 import { ShowApartments } from "./ShowApartments";
 
 class App extends Component {
   constructor(props){
     super(props)
     let length = apartmentContract.getNumberOfApartments().toNumber();
-    console.log(length);
-    let tuple = apartmentContract.getApartmentInfo.call(0, (error, result) => {
-        console.log(result);
-    });
+    let tuple = apartmentContract.getApartmentInfo();
+    console.log(tuple[0].toNumber());
     this.state.apartments = [];
   }
 

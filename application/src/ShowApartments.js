@@ -8,7 +8,7 @@ export class ShowApartments extends Component{
 
     render() {
         let apartmentList = this.props.apartments.map((apartment, i) =>
-        <tr key={i}>
+        <tr key={apartment.id}>
             <td>{apartment.city}</td>
             <td>{apartment.rent}</td>
             <td>{apartment.deposit}</td>

@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && xcopy \"../smart-contracts/build/contracts/Apartment.json\" \"./src/contracts-json/\" /F /Y",
+    "build": "react-scripts build && xcopy \"../smart-contracts/build/contracts/Apartment.json\" \"./src/contracts-json/Apartment.json\" /F /Y",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }

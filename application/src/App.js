@@ -9,8 +9,12 @@ class App extends Component {
     super(props)
     let length = apartmentContract.getNumberOfApartments().toNumber();
     let tuple = apartmentContract.getApartmentInfo();
-    console.log(tuple[0].toNumber());
+    console.log(tuple);
     this.state.apartments = [];
+  }
+
+  getApartmentInfos() {
+
   }
 
   payRent(apartment) {

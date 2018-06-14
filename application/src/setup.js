@@ -1,8 +1,11 @@
 import Web3 from 'web3';
 
-let apartmentContractJson = require('./contracts-json/Apartment.json');
-let apartmentABI=apartmentContractJson.abi;
-let apartmentAddress=apartmentContractJson.networks[1529007864976].address;
+var apartmentContractJson = require('./contracts-json/Apartment.json');
+var apartmentABI=apartmentContractJson.abi;
+for(var firstKey in apartmentContractJson.networks){
+    var key = firstKey;
+}
+let apartmentAddress=apartmentContractJson.networks[key].address;
 
 const web3=new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 web3.eth.defaultAccount = web3.eth.accounts[0]

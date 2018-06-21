@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Container, Col, Row } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
+import { MainHeadline } from '../components/Headlines/MainHeadline';
 
 const StyledCol = styled(Col)`
   color: #ffffff;
@@ -15,9 +16,9 @@ const StyledRow = styled(Row)`
 const MyRentsView = () => (
     <ViewLayout>
       <Container>
-        <StyledRow>
-            My rents
-        </StyledRow>
+        <MainHeadline>
+            My Rents
+        </MainHeadline>
       </Container>
     </ViewLayout>
   );

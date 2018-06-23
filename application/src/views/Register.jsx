@@ -5,8 +5,9 @@ import { Container, Input, InputGroup, Button } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import { createUser } from '../api/DbApi';
+import { createNotification } from '../manager/NotificationManager';
 import { withRouter } from 'react-router-dom';
-import {NotificationContainer, NotificationManager} from 'react-notifications';
+import { NotificationContainer } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 
 const PrimaryButton = styled(Button)`
@@ -34,24 +35,13 @@ export class RegisterView extends React.Component {
     this.setState({username: event.target.value});
   }
 
-  createNotification = (type, message) => {
-    switch(type) {
-      case 'success':
-        NotificationManager.success(message, 'Creating user', 3000);
-        break;
-      case 'error':
-        NotificationManager.error(message, 'Creating user', 3000);
-        break;
-      default:
-        break;
-    }
-  }
+
 
   submit() {
     createUser(this.state.username).then(() => {  
-         this.createNotification('success', 'User created.');
+          createNotification('success', 'User created! You can now login on the homepage.', "Create user");
         }).catch(err => {
-           this.createNotification('error', err.message);
+          createNotification('error', err.message, "Create user");
         });
 
   }
@@ -70,7 +60,6 @@ export class RegisterView extends React.Component {
               CREATE
           </PrimaryButton>
         </Container>
-        <NotificationContainer/>
       </ViewLayout>
     );
   }

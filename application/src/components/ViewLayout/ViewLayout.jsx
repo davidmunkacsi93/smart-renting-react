@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { any } from 'prop-types';
 import Header from '../Header';
 import Footer from '../Footer';
+import { NotificationContainer } from 'react-notifications';
 
 const LayoutWrapper = styled.div`
   display: flex;
@@ -22,6 +23,7 @@ export const ViewLayout = ({children}) => (
     <LayoutWrapper>
         <Header/>
         <ViewContent>{children}</ViewContent>
+        <NotificationContainer/>
         <Footer/>
     </LayoutWrapper>
 );

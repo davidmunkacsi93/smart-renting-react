@@ -43,6 +43,10 @@ export const getDbUsers = () => {
   return users;
 }
 
+export const getDbUser = (username) => {
+  return db.users.get({ name: username });
+}
+
 export const createUser = (username) => {
   return db.accounts.toCollection().first().then(account => {
     if (account == null) {

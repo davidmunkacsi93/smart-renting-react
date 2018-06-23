@@ -6,7 +6,7 @@ import { publicRoutes as publicRoutesConfig } from './routes';
 import { initializeDb, createUser } from './utils/db';
 
 initializeDb();
-// createUser("test");
+createUser("Friedrich");
 const history = createBrowserHistory();
 
 const publicRoutes = () =>

@@ -7,17 +7,18 @@ export const initializeDb = () => {
     users: '++id,name,address'
   }
   db.version(1).stores(schema);
-  db['accounts'].hook('creating', function (primaryKey, friend) {
-    console.log(`Saving "${friend.name}" but we don't now the primary key yet ("${primaryKey}").`);
-    this.onsuccess = function (primaryKey) {
-      console.log(`Saved "${friend.name}" with primary key "${primaryKey}".`);
-    };
-    return undefined;
-  });
+  // If a trigger is needed on a table.
+  // db['accounts'].hook('creating', (primaryKey, friend) => {
+  //   this.onsuccess = function (primaryKey) {
+  //   };
+  //   return undefined;
+  // });
+  // initializeAccounts();
+}
 
+export const initializeAccounts = () => {
   let accounts = getAccounts();
   accounts.forEach((acc) => {
-    console.log(acc);
     db.accounts.add({address: acc})
   });
 }
@@ -43,9 +44,19 @@ export const getDbUsers = () => {
 }
 
 export const createUser = (username) => {
-  var accounts = getDbAccounts();
-  console.log(accounts);
-  // console.log(getDbAccounts()[0]);
+  db.accounts.toCollection().first().then(account => {
+    if (account == null) {
+      console.error("No more available accounts.");
+    }
+    db.accounts.delete(account.id).then(() => {
+      console.log(account.id + " deleted.")
+      db.users.add({name: username, address: account.address}).then((id) => {
+        console.log(id + " added.")
+      })
+    });
+  }).catch(err => {
+    console.error(err);
+  });
 }
 
 const db = new Dexie("smartRentDb");

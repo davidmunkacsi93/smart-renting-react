@@ -1,31 +1,53 @@
 import Dexie from 'dexie';
 import { getAccounts } from './contractUtils';
 
-const db = new Dexie("smartRentDb");
-db.version(1).stores({
-  accounts: 'address',
-  users: 'name, account',
-});
-let accounts = getAccounts();
-for (var index in accounts) {
-  var account = accounts[index];
-  db.table("accounts").add({ address: account });
+export const initializeDb = () => {
+  const schema = {
+    accounts: '++id,address',
+    users: '++id,name,address'
+  }
+  db.version(1).stores(schema);
+  db['accounts'].hook('creating', function (primaryKey, friend) {
+    console.log(`Saving "${friend.name}" but we don't now the primary key yet ("${primaryKey}").`);
+    this.onsuccess = function (primaryKey) {
+      console.log(`Saved "${friend.name}" with primary key "${primaryKey}".`);
+    };
+    return undefined;
+  });
+
+  let accounts = getAccounts();
+  accounts.forEach((acc) => {
+    console.log(acc);
+    db.accounts.add({address: acc})
+  });
 }
 
 export const getDbAccounts = () => {
-  return db.table("accounts").toArray();
+  const accounts = [];
+  db.accounts.toArray().then((a) => {
+      a.forEach(acc => {
+        accounts.push(acc);
+      })
+  });
+  return accounts;
 }
 
 export const getDbUsers = () => {
-  return db.table("users").toArray();
+  const users = [];
+  db.users.toArray().then((u) => {
+    u.forEach(user => {
+      users.push(user);
+    })
+  });
+  return users;
 }
 
 export const createUser = (username) => {
-  db.table("accounts").toArray().then((accounts) => 
-  {
-     var account = accounts[0];
-  });
-  console.log(account);
+  var accounts = getDbAccounts();
+  console.log(accounts);
+  // console.log(getDbAccounts()[0]);
 }
+
+const db = new Dexie("smartRentDb");
 
 export default db;

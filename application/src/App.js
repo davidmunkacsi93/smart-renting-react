@@ -3,10 +3,9 @@ import { Router, Route, Switch } from 'react-router-dom';
 import createBrowserHistory from 'history/createBrowserHistory';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { publicRoutes as publicRoutesConfig } from './routes';
-import { initializeDb, createUser } from './utils/db';
+import { initializeDb } from './api/DbApi';
 
 initializeDb();
-createUser("Friedrich");
 const history = createBrowserHistory();
 
 const publicRoutes = () =>

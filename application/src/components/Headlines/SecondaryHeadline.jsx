@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const StyledSecondaryHeadline = styled.h2`
+  margin-top: 10px;
   padding-bottom: 10px;
   color: #b0bec5;
 `;

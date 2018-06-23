@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { getAccounts } from './contractUtils';
+import { getAccounts } from './ContractApi';
 
 export const initializeDb = () => {
   const schema = {
@@ -44,18 +44,18 @@ export const getDbUsers = () => {
 }
 
 export const createUser = (username) => {
-  db.accounts.toCollection().first().then(account => {
+  return db.accounts.toCollection().first().then(account => {
     if (account == null) {
-      console.error("No more available accounts.");
+      throw {
+        type: 'error',
+        name: 'DbApi.createUser',
+        message: "No more available accounts."
+      };
     }
     db.accounts.delete(account.id).then(() => {
-      console.log(account.id + " deleted.")
-      db.users.add({name: username, address: account.address}).then((id) => {
-        console.log(id + " added.")
-      })
+      db.users.add({name: username, address: account.address}).then(() => {
+      });
     });
-  }).catch(err => {
-    console.error(err);
   });
 }
 

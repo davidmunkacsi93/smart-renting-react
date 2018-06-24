@@ -2,6 +2,7 @@ import HomeView from './views/Home';
 import MyApartmentsView from './views/MyApartments';
 import MyRentsView from './views/MyRents';
 import RegisterView from './views/Register';
+import PayRentView from './views/PayRent';
 
 export const publicRoutes = [
     {
@@ -23,5 +24,10 @@ export const publicRoutes = [
       path: '/register',
       exact: true,
       page: RegisterView,
+    },
+    {
+      path: '/PayRent',
+      exact: true,
+      page: PayRentView,
     }
 ];

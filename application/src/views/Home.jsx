@@ -1,7 +1,7 @@
  import * as React from 'react';
 import { object } from 'prop-types';
 import styled from 'styled-components';
-import { Container, Input, InputGroup, Button } from 'reactstrap';
+import { Container, Input, Button } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import { MainHeadline } from '../components/Headlines/MainHeadline';
 import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
@@ -73,13 +73,11 @@ export class HomeView extends React.Component {
                 <SecondaryHeadline>
                   Please log in to continue!
                 </SecondaryHeadline>
-                <div>
-                  <StyledInput placeholder="Username" name="username" value={this.state.username} onChange={this.handleChange}/>
-                  <StyledInput type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.handleChange}/>
-                  <PrimaryButton onClick={() => this.login() } class="pull-right">
-                      Login
-                  </PrimaryButton>
-                </div>
+                <StyledInput placeholder="Username" name="username" value={this.state.username} onChange={this.handleChange}/>
+                <StyledInput type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.handleChange}/>
+                <PrimaryButton onClick={() => this.login() }>
+                    Login
+                </PrimaryButton>
               </React.Fragment>
           }
 

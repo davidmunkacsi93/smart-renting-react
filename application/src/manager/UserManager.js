@@ -1,5 +1,7 @@
 import { createDbUser } from '../api/DbApi';
 
+var currentUser = null;
+
 export const createUser = (username, password) => {
     return createDbUser(username);
 }
@@ -17,4 +19,4 @@ export const isLoggedIn = () => {
     return currentUser === null;
 }
 
-export var currentUser = null;
+export default currentUser;

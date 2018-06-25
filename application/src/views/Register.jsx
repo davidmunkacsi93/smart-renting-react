@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { object } from 'prop-types';
 import styled from 'styled-components';
-import { Container, Input, InputGroup, Button } from 'reactstrap';
+import { Container, Input, Button } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import { createUser } from '../manager/UserManager';

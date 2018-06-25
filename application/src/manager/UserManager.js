@@ -8,6 +8,8 @@ const createUser = (username, password) => {
 }
 
 const setCurrentUser = (user) => {
+    if (user == null)
+        return;
     currentUser = user;
 }
 

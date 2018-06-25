@@ -8,6 +8,7 @@ import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import { withRouter } from 'react-router-dom';
 import DbApi from '../api/DbApi'
 import NotificationManager from '../manager/NotificationManager';
+import ContractApi from '../api/ContractApi';
 
 const PrimaryButton = styled(Button)`
   margin-top: 20px;
@@ -39,7 +40,7 @@ export class HomeView extends React.Component {
   }
 
   login() {
-    DbApi.getDbUser(this.state.username).then((user) => {
+    ContractApi.authenticate(this.state.username, this.state.password).then((user) => {
       console.log(user);
       if (user == null) {
           throw new Error("User not found.");

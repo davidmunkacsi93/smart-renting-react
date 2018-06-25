@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+import DbApi from './DbApi';
 
 var apartmentContractJson = require('../contracts-json/Apartment.json');
 var apartmentABI=apartmentContractJson.abi;
@@ -29,19 +30,32 @@ const createUser = (address, password) => {
     } else {
         const transactionObject = {
             from: address
-        }
+        };
+
         UserContract.createUserPasswordMapping.sendTransaction(password, transactionObject, (error, result) => {
-            if(!error) {
-                console.log(result);
-            } else {
-                console.error(error);
+            if(error) {
+                throw new Error(error);
             }
         });
     }
 }
 
 const authenticate = (username, password) => {
+    return DbApi.getDbUser(username).then((user) => {
+        if (user === undefined) {
+            throw new Error("Login failed. User does not exist.");
+        }
+        const transactionObject = {
+            from: user.address
+        };
 
+        return UserContract.authenticate.call(password, transactionObject, (error, result) => {
+            console.log(result);
+            if(error) {
+                throw new Error(error);
+            }
+        });
+    });
 }
 
 const payRent = (apartment) => {

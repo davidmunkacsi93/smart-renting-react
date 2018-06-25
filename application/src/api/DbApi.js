@@ -1,26 +1,36 @@
 import Dexie from 'dexie';
 import ContractApi from './ContractApi';
 
+var db = new Dexie("smartRentDb");
+
 const initializeDb = () => {
   const schema = {
     accounts: '++id,address',
     users: '++id,name,address'
   }
   db.version(1).stores(schema);
+  initializeAccounts();
   // If a trigger is needed on a table.
   // db['accounts'].hook('creating', (primaryKey, friend) => {
   //   this.onsuccess = function (primaryKey) {
   //   };
   //   return undefined;
   // });
-  // initializeAccounts();
 }
 
 const initializeAccounts = () => {
   let accounts = ContractApi.getAccounts();
-  accounts.forEach((acc) => {
-    db.accounts.add({address: acc})
+  db.users.toCollection().count().then((cntUsers) => {
+    db.accounts.toCollection().count().then((cntAccounts) => {
+      if (cntUsers === 0 && cntAccounts === 0) {
+        console.log("Initializing accounts...");
+        accounts.forEach((acc) => {
+          db.accounts.add({address: acc})
+        });
+      }
+    })
   });
+
 }
 
 const getDbAccounts = () => {
@@ -61,8 +71,6 @@ const createDbUser = (username, password) => {
     });
   });
 }
-
-const db = new Dexie("smartRentDb");
 
 const DbApi = {
   initializeDb: initializeDb,

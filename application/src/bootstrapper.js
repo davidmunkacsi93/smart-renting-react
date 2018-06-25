@@ -18,4 +18,10 @@ const web3=new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 const apartmentContract = web3.eth.contract(apartmentABI).at(apartmentAddress);
 const userContract = web3.eth.contract(userABI).at(userAddress);
 
-export default { apartmentContract, userContract };
+const Contracts = {
+    Apartment: apartmentContract,
+    User: userContract
+}
+
+export default Contracts;
+

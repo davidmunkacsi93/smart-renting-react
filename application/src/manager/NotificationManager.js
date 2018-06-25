@@ -1,6 +1,6 @@
 import * as ReactNotifications from 'react-notifications';
 
-export const createNotification = (type, message, title) => {
+const createNotification = (type, message, title) => {
     console.log(message);
     switch(type) {
         case 'success':
@@ -20,3 +20,9 @@ export const createNotification = (type, message, title) => {
             break;
     }
   }
+
+const NotificationManager = {
+    createNotification: createNotification
+}
+
+export default NotificationManager;

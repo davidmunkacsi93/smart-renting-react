@@ -1,22 +1,28 @@
-import { createDbUser } from '../api/DbApi';
+import DbApi from '../api/DbApi';
 
 var currentUser = null;
 
-export const createUser = (username, password) => {
-    return createDbUser(username);
+const createUser = (username, password) => {
+    return DbApi.createDbUser(username, password);
 }
 
-export const setCurrentUser = (user) => {
+const setCurrentUser = (user) => {
     currentUser = user;
     console.log(currentUser + " logged in.");
 }
 
-export const getCurrentUser = () => {
+const getCurrentUser = () => {
     return currentUser;
 }
 
-export const isLoggedIn = () => {
+const isLoggedIn = () => {
     return currentUser === null;
 }
 
-export default currentUser;
+const UserManager = {
+    createUser: createUser,
+    setCurrentUser: setCurrentUser,
+    getCurrentUser: getCurrentUser,
+    isLoggedIn: isLoggedIn
+}
+export default UserManager;

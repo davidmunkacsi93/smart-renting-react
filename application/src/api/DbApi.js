@@ -1,7 +1,7 @@
 import Dexie from 'dexie';
-import { getAccounts } from './ContractApi';
+import ContractApi from './ContractApi';
 
-export const initializeDb = () => {
+const initializeDb = () => {
   const schema = {
     accounts: '++id,address',
     users: '++id,name,address'
@@ -16,14 +16,14 @@ export const initializeDb = () => {
   // initializeAccounts();
 }
 
-export const initializeAccounts = () => {
-  let accounts = getAccounts();
+const initializeAccounts = () => {
+  let accounts = ContractApi.getAccounts();
   accounts.forEach((acc) => {
     db.accounts.add({address: acc})
   });
 }
 
-export const getDbAccounts = () => {
+const getDbAccounts = () => {
   const accounts = [];
   db.accounts.toArray().then((a) => {
       a.forEach(acc => {
@@ -33,7 +33,7 @@ export const getDbAccounts = () => {
   return accounts;
 }
 
-export const getDbUsers = () => {
+const getDbUsers = () => {
   const users = [];
   db.users.toArray().then((u) => {
     u.forEach(user => {
@@ -43,21 +43,20 @@ export const getDbUsers = () => {
   return users;
 }
 
-export const getDbUser = (username) => {
+const getDbUser = (username) => {
   return db.users.get({ name: username });
 }
 
-export const createDbUser = (username) => {
+const createDbUser = (username, password) => {
   return db.accounts.toCollection().first().then(account => {
     if (account == null) {
-      throw {
-        type: 'error',
-        name: 'DbApi.createDbUser',
-        message: "No more available accounts."
-      };
+      throw new Error("No more available accounts.");
     }
     db.accounts.delete(account.id).then(() => {
-      db.users.add({name: username, address: account.address}).then(() => {
+      db.users.add({name: username, address: account.address}).then((id) => {
+        db.users.get(id).then(user => {
+          ContractApi.createUser(user.address, password)
+        });
       });
     });
   });
@@ -65,4 +64,13 @@ export const createDbUser = (username) => {
 
 const db = new Dexie("smartRentDb");
 
-export default db;
+const DbApi = {
+  initializeDb: initializeDb,
+  initializeAccounts: initializeAccounts,
+  getDbAccounts: getDbAccounts,
+  getDbUser: getDbUser,
+  getDbUsers: getDbUsers,
+  createDbUser: createDbUser
+}
+
+export default DbApi;

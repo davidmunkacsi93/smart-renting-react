@@ -1,32 +1,42 @@
 import Web3 from 'web3';
-import apartmentContract from '../bootstrapper'
- 
- export const getAccounts = () => {
+import Contracts from '../bootstrapper';
+import { DbApi } from '../api/DbApi';
+
+const getAccounts = () => {
     const web3=new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
     return web3.eth.accounts;
  };
  
- export const getApartments = () => {
-    let apartments = [];
-    let length = apartmentContract.getNumberOfApartments().toNumber();
-    for(let i = 0; i < length; i++) {
-        // apartmentContract.setIterator({from: currentUser});
-        let tuple = apartmentContract.getApartmentInfo();
-        let apartment = this.createApartment(tuple);
-        apartments.push(apartment)
+const createUser = (address, password) => {
+    if (address == null) {
+        throw new Error("Account could not be identified.");
+    } else {
+        const transactionObject = {
+            from: address
+        }
+        Contracts.User.createUserPasswordMapping.sendTransaction(password, transactionObject, (error, result) => {
+            if(!error) {
+                console.log(result);
+            } else {
+                console.error(error);
+            }
+        });
     }
-    return apartments;
-};
+}
 
-export const createApartment = (tuple) => {
-    return {
-        id: tuple[0].toNumber(),
-        city: tuple[1],
-        rent: tuple[2].toNumber(),
-        deposit: tuple[3].toNumber()
-    }
-};
+const authenticate = (username, password) => {
 
-export const payRent = (apartment) => {
+}
+
+const payRent = (apartment) => {
     console.log("Paying the rent...");
 };
+
+const ContractApi = {
+    getAccounts: getAccounts,
+    createUser: createUser,
+    authenticate: authenticate,
+    payRent: payRent
+}
+
+export default ContractApi;

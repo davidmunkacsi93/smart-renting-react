@@ -6,8 +6,8 @@ import ViewLayout from '../components/ViewLayout';
 import { MainHeadline } from '../components/Headlines/MainHeadline';
 import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import { withRouter } from 'react-router-dom';
-import { getDbUser } from '../api/DbApi'
-import { createNotification } from '../manager/NotificationManager'
+import DbApi from '../api/DbApi'
+import NotificationManager from '../manager/NotificationManager';
 
 const PrimaryButton = styled(Button)`
   margin-top: 20px;
@@ -39,18 +39,14 @@ export class HomeView extends React.Component {
   }
 
   login() {
-    getDbUser(this.state.username).then((user) => {
+    DbApi.getDbUser(this.state.username).then((user) => {
       console.log(user);
       if (user == null) {
-          throw {
-            type: 'error',
-            name: 'Login',
-            message: "User not found."
-          }
+          throw new Error("User not found.");
       }
-      createNotification('success', 'Login successful.', "Login");
+      NotificationManager.createNotification('success', 'Login successful.', "Login");
     }).catch(error => {
-      createNotification('error', error.message, "Login");
+      NotificationManager.createNotification('error', error.message, "Login");
     });
   }
 

@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import { Container, Input, Button } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
-import { createUser } from '../manager/UserManager';
-import { createNotification } from '../manager/NotificationManager';
+import UserManager from '../manager/UserManager';
+import NotificationManager from '../manager/NotificationManager';
 import { withRouter } from 'react-router-dom';
 
 const PrimaryButton = styled(Button)`
@@ -38,10 +38,10 @@ export class RegisterView extends React.Component {
 
   submit() {
 
-    createUser(this.state.username, this.state.password).then(() => {  
-      createNotification('success', 'User created! You can now login on the homepage.', "Create user");
+    UserManager.createUser(this.state.username, this.state.password).then(() => {  
+      NotificationManager.createNotification('success', 'User created! You can now login on the homepage.', "Create user");
     }).catch(err => {
-      createNotification('error', err.message, "Create user");
+      NotificationManager.createNotification('error', err.message, "Create user");
     });
   }
 

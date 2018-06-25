@@ -6,7 +6,8 @@ var db = new Dexie("smartRentDb");
 const initializeDb = () => {
   const schema = {
     accounts: '++id,address',
-    users: '++id,name,address'
+    users: '++id,name,address',
+    currentUser: 'id,name,address'
   }
   db.version(1).stores(schema);
   initializeAccounts();
@@ -30,7 +31,6 @@ const initializeAccounts = () => {
       }
     })
   });
-
 }
 
 const getDbAccounts = () => {

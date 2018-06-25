@@ -1,7 +1,6 @@
 import * as ReactNotifications from 'react-notifications';
 
 const createNotification = (type, message, title) => {
-    console.log(message);
     switch(type) {
         case 'success':
             ReactNotifications.NotificationManager.success(message, title, 3000);

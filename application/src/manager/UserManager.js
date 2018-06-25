@@ -9,7 +9,6 @@ const createUser = (username, password) => {
 
 const setCurrentUser = (user) => {
     currentUser = user;
-    console.log(currentUser + " logged in.");
 }
 
 const getCurrentUser = () => {
@@ -17,11 +16,14 @@ const getCurrentUser = () => {
 }
 
 const login = (username, password) => {
-    return ContractApi.authenticate(username, password);
+    return ContractApi.authenticate(username, password).then(user => {
+        setCurrentUser(user);
+        return user;
+    });
 }
 
 const isLoggedIn = () => {
-    return currentUser === null;
+    return currentUser != null;
 }
 
 const UserManager = {

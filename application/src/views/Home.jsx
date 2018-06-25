@@ -2,13 +2,14 @@
 import { object } from 'prop-types';
 import styled from 'styled-components';
 import { Container, Input, Button } from 'reactstrap';
+import createBrowserHistory from 'history/createBrowserHistory'
 import ViewLayout from '../components/ViewLayout';
 import { MainHeadline } from '../components/Headlines/MainHeadline';
 import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import { withRouter } from 'react-router-dom';
-import DbApi from '../api/DbApi'
 import NotificationManager from '../manager/NotificationManager';
 import ContractApi from '../api/ContractApi';
+import UserManager from '../manager/UserManager';
 
 const PrimaryButton = styled(Button)`
   margin-top: 20px;
@@ -26,13 +27,25 @@ const StyledInput = styled(Input)`
 export class HomeView extends React.Component {
   constructor(props) {
     super(props);
+
+    var currentUser = UserManager.getCurrentUser();
+    if (currentUser != null) {
+      this.goToMyHome();
+    }
+
     this.state = {
       username: '',
       password: '',
-      isLoggedIn: false
+      isLoggedIn: UserManager.isLoggedIn()
     }
     this.handleChange = this.handleChange.bind(this);
     this.login = this.login.bind(this);
+  }
+
+  goToMyHome() {
+    const history = createBrowserHistory();
+    history.push('/MyHome');
+    window.location.reload();
   }
 
   handleChange(evt) {
@@ -40,12 +53,13 @@ export class HomeView extends React.Component {
   }
 
   login() {
-    ContractApi.authenticate(this.state.username, this.state.password).then((user) => {
-      console.log(user);
-      if (user == null) {
-          throw new Error("User not found.");
+    UserManager.login(this.state.username, this.state.password).then(result => {
+      if (result) {
+        NotificationManager.createNotification('success', 'Login successful.', "Login");
+        this.goToMyHome();
+      } else {
+        throw new Error("Login failed.");
       }
-      NotificationManager.createNotification('success', 'Login successful.', "Login");
     }).catch(error => {
       NotificationManager.createNotification('error', error.message, "Login");
     });

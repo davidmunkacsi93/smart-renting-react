@@ -8,10 +8,15 @@ contract User {
     }
 
     function createUserPasswordMapping(string password) public returns (bool) {
-        userPasswordMapping[msg.sender] = keccak256(password);
+        bytes32 passwordHash = keccak256(password);
+        userPasswordMapping[msg.sender] = passwordHash;
     }
 
     function authenticate(string password) public view returns (bool) {
-        return userPasswordMapping[msg.sender] == keccak256(password);
+        bytes32 storedHash = userPasswordMapping[msg.sender];
+        return storedHash == keccak256(password);
+
     }
+
+    event Log(string, bytes32);
 }

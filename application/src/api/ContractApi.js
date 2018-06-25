@@ -49,12 +49,7 @@ const authenticate = (username, password) => {
             from: user.address
         };
 
-        return UserContract.authenticate.call(password, transactionObject, (error, result) => {
-            console.log(result);
-            if(error) {
-                throw new Error(error);
-            }
-        });
+        return UserContract.authenticate.call(password, transactionObject) ? user : null;
     });
 }
 

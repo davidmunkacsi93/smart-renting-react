@@ -9,19 +9,27 @@ import {
     NavItem,
     NavLink,
  } from 'reactstrap';
+ import UserManager from '../../manager/UserManager';
+import createBrowserHistory from 'history/createBrowserHistory';
 
 const StyledNavbar = styled(Navbar)`
   background-color: #18293b !important;
 `;
+
+const ClickableNavLink = styled(NavLink)`
+ cursor: pointer;
+`
 
 export class Header extends Component {
     constructor(props) {
         super(props);
 
         this.toggle = this.toggle.bind(this);
+        this.logout = this.logout.bind(this);
+
         this.state = {
             isOpen: false,
-            isLoggedIn: false
+            isLoggedIn: UserManager.getCurrentUser() == null
         }
     }
 
@@ -31,6 +39,14 @@ export class Header extends Component {
         })
     }
 
+    logout() {
+        UserManager.setCurrentUser(null);
+        const history = createBrowserHistory();
+        history.push('/');
+        window.parent.location = window.parent.location.href;
+      }
+    
+
     render() {
         return(
             <div>
@@ -39,20 +55,24 @@ export class Header extends Component {
                     <NavbarToggler onClick={this.toggle}/>
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
-                            <NavItem>
-                                <NavLink href="/register">Register</NavLink>
-                            </NavItem>
                             {
-                                this.state.isLoggedIn ? 
+                                this.state.isLoggedIn 
+                                ? 
                                 <React.Fragment>
                                     <NavItem>
                                     <NavLink href="/apartments">My Apartments</NavLink>
                                     </NavItem>
                                     <NavItem >
                                         <NavLink href="/rents">My Rents</NavLink>
+                                    </NavItem>
+                                    <NavItem >
+                                        <ClickableNavLink onClick={this.logout}>Logout</ClickableNavLink>
                                     </NavItem> 
                                 </React.Fragment>
-                                 : null                     
+                                :
+                                <NavItem>
+                                    <NavLink href="/register">Register</NavLink>
+                                </NavItem>                   
                             }
                         </Nav>
                     </Collapse>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from 'reactstrap';
-import { Router, Route, Switch } from 'react-router-dom';
+import { Router, Switch } from 'react-router-dom';
 import ViewLayout from '../components/ViewLayout';
 import { MainHeadline } from '../components/Headlines/MainHeadline';
 import createBrowserHistory from 'history/createBrowserHistory'

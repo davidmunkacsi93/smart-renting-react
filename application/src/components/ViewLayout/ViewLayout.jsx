@@ -4,6 +4,7 @@ import { any } from 'prop-types';
 import Header from '../Header';
 import Footer from '../Footer';
 import { NotificationContainer } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 
 const LayoutWrapper = styled.div`
   display: flex;

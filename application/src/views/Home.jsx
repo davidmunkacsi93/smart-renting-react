@@ -2,13 +2,12 @@
 import { object } from 'prop-types';
 import styled from 'styled-components';
 import { Container, Input, InputGroup, Button } from 'reactstrap';
-import { createNotification } from '../manager/NotificationManager'
 import ViewLayout from '../components/ViewLayout';
 import { MainHeadline } from '../components/Headlines/MainHeadline';
 import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import { withRouter } from 'react-router-dom';
 import { getDbUser } from '../api/DbApi'
-import 'react-notifications/lib/notifications.css';
+import { createNotification } from '../manager/NotificationManager'
 
 const PrimaryButton = styled(Button)`
   margin-top: 20px;
@@ -18,21 +17,25 @@ const PrimaryButton = styled(Button)`
 `;
 
 const StyledInput = styled(Input)`
-  width: 20% !important;
-`;
+  width: 40%;
+  margin-top: 10px;
+  display: block;
+`
 
 export class HomeView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: ''
+      username: '',
+      password: '',
+      isLoggedIn: false
     }
     this.handleChange = this.handleChange.bind(this);
     this.login = this.login.bind(this);
   }
 
-  handleChange(event) {
-    this.setState({username: event.target.value});
+  handleChange(evt) {
+    this.setState({ [evt.target.name]: evt.target.value });
   }
 
   login() {
@@ -55,18 +58,32 @@ export class HomeView extends React.Component {
     return (
       <ViewLayout>
         <Container>
-          <MainHeadline>
-            Welcome to the Ehereum based smart renting application!
-          </MainHeadline>
-          <SecondaryHeadline>
-            Please log in to continue!
-          </SecondaryHeadline>
-          <InputGroup size="m">
-            <StyledInput placeholder="Username" value={this.state.username} onChange={this.handleChange}/>
-          </InputGroup>
-          <PrimaryButton onClick={() => this.login() }>
-              Login
-          </PrimaryButton>
+          { this.state.isLoggedIn
+            ?
+              <React.Fragment>
+                <MainHeadline>
+                  Welcome David to the based smart renting application!
+                </MainHeadline>
+              </React.Fragment>
+            :
+              <React.Fragment>
+                <MainHeadline>
+                  Welcome to the Ehereum based smart renting application!
+                </MainHeadline>
+                <SecondaryHeadline>
+                  Please log in to continue!
+                </SecondaryHeadline>
+                <div>
+                  <StyledInput placeholder="Username" name="username" value={this.state.username} onChange={this.handleChange}/>
+                  <StyledInput type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.handleChange}/>
+                  <PrimaryButton onClick={() => this.login() } class="pull-right">
+                      Login
+                  </PrimaryButton>
+                </div>
+              </React.Fragment>
+          }
+
+          
         </Container>
       </ViewLayout>
     );

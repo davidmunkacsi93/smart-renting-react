@@ -47,12 +47,12 @@ export const getDbUser = (username) => {
   return db.users.get({ name: username });
 }
 
-export const createUser = (username) => {
+export const createDbUser = (username) => {
   return db.accounts.toCollection().first().then(account => {
     if (account == null) {
       throw {
         type: 'error',
-        name: 'DbApi.createUser',
+        name: 'DbApi.createDbUser',
         message: "No more available accounts."
       };
     }

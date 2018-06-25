@@ -21,6 +21,7 @@ export class Header extends Component {
         this.toggle = this.toggle.bind(this);
         this.state = {
             isOpen: false,
+            isLoggedIn: false
         }
     }
 
@@ -41,12 +42,18 @@ export class Header extends Component {
                             <NavItem>
                                 <NavLink href="/register">Register</NavLink>
                             </NavItem>
-                            <NavItem>
-                                <NavLink href="/apartments">My Apartments</NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink href="/rents">My Rents</NavLink>
-                            </NavItem>
+                            {
+                                this.state.isLoggedIn ? 
+                                <React.Fragment>
+                                    <NavItem>
+                                    <NavLink href="/apartments">My Apartments</NavLink>
+                                    </NavItem>
+                                    <NavItem >
+                                        <NavLink href="/rents">My Rents</NavLink>
+                                    </NavItem> 
+                                </React.Fragment>
+                                 : null                     
+                            }
                         </Nav>
                     </Collapse>
                 </StyledNavbar>

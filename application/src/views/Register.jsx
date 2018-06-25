@@ -4,11 +4,9 @@ import styled from 'styled-components';
 import { Container, Input, InputGroup, Button } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
-import { createUser } from '../api/DbApi';
+import { createUser } from '../manager/UserManager';
 import { createNotification } from '../manager/NotificationManager';
 import { withRouter } from 'react-router-dom';
-import { NotificationContainer } from 'react-notifications';
-import 'react-notifications/lib/notifications.css';
 
 const PrimaryButton = styled(Button)`
   margin-top: 20px;
@@ -18,32 +16,33 @@ const PrimaryButton = styled(Button)`
 `;
 
 const StyledInput = styled(Input)`
-  width: 20% !important;
-`;
+  width: 40%;
+  margin-top: 10px;
+  display: block;
+`
 
 export class RegisterView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: ''
+      username: '',
+      password: ''
     }
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
   }
 
   handleChange(event) {
-    this.setState({username: event.target.value});
+    this.setState({ [event.target.name]: event.target.value});
   }
 
-
-
   submit() {
-    createUser(this.state.username).then(() => {  
-          createNotification('success', 'User created! You can now login on the homepage.', "Create user");
-        }).catch(err => {
-          createNotification('error', err.message, "Create user");
-        });
 
+    createUser(this.state.username, this.state.password).then(() => {  
+      createNotification('success', 'User created! You can now login on the homepage.', "Create user");
+    }).catch(err => {
+      createNotification('error', err.message, "Create user");
+    });
   }
 
   render() {
@@ -53,12 +52,13 @@ export class RegisterView extends React.Component {
           <SecondaryHeadline>
               Fill out the following form to register:
           </SecondaryHeadline>
-          <InputGroup size="m">
-            <StyledInput placeholder="Username" value={this.state.username} onChange={this.handleChange}/>
-          </InputGroup>
-          <PrimaryButton onClick={() => this.submit() }>
-              CREATE
-          </PrimaryButton>
+          <div>
+            <StyledInput placeholder="Username" name="username" value={this.state.username} onChange={this.handleChange}/>
+            <StyledInput placeholder="Password" type="password" name="password" value={this.state.password} onChange={this.handleChange}/>
+            <PrimaryButton onClick={() => this.submit() }>
+                CREATE
+            </PrimaryButton>
+          </div>
         </Container>
       </ViewLayout>
     );

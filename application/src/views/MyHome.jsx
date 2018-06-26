@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { object } from 'prop-types';
-import styled from 'styled-components';
 import { Container } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import { MainHeadline, ErrorHeadline } from '../components/Headlines/MainHeadline';
@@ -11,10 +10,9 @@ export class MyHomeView extends React.Component {
   constructor(props) {
     super(props);
     var currentUser = UserManager.getCurrentUser();
-    console.log(currentUser);
     this.state = {
-      username: currentUser ? currentUser.username : '',
-      isLoggedIn: UserManager.isLoggedIn()
+      currentUser: currentUser,
+      isLoggedIn: currentUser != null
     }
     this.handleChange = this.handleChange.bind(this);
   }
@@ -32,7 +30,7 @@ export class MyHomeView extends React.Component {
             ?
               <React.Fragment>
                 <MainHeadline>
-                  Welcome {this.state.username} to the based smart renting application!
+                  Hello {this.state.currentUser.name}! Welcome back!
                 </MainHeadline>
               </React.Fragment>
             :

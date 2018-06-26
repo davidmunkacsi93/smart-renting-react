@@ -27,9 +27,12 @@ export class Header extends Component {
         this.toggle = this.toggle.bind(this);
         this.logout = this.logout.bind(this);
 
+        var currentUser = UserManager.getCurrentUser();
+
         this.state = {
+            currentUser: currentUser,
             isOpen: false,
-            isLoggedIn: UserManager.getCurrentUser() == null
+            isLoggedIn: currentUser != null
         }
     }
 

@@ -1,20 +1,18 @@
 import DbApi from '../api/DbApi';
 import ContractApi from '../api/ContractApi';
 
-var currentUser = null;
+const currentUserKey = "currentUser";
 
 const createUser = (username, password) => {
     return DbApi.createDbUser(username, password);
 }
 
 const setCurrentUser = (user) => {
-    if (user == null)
-        return;
-    currentUser = user;
+    localStorage[currentUserKey] = JSON.stringify(user);
 }
 
 const getCurrentUser = () => {
-    return currentUser;
+    return JSON.parse(localStorage[currentUserKey]);
 }
 
 const login = (username, password) => {
@@ -25,7 +23,7 @@ const login = (username, password) => {
 }
 
 const isLoggedIn = () => {
-    return currentUser != null;
+    return getCurrentUser() != null;
 }
 
 const UserManager = {

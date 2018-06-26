@@ -1,26 +1,12 @@
-import mongoose from 'mongoose';
+const mongoClient = require('mongodb').MongoClient;
+const uri = "mongodb://SmartRent:Pa\$\$word123@smartrentdb-shard-00-00-estgp.mongodb.net:27017,smartrentdb-shard-00-01-estgp.mongodb.net:27017,smartrentdb-shard-00-02-estgp.mongodb.net:27017/test?ssl=true&replicaSet=SmartRentDB-shard-0&authSource=admin&retryWrites=true";
 
-const Schema = mongoose.Schema,
-    ObjectId = Schema.ObjectId;
-
- 
-const Account = new Schema({
-    id: ObjectId,
-    address: String
-});
-
-const User = new Schema({
-    id: ObjectId,
-    name: String,
-    address: String,
-});
-
-export const connect = () => {
-    mongoose.connect('mongodb+srv://SmartRent:Pa\$\$word123@smartrentdb-estgp.mongodb.net/test?retryWrites=true').then((res) => {
-        console.log(res);
+const connect = () => {
+    mongoClient.connect(uri, function(err, db) {
+        console.log("Connected.")
     });
 }
 
-const MongoDbApi = {
-
+module.exports =  {
+ connect : connect
 }

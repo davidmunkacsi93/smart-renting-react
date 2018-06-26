@@ -9,8 +9,11 @@ import {
     NavItem,
     NavLink,
  } from 'reactstrap';
- import UserManager from '../../manager/UserManager';
+import UserManager from '../../manager/UserManager';
 import createBrowserHistory from 'history/createBrowserHistory';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
+
 
 const StyledNavbar = styled(Navbar)`
   background-color: #18293b !important;
@@ -18,6 +21,10 @@ const StyledNavbar = styled(Navbar)`
 
 const ClickableNavLink = styled(NavLink)`
  cursor: pointer;
+`
+
+const StyledIcon = styled(FontAwesomeIcon)`
+ margin-right: 5px;
 `
 
 export class Header extends Component {
@@ -54,7 +61,7 @@ export class Header extends Component {
         return(
             <div>
                 <StyledNavbar color="dark" dark expand="md">
-                    <NavbarBrand href="/">Smart Rent</NavbarBrand>
+                    <NavbarBrand href="/"><StyledIcon icon={faHome}/>Home</NavbarBrand>
                     <NavbarToggler onClick={this.toggle}/>
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>

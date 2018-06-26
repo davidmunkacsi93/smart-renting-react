@@ -2,10 +2,8 @@
 import { object } from 'prop-types';
 import styled from 'styled-components';
 import { Container, Input, Button } from 'reactstrap';
-import createBrowserHistory from 'history/createBrowserHistory'
 import ViewLayout from '../components/ViewLayout';
 import { MainHeadline } from '../components/Headlines/MainHeadline';
-import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import { withRouter } from 'react-router-dom';
 import NotificationManager from '../manager/NotificationManager';
 import UserManager from '../manager/UserManager';
@@ -23,13 +21,17 @@ const StyledInput = styled(Input)`
   display: block;
 `
 
+const StyledSpan = styled.span`
+ color:white;
+`
+
 export class HomeView extends React.Component {
   constructor(props) {
     super(props);
 
     var currentUser = UserManager.getCurrentUser();
     if (currentUser != null) {
-      this.goToMyHome();
+      window.location.reload();
     }
 
     this.state = {
@@ -40,12 +42,6 @@ export class HomeView extends React.Component {
     this.login = this.login.bind(this);
   }
 
-  goToMyHome() {
-    const history = createBrowserHistory();
-    history.push('/MyHome');
-    window.location.reload();
-  }
-
   handleChange(evt) {
     this.setState({ [evt.target.name]: evt.target.value });
   }
@@ -53,8 +49,7 @@ export class HomeView extends React.Component {
   login() {
     UserManager.login(this.state.username, this.state.password).then(result => {
       if (result) {
-        NotificationManager.createNotification('success', 'Login successful.', "Login");
-        this.goToMyHome();
+        window.location.reload();
       } else {
         throw new Error("Login failed.");
       }
@@ -71,9 +66,9 @@ export class HomeView extends React.Component {
               <MainHeadline>
                 Welcome to the Ehereum based smart renting application!
               </MainHeadline>
-              <SecondaryHeadline>
+              <StyledSpan>
                 Please log in to continue!
-              </SecondaryHeadline>
+              </StyledSpan>
               <StyledInput placeholder="Username" name="username" value={this.state.username} onChange={this.handleChange}/>
               <StyledInput type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.handleChange}/>
               <PrimaryButton onClick={() => this.login() }>

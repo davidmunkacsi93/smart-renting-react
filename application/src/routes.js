@@ -3,17 +3,15 @@ import MyHomeView from './views/MyHome';
 import MyApartmentsView from './views/MyApartments';
 import MyRentsView from './views/MyRents';
 import RegisterView from './views/Register';
+import UserManager from './manager/UserManager';
+
+const currentUser = UserManager.getCurrentUser();
 
 export const publicRoutes = [
     {
       path: '/',
       exact: true,
-      page: HomeView,
-    },
-    {
-      path: '/myhome',
-      exact: true,
-      page: MyHomeView,
+      page: currentUser == null ? HomeView : MyHomeView,
     },
     {
       path: '/apartments',

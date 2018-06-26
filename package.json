@@ -13,6 +13,8 @@
     "dexie": "^2.0.4",
     "express": "^4.16.2",
     "history": "^4.7.2",
+    "mongodb": "^3.0.10",
+    "mongoose": "^5.1.7",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "react-notifications": "^1.4.3",

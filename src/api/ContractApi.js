@@ -15,12 +15,11 @@ for(var uKey in userContractJson.networks){
 }
 let userAddress=userContractJson.networks[userKey].address;
 
-const web3=new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+const web3=new Web3(new Web3.providers.HttpProvider("http://192.168.0.6:8545"));
 // const ApartmentContract = web3.eth.contract(apartmentABI).at(apartmentAddress);
 const UserContract = web3.eth.contract(userABI).at(userAddress);
 
 const getAccounts = () => {
-    const web3=new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
     return web3.eth.accounts;
  };
  

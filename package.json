@@ -21,8 +21,8 @@
     "web3": "^0.19.1"
   },
   "scripts": {
-    "start": "xcopy /F /Y /s \"../smart-contracts/build/contracts/*.*\" \"./src/contracts-json/\" && react-scripts start",
-    "build": "react-scripts build && xcopy /F /Y /s \"../smart-contracts/build/contracts/*.*\" \"./src/contracts-json/\" ",
+    "start": "xcopy /F /Y /s \"./ethereum/build/contracts/*.*\" \"./src/contracts-json/\" && react-scripts start",
+    "build": "react-scripts build && xcopy /F /Y /s \"./ethereum/build/contracts/*.*\" \"./src/contracts-json/\" ",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }

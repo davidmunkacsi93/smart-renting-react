@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import DbApi from './DbApi';
+import NotificationManager from '../manager/NotificationManager';
 
 // var apartmentContractJson = require('../contracts-json/Apartment.json');
 // var apartmentABI=apartmentContractJson.abi;
@@ -18,6 +19,35 @@ let userAddress=userContractJson.networks[userKey].address;
 const web3=new Web3(new Web3.providers.HttpProvider("http://192.168.0.6:8545"));
 // const ApartmentContract = web3.eth.contract(apartmentABI).at(apartmentAddress);
 const UserContract = web3.eth.contract(userABI).at(userAddress);
+
+const initializeAccounts = async () => {
+    let accounts = [];
+    getAccounts().forEach(acc => {
+        accounts.push({ address: acc });
+    });
+    var response = await fetch('/api/getCounts');
+    const body = await response.json();
+    if (response.status !== 200) throw Error("Error during initializing accounts.");
+    console.log(body);
+    if (body.accountCount === 0 && body.userCount === 0) {
+        console.log("Creating accounts...");
+        response = await fetch('/api/createAccounts', {
+            body: JSON.stringify(accounts),
+            cache: 'no-cache',
+            headers: {
+              'content-type': 'application/json'
+            },
+            method: 'POST'
+        });
+        const body = await response.json();
+        if (response.status !== 200) throw Error("Error during initializing accounts.");
+        if (!body.success) {
+            NotificationManager.createNotification('error', body.message, 'Creating accounts');
+        } else {
+            NotificationManager.createNotification('success', "Accounts created successfully.", 'Creating accounts...');
+        }
+    }
+  };
 
 const getAccounts = () => {
     return web3.eth.accounts;
@@ -40,7 +70,7 @@ const createUser = (address, password) => {
 }
 
 const authenticate = (username, password) => {
-    return DbApi.getDbUser(username).then((user) => {
+    return DbApi.getUser(username).then((user) => {
         if (user === undefined) {
             throw new Error("Login failed. User does not exist.");
         }
@@ -57,6 +87,7 @@ const payRent = (apartment) => {
 };
 
 const ContractApi = {
+    initializeAccounts: initializeAccounts,
     getAccounts: getAccounts,
     createUser: createUser,
     authenticate: authenticate,

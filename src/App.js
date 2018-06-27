@@ -4,8 +4,10 @@ import createBrowserHistory from 'history/createBrowserHistory';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { publicRoutes as publicRoutesConfig } from './routes';
 import DbApi from './api/DbApi';
+import ContractApi from './api/ContractApi';
 
 DbApi.initializeDb();
+ContractApi.initializeAccounts().then();
 const history = createBrowserHistory();
 
 const publicRoutes = () =>

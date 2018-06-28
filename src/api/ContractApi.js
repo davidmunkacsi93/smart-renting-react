@@ -1,6 +1,7 @@
 import Web3 from 'web3';
 import DbApi from './DbApi';
 import NotificationManager from '../manager/NotificationManager';
+import UserManager from '../manager/UserManager';
 
 // var apartmentContractJson = require('../contracts-json/Apartment.json');
 // var apartmentABI=apartmentContractJson.abi;
@@ -25,11 +26,10 @@ const initializeAccounts = async () => {
     getAccounts().forEach(acc => {
         accounts.push({ address: acc });
     });
-    var response = await fetch('/api/getCounts');
+    var response = await fetch('/api/getAccountCount');
     const body = await response.json();
     if (response.status !== 200) throw Error("Error during initializing accounts.");
-    console.log(body);
-    if (body.accountCount === 0 && body.userCount === 0) {
+    if (body.count === 0) {
         console.log("Creating accounts...");
         response = await fetch('/api/createAccounts', {
             body: JSON.stringify(accounts),
@@ -44,7 +44,7 @@ const initializeAccounts = async () => {
         if (!body.success) {
             NotificationManager.createNotification('error', body.message, 'Creating accounts');
         } else {
-            NotificationManager.createNotification('success', "Accounts created successfully.", 'Creating accounts...');
+            NotificationManager.createNotification('success', "Accounts created successfully.", 'Creating accounts');
         }
     }
   };
@@ -70,16 +70,16 @@ const createUser = (address, password) => {
 }
 
 const authenticate = (username, password) => {
-    return DbApi.getUser(username).then((user) => {
-        if (user === undefined) {
-            throw new Error("Login failed. User does not exist.");
-        }
-        const transactionObject = {
-            from: user.address
-        };
+    var account = UserManager.getCurrentAccount();
+    if (account === null) {
+        NotificationManager.createNotification('error', 'Current user could not be identified.', 'Login')
+        return null;
+    }
+    const transactionObject = {
+        from: account.address
+    };
 
-        return UserContract.authenticate.call(password, transactionObject) ? user : null;
-    });
+    return UserContract.authenticate.call(password, transactionObject) ? account : null;
 }
 
 const payRent = (apartment) => {

@@ -5,13 +5,13 @@ import MyRentsView from './views/MyRents';
 import RegisterView from './views/Register';
 import UserManager from './manager/UserManager';
 
-const currentUser = UserManager.getCurrentUser();
+const currentAccount = UserManager.getCurrentAccount();
 
 export const publicRoutes = [
     {
       path: '/',
       exact: true,
-      page: currentUser == null ? HomeView : MyHomeView,
+      page: currentAccount == null ? HomeView : MyHomeView,
     },
     {
       path: '/apartments',

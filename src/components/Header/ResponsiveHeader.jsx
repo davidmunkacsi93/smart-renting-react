@@ -34,12 +34,12 @@ export class Header extends Component {
         this.toggle = this.toggle.bind(this);
         this.logout = this.logout.bind(this);
 
-        var currentUser = UserManager.getCurrentUser();
+        var currentAccount = UserManager.getCurrentAccount();
 
         this.state = {
-            currentUser: currentUser,
+            currentAccount: currentAccount,
             isOpen: false,
-            isLoggedIn: currentUser != null
+            isLoggedIn: currentAccount != null
         }
     }
 
@@ -50,7 +50,7 @@ export class Header extends Component {
     }
 
     logout() {
-        UserManager.setCurrentUser(null);
+        UserManager.setCurrentAccount(null);
         const history = createBrowserHistory();
         history.push('/');
         window.parent.location = window.parent.location.href;

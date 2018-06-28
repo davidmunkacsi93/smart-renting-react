@@ -14,35 +14,54 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
-app.get('/api/getCounts', (req, res) => {
+app.get('/api/getAccountCount', (req, res) => {
   mongoClient.connect(uri, (err, db) => {
     if (err) throw err;
-    
     var dbo = db.db(dbName);
-    dbo.collection("users").count((errUser, userCount) => {
-        if (errUser) throw errUser;
-        dbo.collection("accounts").count((errAccount, accountCount) => {
-          if (errAccount) throw errAccount; 
-          res.send({ success: true, userCount: userCount, accountCount: accountCount });
-        });
-        db.close();
-      });
+    dbo.collection("accounts").count((err, count) => {
+      if (err) throw err; 
+      res.send({ success: true, count: count });
+    });
+    db.close();
   });
 });
 
-app.post('/api/createUser', (req, res) => {
+app.get('/api/getAccount', (request, response) => {
   mongoClient.connect(uri, function(err, db) {
-    if (err)
-      res.send( { success: false, message: connectionErrorMessage });
+    if (err) response.send( { success: false, message: connectionErrorMessage });
     var dbo = db.db(dbName);
-    dbo.collection("accounts").updateOne(req.body, function(err, res) {
-        if (err) {
-          res.send( { success: false, message: "User could not be created." });
+    var query = { account: { user: request.body }};
+    dbo.collection("accounts").findOne(query, function(err, document) {
+        console.log(document);
+        if (err)  {
+          response.send( { success: false, message: "User could not be found." });
+          throw err;
         } else {
-          res.send( { success: true, message: "User created." });
+          response.send( { success: true, message: "User created successfully.", account: document });
         }
-        db.close();
     });
+    db.close();
+  });
+});
+
+app.post('/api/createUser', (request, response) => {
+  mongoClient.connect(uri, function(err, db) {
+    if (err) response.send( { success: false, message: connectionErrorMessage });
+    var dbo = db.db(dbName);
+    var query = { user: { $exists: false }};
+    var update = { $set: { user: request.body } };
+    dbo.collection("accounts").findOneAndUpdate(query, update, { returnOriginal: false }, function(err, document) {
+        if (err)  {
+          response.send( { success: false, message: "User could not be created." });
+          throw err;
+        } if (document.value === null) {
+          response.send( { success: false, message: "No more available accounts." });
+        } 
+        else {
+          response.send( { success: true, message: "User created successfully.", account: document.value });
+        }
+    });
+    db.close();
   });
 });
 

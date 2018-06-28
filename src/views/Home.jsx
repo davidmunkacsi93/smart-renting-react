@@ -29,8 +29,8 @@ export class HomeView extends React.Component {
   constructor(props) {
     super(props);
 
-    var currentUser = UserManager.getCurrentUser();
-    if (currentUser != null) {
+    var currentAccount = UserManager.getCurrentAccount();
+    if (currentAccount != null) {
       window.location.reload();
     }
 
@@ -47,15 +47,10 @@ export class HomeView extends React.Component {
   }
 
   login() {
-    UserManager.login(this.state.username, this.state.password).then(result => {
-      if (result) {
-        window.location.reload();
-      } else {
-        throw new Error("Login failed.");
-      }
-    }).catch(error => {
-      NotificationManager.createNotification('error', error.message, "Login");
-    });
+    var result = UserManager.login(this.state.username, this.state.password);
+    if (result) {
+      window.location.reload();
+    }
   }
 
   render() {

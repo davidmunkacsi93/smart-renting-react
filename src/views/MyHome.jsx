@@ -9,10 +9,11 @@ import UserManager from '../manager/UserManager';
 export class MyHomeView extends React.Component {
   constructor(props) {
     super(props);
-    var currentUser = UserManager.getCurrentUser();
+    var currentAccount = UserManager.getCurrentAccount();
+    console.log(currentAccount);
     this.state = {
-      currentUser: currentUser,
-      isLoggedIn: currentUser != null
+      currentAccount: currentAccount,
+      isLoggedIn: currentAccount != null
     }
     this.handleChange = this.handleChange.bind(this);
   }
@@ -39,7 +40,7 @@ export class MyHomeView extends React.Component {
             ?
               <React.Fragment>
                 <MainHeadline>
-                  Hello {this.state.currentUser.name}! Welcome back!
+                  Hello {this.state.currentAccount.user.username}! Welcome back!
                 </MainHeadline>
               </React.Fragment>
             :

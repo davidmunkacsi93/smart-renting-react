@@ -5,7 +5,7 @@ var db = new Dexie("smartRentDb");
 
 const initializeDb = () => {
   const schema = {
-    currentUser: '++id,name,address'
+    currentAccount: '++id,name,address'
   }
   db.version(1).stores(schema);
   // If a trigger is needed on a table.
@@ -16,16 +16,21 @@ const initializeDb = () => {
   // });
 }
 
-const setCurrentUser = (user) => {
-  db.current.clear();
-  if (user) {
-    return db.currentUser.add({name: user.username, address: user.address});
+const getCurrentAccount = () => {
+  return db.currentAccount.toCollection().first();
+}
+
+const setCurrentAccount = (account) => {
+  db.currentAccount.clear();
+  if (account) {
+    return db.currentAccount.add({name: account.user.username, address: account.address});
   }
 }
 
 const DbApi = {
   initializeDb: initializeDb,
-  setCurrentUser: setCurrentUser
+  getCurrentAccount: getCurrentAccount,
+  setCurrentAccount: setCurrentAccount
 }
 
 export default DbApi;

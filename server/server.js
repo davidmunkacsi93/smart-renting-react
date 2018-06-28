@@ -65,6 +65,27 @@ app.post('/api/createUser', (request, response) => {
   });
 });
 
+app.post('/api/createApartment', (request, response) => {
+  mongoClient.connect(uri, function(err, db) {
+    if (err) response.send( { success: false, message: connectionErrorMessage });
+    var dbo = db.db(dbName);
+    var query = { address: request.body.account.address };
+    var update = { $push: { apartment: request.body.apartment } };
+    dbo.collection("accounts").findOneAndUpdate(query, update, { returnOriginal: false }, function(err, document) {
+        if (err)  {
+          console.log(err);
+          response.send( { success: false, message: "Apartment could not be created." });
+          throw err;
+        }
+        else {
+          console.log(document.value);
+          response.send( { success: true, message: "Apartment created successfully.", account: document.value });
+        }
+    });
+    db.close();
+  });
+});
+
 app.post('/api/createAccounts', (req, response) => {
   mongoClient.connect(uri, (err, db) => {
       if (err) 

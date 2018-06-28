@@ -70,6 +70,9 @@ export class Header extends Component {
                                 ? 
                                 <React.Fragment>
                                     <NavItem>
+                                        <NavLink href="/newapartment">New Apartment</NavLink>
+                                    </NavItem>
+                                    <NavItem>
                                     <NavLink href="/apartments">My Apartments</NavLink>
                                     </NavItem>
                                     <NavItem >

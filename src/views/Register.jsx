@@ -41,7 +41,6 @@ export class RegisterView extends React.Component {
   }
 
   submit() {
-
     UserManager.createUser(this.state.username, this.state.password).then(() => {  
       NotificationManager.createNotification('success', 'Registration successful! You will be soon redirected to the home page.', "Register");
       setTimeout(function () {

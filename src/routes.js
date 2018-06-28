@@ -3,6 +3,7 @@ import MyHomeView from './views/MyHome';
 import MyApartmentsView from './views/MyApartments';
 import MyRentsView from './views/MyRents';
 import RegisterView from './views/Register';
+import NewApartmentView from './views/NewApartment';
 import UserManager from './manager/UserManager';
 
 const currentAccount = UserManager.getCurrentAccount();
@@ -17,6 +18,11 @@ export const publicRoutes = [
       path: '/apartments',
       exact: true,
       page: MyApartmentsView,
+    },
+    {
+      path: '/newapartment',
+      exact: true,
+      page: NewApartmentView,
     },
     {
       path: '/rents',

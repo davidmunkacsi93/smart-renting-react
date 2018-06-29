@@ -1,5 +1,4 @@
 import Dexie from 'dexie';
-import ContractApi from './ContractApi';
 
 var db = new Dexie("smartRentDb");
 

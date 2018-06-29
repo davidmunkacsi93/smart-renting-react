@@ -3,17 +3,18 @@ import { object } from 'prop-types';
 import { Container } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import { MainHeadline, ErrorHeadline } from '../components/Headlines/MainHeadline';
+import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import { withRouter } from 'react-router-dom';
 import UserManager from '../manager/UserManager';
+import ContractApi from '../api/ContractApi';
 
 export class MyHomeView extends React.Component {
   constructor(props) {
     super(props);
-    var currentAccount = UserManager.getCurrentAccount();
-    console.log(currentAccount);
+    var account = UserManager.getCurrentAccount();
     this.state = {
-      currentAccount: currentAccount,
-      isLoggedIn: currentAccount != null
+      account: account,
+      isLoggedIn: account != null
     }
     this.handleChange = this.handleChange.bind(this);
   }
@@ -40,8 +41,11 @@ export class MyHomeView extends React.Component {
             ?
               <React.Fragment>
                 <MainHeadline>
-                  Hello {this.state.currentAccount.user.username}! Welcome back!
+                  Hello {this.state.account.user.username}! Welcome back!
                 </MainHeadline>
+                <SecondaryHeadline>
+                  Your current balance is: {ContractApi.getBalanceInEur(this.state.account.address)} EUR ({ContractApi.getBalanceInEth(this.state.account.address)} ETH)
+                </SecondaryHeadline>
               </React.Fragment>
             :
               <React.Fragment>

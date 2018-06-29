@@ -1,4 +1,3 @@
-import DbApi from '../api/DbApi';
 import ContractApi from '../api/ContractApi';
 import NotificationManager from '../manager/NotificationManager';
 

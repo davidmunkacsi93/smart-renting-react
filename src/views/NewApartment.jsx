@@ -1,15 +1,12 @@
 import * as React from 'react';
-import { object } from 'prop-types';
 import styled from 'styled-components';
 import { Container, Input, Button } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import UserManager from '../manager/UserManager';
 import NotificationManager from '../manager/NotificationManager';
 import { withRouter } from 'react-router-dom';
-import createBrowserHistory from 'history/createBrowserHistory';
 import { MainHeadline, ErrorHeadline } from '../components/Headlines/MainHeadline'
-import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline'
-import { getBasePrice } from 'crypto-price'
+import ContractApi from '../api/ContractApi';
 
 const PrimaryButton = styled(Button)`
   margin-top: 20px;
@@ -31,9 +28,9 @@ const StyledSpan = styled.span`
 export class NewApartmentView extends React.Component {
   constructor(props) {
     super(props);
-    var currentAccount = UserManager.getCurrentAccount();
+    var account = UserManager.getCurrentAccount();
     this.state = {
-        currentAccount: currentAccount,
+        account: account,
         postCode: '',
         city: '',
         street: '',
@@ -54,29 +51,27 @@ export class NewApartmentView extends React.Component {
   handleChange(event) {
     this.setState({ [event.target.name]: event.target.value});
     if (event.target.name === "rent" || event.target.name === "deposit") {  
-        var value = event.target.value;
-        var name = event.target.name;
-        getBasePrice('EUR', 'ETH').then(crypto => { 
-            this.setState({[name + "Eth"]: value*crypto.price});
-        }).catch(err => {
-            console.error(err)
-        })
+        // var value = event.target.value;
+        // var name = event.target.name;
+        // getBasePrice('EUR', 'ETH').then(crypto => { 
+        //     this.setState({[name + "Eth"]: value*crypto.price});
+        // }).catch(err => {
+        //     console.error(err)
+        // })
     }
   }
 
   createApartment = async () => {
     const apartment = {
-        account: this.state.currentAccount,
+        account: this.state.account,
         apartment: {
-            postCode: parseInt(this.state.postCode),
+            postCode: parseInt(this.state.postCode, 10),
             city: this.state.city,
             street: this.state.street,
-            houseNumber: parseInt(this.state.houseNumber),
-            floor: parseInt(this.state.floor),
-            deposit: parseInt(this.state.deposit),
-            rent: parseInt(this.state.rent),
-            depositEth: this.state.depositEth,
-            rentEth: this.state.rentEth
+            houseNumber: parseInt(this.state.houseNumber, 10),
+            floor: parseInt(this.state.floor, 10),
+            deposit: parseInt(this.state.deposit, 10),
+            rent: parseInt(this.state.rent, 10)
         }
     }
     var response = await fetch('/api/createApartment', {
@@ -88,10 +83,16 @@ export class NewApartmentView extends React.Component {
         method: 'POST'
     });
     const body = await response.json();
-    if (response.status !== 200) throw Error("Error during initializing accounts.");
+    if (response.status !== 200) throw Error("Error during creating apartment.");
     if (!body.success) {
         NotificationManager.createNotification('error', body.message, 'Creating apartment');
     } else {
+        try {
+            ContractApi.createApartment(body.account, body.apartment);
+        } catch (err) {
+            NotificationManager.createNotification('error', err.message, 'Creating apartment');
+            return;
+        }
         NotificationManager.createNotification('success', "Apartment created successfully.", 'Creating apartment');
     }
   }
@@ -118,12 +119,19 @@ export class NewApartmentView extends React.Component {
                 </div>
 
                 <div className="col-md-4">
-                    <StyledInput className="" className="display-inline" placeholder="Deposit" name="deposit" type="number" value={this.state.deposit} onChange={this.handleChange}/>
-                    <StyledInput className="margin-left-10 display-inline" placeholder="Deposit" name="deposit" type="number" value={this.state.depositEth} onChange={this.handleChange}/>
+                    <StyledInput className="display-inline" placeholder="Deposit" name="deposit" type="number" value={this.state.deposit} onChange={this.handleChange}/>
                 </div>
                 <div className="col-md-4">
-                    <StyledInput className="" className="display-inline" placeholder="Rent" name="rent" type="number" value={this.state.rent} onChange={this.handleChange}/>
-                    <StyledInput className="margin-left-10 display-inline" placeholder="Rent" name="rent" type="number" value={this.state.rentEth} onChange={this.handleChange}/>
+                    <StyledInput className="display-inline" placeholder="Rent" name="rent" type="number" value={this.state.rent} onChange={this.handleChange}/>
+                </div>
+                <div className="margin-top-10">
+                    <StyledSpan>Your current balance is {ContractApi.getBalanceInEur(this.state.account.address)} EUR ({ContractApi.getBalanceInEth(this.state.account.address)} ETH).</StyledSpan>
+                </div>
+                <div>
+                    <StyledSpan>The current transaction is going to cost {ContractApi.getTransactionPriceInEur(this.state.deposit, this.state.rent)} EUR ({ContractApi.getTransactionPriceInEth(this.state.deposit, this.state.rent)} ETH).</StyledSpan>
+                </div>
+                <div>
+                    <StyledSpan>Balance after transaction: {ContractApi.getRemainingAmountInEur(this.state.account.address, this.state.deposit, this.state.rent)} EUR ({ContractApi.getRemainingAmountInEth(this.state.account.address, this.state.deposit, this.state.rent)} ETH).</StyledSpan>
                 </div>
                 <PrimaryButton onClick={() => this.createApartment() }>
                     CREATE

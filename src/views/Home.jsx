@@ -5,7 +5,6 @@ import { Container, Input, Button } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import { MainHeadline } from '../components/Headlines/MainHeadline';
 import { withRouter } from 'react-router-dom';
-import NotificationManager from '../manager/NotificationManager';
 import UserManager from '../manager/UserManager';
 
 const PrimaryButton = styled(Button)`

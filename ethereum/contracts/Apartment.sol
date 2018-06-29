@@ -9,7 +9,7 @@ contract Apartment {
     ApartmentDetail[] apartmentlist;
 
     struct ApartmentDetail {
-        uint id;
+        string id;
         address owner;
         address tenant;
         uint deposit;
@@ -20,9 +20,19 @@ contract Apartment {
     }
 
 
-    function payRent(uint id) public payable {
+    function createApartmentDetail(string _id, uint _deposit, uint _rent) public payable {
+        ownedApartments[msg.sender].push(ApartmentDetail({
+            id: _id,
+            owner: msg.sender,
+            tenant: address(0),
+            deposit: _deposit,
+            rent: _rent
+        }));
+    }
+
+    function payRent(string _id) public payable {
         for(uint i = 0; i < apartmentlist.length; i++) {
-            if (apartmentlist[i].id == id) {
+            if (keccak256(apartmentlist[i].id) == keccak256(_id)) {
                 ApartmentDetail storage apartment = apartmentlist[i];
             }
         }
@@ -30,9 +40,9 @@ contract Apartment {
         apartment.owner.transfer(msg.value);
     }
 
-    function payDeposit(uint id) public payable {
+    function payDeposit(string _id) public payable {
         for(uint i = 0; i < apartmentlist.length; i++) {
-            if (apartmentlist[i].id == id) {
+            if (keccak256(apartmentlist[i].id) == keccak256(_id)) {
                 ApartmentDetail storage apartment = apartmentlist[i];
             }
         }

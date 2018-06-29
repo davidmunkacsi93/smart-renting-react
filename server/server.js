@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
+
 const bodyParser = require("body-parser");
 const dbName = "smartrent";
 const uri = "mongodb://SmartRent:berlin28041993@smartrentdb-shard-00-00-estgp.mongodb.net:27017,smartrentdb-shard-00-01-estgp.mongodb.net:27017,smartrentdb-shard-00-02-estgp.mongodb.net:27017/test?ssl=true&replicaSet=SmartRentDB-shard-0&authSource=admin&retryWrites=true";
@@ -32,7 +34,6 @@ app.get('/api/getAccount', (request, response) => {
     var dbo = db.db(dbName);
     var query = { account: { user: request.body }};
     dbo.collection("accounts").findOne(query, function(err, document) {
-        console.log(document);
         if (err)  {
           response.send( { success: false, message: "User could not be found." });
           throw err;
@@ -70,16 +71,17 @@ app.post('/api/createApartment', (request, response) => {
     if (err) response.send( { success: false, message: connectionErrorMessage });
     var dbo = db.db(dbName);
     var query = { address: request.body.account.address };
-    var update = { $push: { apartment: request.body.apartment } };
+    var apartment = request.body.apartment;
+    apartment["_id"] = ObjectId();
+    var update = { $push: { apartments: request.body.apartment } };
     dbo.collection("accounts").findOneAndUpdate(query, update, { returnOriginal: false }, function(err, document) {
         if (err)  {
-          console.log(err);
           response.send( { success: false, message: "Apartment could not be created." });
           throw err;
         }
         else {
-          console.log(document.value);
-          response.send( { success: true, message: "Apartment created successfully.", account: document.value });
+          var apartment = document.value.apartments[document.value.apartments.length-1];
+          response.send( { success: true, message: "Apartment created successfully.", account: document.value, apartment: apartment });
         }
     });
     db.close();
@@ -97,8 +99,8 @@ app.post('/api/createAccounts', (req, response) => {
           } else {
             response.send( { success: true, message: result.insertedCount + " accounts created." });
           }
-          db.close();
       });
+      db.close();
   });
 });
 

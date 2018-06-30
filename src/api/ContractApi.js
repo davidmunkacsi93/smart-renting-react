@@ -1,9 +1,9 @@
 import Web3 from 'web3';
 import NotificationManager from '../manager/NotificationManager';
 import UserManager from '../manager/UserManager';
+import { getBasePrice } from 'crypto-price';
 
-const ethereumValueInEur = 352.70;
-const fixedPercentage = 0.005;
+const fallbackPrice = 352.70;
 
 var apartmentContractJson = require('../contracts-json/Apartment.json');
 var apartmentABI=apartmentContractJson.abi;
@@ -92,7 +92,7 @@ const createApartment = (account, apartment) => {
     }
 }
 
-const authenticate = (username, password) => {
+const authenticate = (_, password) => {
     var account = UserManager.getCurrentAccount();
     if (account === null) {
         NotificationManager.createNotification('error', 'Current user could not be identified.', 'Login')
@@ -106,51 +106,52 @@ const authenticate = (username, password) => {
 }
 
 const getBalanceInEur = (address) => {
-    return web3.fromWei(web3.eth.getBalance(address)).toFixed(2)*ethereumValueInEur;
+    return web3.fromWei(web3.eth.getBalance(address)).toFixed(2)*fallbackPrice;
 }
 
 const getBalanceInEth = (address) => {
     return web3.fromWei(web3.eth.getBalance(address)).toFixed(2);
 }
 
-const getTransactionPriceInEur = (deposit, rent) => {
-    return (parseInt(deposit, 10)+parseInt(rent, 10))*fixedPercentage;
-}
-const getTransactionPriceInEth = (deposit, rent) => {
-    return (parseInt(deposit, 10)+parseInt(rent, 10))*fixedPercentage/ethereumValueInEur;
-}
-
-const getTransactionPriceInWei = (deposit, rent) => {
-    return (parseInt(deposit, 10)+parseInt(rent, 10))*fixedPercentage/ethereumValueInEur*Math.pow(10,18);
-}
-
-const getRemainingAmountInEur = (address, deposit, rent) => {
-    return (getBalanceInEur(address) - getTransactionPriceInEur(deposit, rent)).toFixed(3);
+const getCurrentTransactionPrice = (transactionInfo) => {
+    getBasePrice('EUR', 'ETH').then(obj => {  
+        var currentPriceInEth = obj.price*(transactionInfo.deposit + transactionInfo.rent);
+        var priceInWei = currentPriceInEth;
+        console.log(priceInWei);
+    }).catch(err => {
+        NotificationManager.createNotification('error', err.message, 'Renting an apartment');
+    })
 }
 
-const getRemainingAmountInEth = (address, deposit, rent) => {
-    return (getBalanceInEth(address) - getTransactionPriceInEth(deposit, rent)).toFixed(3);
-}
-
-
-const payRent = (apartment) => {
-    console.log("Paying the rent...");
+const rentApartment = (transactionInfo) => {
+    var currentPriceInEth = (transactionInfo.deposit + transactionInfo.rent)/fallbackPrice;
+    var priceInWei = web3.toWei(currentPriceInEth, 'ether');
+    const transactionObject = {
+        from: transactionInfo.from,
+        value: priceInWei
+    };
+    console.log(priceInWei);
+    console.log(web3.eth.getBalance(transactionObject.from));
+    ApartmentContract.payRent(transactionInfo.to, transactionObject, function(err, res) {
+        if (err) {
+            console.error(err);
+            NotificationManager.createNotification('error', 'Error during transfering deposit.', 'Transfering deposit')
+        } else {
+            console.log(res);
+            NotificationManager.createNotification('success', 'Deposit successfully transferred.', 'Transfering deposit')
+        }
+    });
 };
 
 const ContractApi = {
-    ethereumValueInEur: ethereumValueInEur,
     initializeAccounts: initializeAccounts,
     getAccounts: getAccounts,
-    getTransactionPriceInEur: getTransactionPriceInEur,
-    getTransactionPriceInEth: getTransactionPriceInEth,
-    getRemainingAmountInEur: getRemainingAmountInEur,
-    getRemainingAmountInEth: getRemainingAmountInEth,
     getBalanceInEth: getBalanceInEth,
     getBalanceInEur: getBalanceInEur,
     createApartment: createApartment,
     createUser: createUser,
     authenticate: authenticate,
-    payRent: payRent
+    rentApartment: rentApartment
 }
 
 export default ContractApi;

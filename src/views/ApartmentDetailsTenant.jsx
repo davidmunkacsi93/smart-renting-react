@@ -75,8 +75,8 @@ export class ApartmentDetailsTenantView extends React.Component {
     const transactionInfo = {
       deposit: this.state.apartment.deposit,
       rent: this.state.apartment.rent,
-      from: this.state.apartment.ownerAddress,
-      to: this.state.account.address
+      from: this.state.account.address,
+      to: this.state.apartment.ownerAddress
     };
     ContractApi.rentApartment(transactionInfo);
   }

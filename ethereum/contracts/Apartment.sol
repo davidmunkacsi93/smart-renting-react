@@ -30,14 +30,8 @@ contract Apartment {
         }));
     }
 
-    function payRent(string _id) public payable {
-        for(uint i = 0; i < apartmentlist.length; i++) {
-            if (keccak256(apartmentlist[i].id) == keccak256(_id)) {
-                ApartmentDetail storage apartment = apartmentlist[i];
-            }
-        }
-        require(apartment.rent == msg.value);
-        apartment.owner.transfer(msg.value);
+    function payRent(address to) public payable {
+        to.transfer(msg.value);
     }
 
     function payDeposit(string _id) public payable {

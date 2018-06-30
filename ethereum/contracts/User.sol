@@ -3,6 +3,17 @@ pragma solidity ^0.4.23;
 contract User {
     mapping (address => bytes32) userPasswordMapping;
 
+    mapping (address => string) message;
+
+    function sendMessage(address _recipient, string _message){
+        message[_recipient] = _message;
+    }
+
+    function readMessage() returns (string) {
+        return message[msg.sender];
+    }
+
+
     function getBalance(address user) public view returns (uint256) {
         return user.balance;
     }

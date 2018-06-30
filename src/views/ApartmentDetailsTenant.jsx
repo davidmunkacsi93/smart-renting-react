@@ -13,6 +13,8 @@ import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import NotificationManager from '../manager/NotificationManager';
 import ApartmentDetails from '../components/Apartment/ApartmentDetails';
 import ContractApi from '../api/ContractApi';
+import { Widget } from 'react-chat-widget';
+import 'react-chat-widget/lib/styles.css';
 
 const PrimaryButton = styled(Button)`
   margin-top: 15px;
@@ -35,14 +37,19 @@ export class ApartmentDetailsTenantView extends React.Component {
     super(props);
 
     var account = UserManager.getCurrentAccount();
+    var balanceInEur = ContractApi.getBalanceInEur(account.address);
+    var balanceInEth = ContractApi.getBalanceInEth(account.address);
     this.state = {
       username: '',
       account: account,
+      balanceInEur: balanceInEur,
+      balanceInEth: balanceInEth,
       apartment: '',
       isLoggedIn: UserManager.isLoggedIn()
     }
 
     this.rentApartment = this.rentApartment.bind(this);
+    this.sendMessage = this.sendMessage.bind(this);
   }
 
   componentWillMount() {
@@ -79,6 +86,12 @@ export class ApartmentDetailsTenantView extends React.Component {
       to: this.state.apartment.ownerAddress
     };
     ContractApi.rentApartment(transactionInfo);
+    this.setState({balanceInEur: ContractApi.getBalanceInEur(this.state.account.address)});
+    this.setState({balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)});
+  }
+
+  sendMessage() {
+
   }
   
   render() {
@@ -96,9 +109,10 @@ export class ApartmentDetailsTenantView extends React.Component {
                   Apartment history
                 </SecondaryHeadline>
                 <StyledSpan>
-                  Your current balance is: {ContractApi.getBalanceInEur(this.state.account.address)} EUR ({ContractApi.getBalanceInEth(this.state.account.address)} ETH)
+                  Your current balance is: {this.state.balanceInEur} EUR ({this.state.balanceInEth} ETH)
                 </StyledSpan>
-                <PrimaryButton secondary="true" onClick={() => { this.rentApartment() }}>
+                <Widget/>
+                <PrimaryButton secondary="true" onClick={() => { this.sendMessage() }}>
                   SEND MESSAGE<FontAwesomeIcon className="margin-left-10" icon={faEnvelope}/>
                 </PrimaryButton>  
                 <PrimaryButton secondary="true" onClick={() => { this.rentApartment() }}>

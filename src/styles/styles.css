@@ -9,3 +9,22 @@
 .margin-top-10 {
     margin-top: 10px !important ;
 }
+
+.conversation-container > .header {
+    background-color: #1f3651 !important;
+  }
+
+.client {
+    background-color: #1f3651 !important;
+    color: white !important;
+
+}
+  
+.message > .response {
+    color: white !important;
+}
+
+.launcher {
+    background-color: #1f3651 !important;
+
+}

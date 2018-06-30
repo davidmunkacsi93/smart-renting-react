@@ -5,11 +5,11 @@ contract User {
 
     mapping (address => string) message;
 
-    function sendMessage(address _recipient, string _message){
+    function sendMessage(address _recipient, string _message) public {
         message[_recipient] = _message;
     }
 
-    function readMessage() returns (string) {
+    function readMessage() public view returns (string) {
         return message[msg.sender];
     }
 

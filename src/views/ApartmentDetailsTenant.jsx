@@ -45,11 +45,17 @@ export class ApartmentDetailsTenantView extends React.Component {
       balanceInEur: balanceInEur,
       balanceInEth: balanceInEth,
       apartment: '',
+      chatSubtitle: 'Chat with ' + account.user.username,
       isLoggedIn: UserManager.isLoggedIn()
     }
 
     this.rentApartment = this.rentApartment.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
+  }
+
+  handleNewUserMessage = (newMessage) => {
+    console.log(`New message incomig! ${newMessage}`);
+    // Now send the message throught the backend API
   }
 
   componentWillMount() {
@@ -111,7 +117,11 @@ export class ApartmentDetailsTenantView extends React.Component {
                 <StyledSpan>
                   Your current balance is: {this.state.balanceInEur} EUR ({this.state.balanceInEth} ETH)
                 </StyledSpan>
-                <Widget/>
+                <Widget 
+                  title="Chat with the owner of the apartment"
+                  subtitle={this.state.chatSubtitle}
+                  handleNewUserMessage={this.handleNewUserMessage}
+                  />
                 <PrimaryButton secondary="true" onClick={() => { this.sendMessage() }}>
                   SEND MESSAGE<FontAwesomeIcon className="margin-left-10" icon={faEnvelope}/>
                 </PrimaryButton>  

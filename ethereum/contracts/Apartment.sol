@@ -1,12 +1,8 @@
 pragma solidity ^0.4.23;
 
 contract Apartment {
-    mapping(uint => uint) apartmentRent;
-    mapping(uint => uint) apartmentDeposit;
     mapping(address => ApartmentDetail[]) ownedApartments;
     mapping(address => ApartmentDetail[]) rentedApartments;
-
-    ApartmentDetail[] apartmentlist;
 
     struct ApartmentDetail {
         string id;

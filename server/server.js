@@ -3,7 +3,6 @@ const url = require('url');
 const mongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 
-const io = require('socket.io')();
 
 const bodyParser = require("body-parser");
 const dbName = "smartrent";
@@ -18,17 +17,17 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+const ioPort = 8000;
+const io = require('socket.io').listen(ioPort);
+var clientDict = {};
 io.on('connection', (client) => {
-  client.on('subscribeToTimer', (interval) => {
-    console.log('client is subscribing to timer with interval ', interval);
-    setInterval(() => {
-      client.emit('timer', new Date());
-    }, interval);
+  var address = client.request._query["address"];
+  clientDict[address] = client.id;
+  client.on('sendMessage', (data) => {
+      console.log("Sending message to " + data.address)
+      client.broadcast.to(clientDict[data.address]).emit('receiveMessage', data.message);
   });
 });
-const ioPort = 8000;
-io.listen(ioPort);
-console.log('Socket.io listening on port ', ioPort);
 
 app.get('/api/getAccountCount', (req, res) => {
   mongoClient.connect(uri, (err, db) => {

@@ -13,7 +13,7 @@ import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import NotificationManager from '../manager/NotificationManager';
 import ApartmentDetails from '../components/Apartment/ApartmentDetails';
 import ContractApi from '../api/ContractApi';
-import { Widget } from 'react-chat-widget';
+import { Widget, addResponseMessage } from 'react-chat-widget';
 import 'react-chat-widget/lib/styles.css';
 import openSocket from 'socket.io-client';
 
@@ -37,11 +37,11 @@ export class ApartmentDetailsTenantView extends React.Component {
   constructor(props) {
     super(props);
     
-    const socket = openSocket('http://localhost:8000');
-    socket.on('timer', timestamp => console.log(timestamp));
-    socket.emit('subscribeToTimer', 1000);
-
     var account = UserManager.getCurrentAccount();
+
+    const socket = openSocket('http://192.168.0.6:8000?address=' + account.address);
+    socket.on('receiveMessage', message => this.handleReceiveMessage(message));
+
     var balanceInEur = ContractApi.getBalanceInEur(account.address);
     var balanceInEth = ContractApi.getBalanceInEth(account.address);
     this.state = {
@@ -50,7 +50,7 @@ export class ApartmentDetailsTenantView extends React.Component {
       balanceInEur: balanceInEur,
       balanceInEth: balanceInEth,
       apartment: '',
-      chatSubtitle: 'Chat with ' + account.user.username,
+      socket: socket,
       isLoggedIn: UserManager.isLoggedIn()
     }
 
@@ -59,9 +59,13 @@ export class ApartmentDetailsTenantView extends React.Component {
 
   }
 
-  handleNewUserMessage = (newMessage) => {
-    console.log(`New message incomig! ${newMessage}`);
-    // Now send the message throught the backend API
+  handleReceiveMessage = (message) => {
+    addResponseMessage(message);
+  }
+
+  handleNewUserMessage = (message) => {
+    this.state.socket.emit('sendMessage', 
+      { message: message, address: this.state.apartment.ownerAddress });
   }
 
   componentWillMount() {
@@ -125,7 +129,7 @@ export class ApartmentDetailsTenantView extends React.Component {
                 </StyledSpan>
                 <Widget 
                   title="Chat with the owner of the apartment"
-                  subtitle={this.state.chatSubtitle}
+                  subtitle={this.state.apartment.username}
                   handleNewUserMessage={this.handleNewUserMessage}
                   />
                 <PrimaryButton secondary="true" onClick={() => { this.sendMessage() }}>

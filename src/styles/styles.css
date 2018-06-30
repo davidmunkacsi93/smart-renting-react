@@ -21,6 +21,7 @@
 }
   
 .message > .response {
+    background-color: black !important;
     color: white !important;
 }
 

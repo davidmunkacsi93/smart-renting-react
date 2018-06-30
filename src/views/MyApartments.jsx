@@ -32,9 +32,6 @@ export class MyApartments extends React.Component {
       })
       .then(body => {
         this.setState({apartments: body.account.apartments});
-        this.state.apartments.map((apartment, i)  => {
-          console.log(apartment)
-        });
       })
       .catch(err => {
         NotificationManager.createNotification('error', err.message, 'Querying apartments')

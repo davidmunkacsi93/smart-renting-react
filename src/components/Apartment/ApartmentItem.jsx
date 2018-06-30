@@ -28,7 +28,15 @@ const TitleHeadline = styled.h3`
   color: #ffffff;
 `;
 
-const DescriptionHeadline = styled.h4`
+const MediumHeadline = styled.h4`
+  color: #ffffff;
+`;
+
+const SmallHeadline = styled.h5`
+  color: #ffffff;
+`;
+
+const DescriptionHeadline = styled.h6`
   color: #ffffff;
 `;
 
@@ -56,19 +64,43 @@ const LeftItemCardContent = styled.div`
   display: flex;
 `;
 
+const getThumbnail = () => {
+  var random = Math.floor((Math.random()*3) + 1);
+  switch (true) {
+    case (random % 3 === 0):
+      return thumbnail1;
+    case (random % 3 === 1):
+      return thumbnail2;
+    case (random % 3 === 2):
+      return thumbnail3;
+    default:
+      return thumbnail1;
+  }
+}
+
 export const ApartmentItem = (apartment) => (
   <Container>
     <ContentWrapper>
       <LeftItemCardContent>
-        <Thumbnail onClick={() => history.replace(`details/${apartment._id}`)}>
-          <img src={thumbnail1} alt="apartment thumbnail" width={150} height={100} />
+        <Thumbnail onClick={() => {
+          history.replace(`landlorddetails/${apartment._id}`);
+          window.location.reload();
+        }}>
+          <img src={getThumbnail(this.key)} alt="apartment thumbnail" width={150} height={150} />
         </Thumbnail>
         <ApartmentDetails>
-          <TitleHeadline>{apartment.street}</TitleHeadline>
+          <TitleHeadline>{apartment.postCode} {apartment.city} {apartment.street}</TitleHeadline>
+          <MediumHeadline>{apartment.street} {apartment.houseNumber}</MediumHeadline>
+          <SmallHeadline>Floor: {apartment.floor}</SmallHeadline>
+          <SmallHeadline>Required deposit: {apartment.deposit} €</SmallHeadline>
+          <SmallHeadline>Rent: {apartment.rent} €</SmallHeadline>
           <DescriptionHeadline>{apartment.description}</DescriptionHeadline>
         </ApartmentDetails>
       </LeftItemCardContent>
-      <PrimaryButton secondary="true" onClick={() => history.replace(`details/${apartment._id}`)}>
+      <PrimaryButton secondary="true" onClick={() => {
+          history.replace(`landlorddetails/${apartment._id}`);
+          window.location.reload();
+        }}>
         <FontAwesomeIcon icon={faEye}/>
       </PrimaryButton>  
     </ContentWrapper>

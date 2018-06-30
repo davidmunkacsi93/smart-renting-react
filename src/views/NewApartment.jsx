@@ -74,7 +74,7 @@ export class NewApartmentView extends React.Component {
             street: this.state.street,
             houseNumber: parseInt(this.state.houseNumber, 10),
             floor: parseInt(this.state.floor, 10),
-            descripton: this.state.description,
+            description: this.state.description,
             deposit: parseInt(this.state.deposit, 10),
             rent: parseInt(this.state.rent, 10)
         }
@@ -135,7 +135,7 @@ export class NewApartmentView extends React.Component {
                 <div className="col-md-4">
                     <StyledInput className="display-inline" placeholder="Rent" name="rent" type="number" value={this.state.rent} onChange={this.handleChange}/>
                 </div>
-                <div className="margin-top-10">
+                {/* <div className="margin-top-10">
                     <StyledSpan>Your current balance is {ContractApi.getBalanceInEur(this.state.account.address)} EUR ({ContractApi.getBalanceInEth(this.state.account.address)} ETH).</StyledSpan>
                 </div>
                 <div>
@@ -143,7 +143,7 @@ export class NewApartmentView extends React.Component {
                 </div>
                 <div>
                     <StyledSpan>Balance after transaction: {ContractApi.getRemainingAmountInEur(this.state.account.address, this.state.deposit, this.state.rent)} EUR ({ContractApi.getRemainingAmountInEth(this.state.account.address, this.state.deposit, this.state.rent)} ETH).</StyledSpan>
-                </div>
+                </div> */}
                 <PrimaryButton onClick={() => this.createApartment() }>
                     CREATE
                 </PrimaryButton>

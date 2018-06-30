@@ -8,7 +8,7 @@ import UserManager from '../manager/UserManager';
 import { ErrorHeadline } from '../components/Headlines/MainHeadline'
 
 // const history = createBrowserHistory();
-export class ApartmentDetailsView extends React.Component {
+export class ApartmentDetailsLandlordView extends React.Component {
   constructor(props) {
     super(props);
 
@@ -43,4 +43,4 @@ export class ApartmentDetailsView extends React.Component {
 }
 
   
-export default withRouter(ApartmentDetailsView);
+export default withRouter(ApartmentDetailsLandlordView);

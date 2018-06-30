@@ -4,7 +4,9 @@ import MyApartmentsView from './views/MyApartments';
 import MyRentsView from './views/MyRents';
 import RegisterView from './views/Register';
 import NewApartmentView from './views/NewApartment';
-import ApartmentDetails from './views/ApartmentDetails';
+import ApartmentDetailsLandlord from './views/ApartmentDetailsLandlord';
+import ApartmentDetailsTenant from './views/ApartmentDetailsTenant';
+
 import UserManager from './manager/UserManager';
 
 const currentAccount = UserManager.getCurrentAccount();
@@ -26,9 +28,14 @@ export const publicRoutes = [
       page: NewApartmentView,
     },
     {
-      path: '/details/:id',
+      path: '/landlorddetails/:id',
       exact: true,
-      page: ApartmentDetails,
+      page: ApartmentDetailsLandlord,
+    },
+    {
+      path: '/tentantdetails/:id',
+      exact: true,
+      page: ApartmentDetailsTenant,
     },
     {
       path: '/rents',

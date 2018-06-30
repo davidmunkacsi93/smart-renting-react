@@ -78,17 +78,18 @@ const getThumbnail = () => {
   }
 }
 
-export const ApartmentItem = (apartment) => (
+export const ApartmentItemExtended = (apartment) => (
   <Container>
     <ContentWrapper>
       <LeftItemCardContent>
         <Thumbnail onClick={() => {
-          history.push(`/landlorddetails/${apartment._id}`);
+          history.push(`/tenantdetails/${apartment._id}`);
           window.location.reload();
         }}>
           <img src={getThumbnail(this.key)} alt="apartment thumbnail" width={150} height={150} />
         </Thumbnail>
         <ApartmentDetails>
+          <TitleHeadline>Owner: {apartment.username}</TitleHeadline>
           <TitleHeadline>{apartment.postCode} {apartment.city}</TitleHeadline>
           <MediumHeadline>{apartment.street} {apartment.houseNumber}</MediumHeadline>
           <SmallHeadline>Floor: {apartment.floor}</SmallHeadline>
@@ -98,7 +99,7 @@ export const ApartmentItem = (apartment) => (
         </ApartmentDetails>
       </LeftItemCardContent>
       <PrimaryButton secondary="true" onClick={() => {
-          history.push(`/landlorddetails/${apartment._id}`);
+          history.push(`/tenantdetails/${apartment._id}`);
           window.location.reload();
         }}>
         <FontAwesomeIcon icon={faEye}/>
@@ -107,9 +108,9 @@ export const ApartmentItem = (apartment) => (
   </Container>
 );
 
-ApartmentItem.propTypes = {
+ApartmentItemExtended.propTypes = {
   _id: string.isRequired,
   history: object.isRequired,
 };
 
-export default withRouter(ApartmentItem);
+export default withRouter(ApartmentItemExtended);

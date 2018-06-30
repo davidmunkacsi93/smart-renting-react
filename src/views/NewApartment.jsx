@@ -42,8 +42,6 @@ export class NewApartmentView extends React.Component {
         description: '',
         deposit: '',
         rent: '',
-        depositEth: '',
-        rentEth: '',
         isLoggedIn: UserManager.isLoggedIn()
     }
 
@@ -76,7 +74,8 @@ export class NewApartmentView extends React.Component {
             floor: parseInt(this.state.floor, 10),
             description: this.state.description,
             deposit: parseInt(this.state.deposit, 10),
-            rent: parseInt(this.state.rent, 10)
+            rent: parseInt(this.state.rent, 10),
+            isRented: false
         }
     }
     var response = await fetch('/api/createApartment', {

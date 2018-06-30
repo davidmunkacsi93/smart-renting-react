@@ -64,22 +64,26 @@ app.get('/api/getAccountWithApartments', (request, response) => {
   });
 });
 
-app.get('/api/getApartments', (request, response) => {
-  // var address = url.parse(request.url, true).query.address;
-  // mongoClient.connect(uri, function(err, db) {
-  //   if (err) response.send( { success: false, message: connectionErrorMessage });
-  //   var dbo = db.db(dbName);
-  //   var query = { address: address };
-  //   dbo.collection("accounts").find(query, {}).toArray(function(err, documents) {
-  //       if (err)  {
-  //         response.send( { success: false, message: "Error by querying accounts." });
-  //         throw err;
-  //       } else {
-  //         response.send( { success: true, account: JSON.stringify(documents) });
-  //       }
-  //   });
-  //   db.close();
-  // });
+app.get('/api/getAccountsWithAvailableApartments', (_, response) => {
+  mongoClient.connect(uri, function(err, db) {
+    if (err) response.send( { success: false, message: connectionErrorMessage });
+    var dbo = db.db(dbName);
+    var query = { apartments: {
+       $elemMatch: { 
+           isRented: false
+          } 
+        } 
+      };
+    dbo.collection("accounts").find(query, {}).toArray(function(err, documents) {
+        if (err)  {
+          response.send( { success: false, message: "Error by querying accounts." });
+          throw err;
+        } else {
+          response.send( { success: true, accounts: JSON.stringify(documents) });
+        }
+    });
+    db.close();
+  });
 });
 
 app.post('/api/createUser', (request, response) => {

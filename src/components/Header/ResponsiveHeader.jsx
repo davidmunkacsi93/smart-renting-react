@@ -73,6 +73,9 @@ export class Header extends Component {
                                         <NavLink href="/newapartment">New Apartment</NavLink>
                                     </NavItem>
                                     <NavItem>
+                                        <NavLink href="/browse">Browse Apartments</NavLink>
+                                    </NavItem>
+                                    <NavItem>
                                     <NavLink href="/apartments">My Apartments</NavLink>
                                     </NavItem>
                                     <NavItem >

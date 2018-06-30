@@ -26,5 +26,8 @@
 
 .launcher {
     background-color: #1f3651 !important;
+}
 
+.close-button {
+    background-color: black !important;
 }

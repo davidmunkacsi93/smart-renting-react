@@ -3,6 +3,8 @@ const url = require('url');
 const mongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 
+const io = require('socket.io')();
+
 const bodyParser = require("body-parser");
 const dbName = "smartrent";
 const uri = "mongodb://SmartRent:berlin28041993@smartrentdb-shard-00-00-estgp.mongodb.net:27017,smartrentdb-shard-00-01-estgp.mongodb.net:27017,smartrentdb-shard-00-02-estgp.mongodb.net:27017/test?ssl=true&replicaSet=SmartRentDB-shard-0&authSource=admin&retryWrites=true";
@@ -14,8 +16,19 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-
 app.use(bodyParser.json());
+
+io.on('connection', (client) => {
+  client.on('subscribeToTimer', (interval) => {
+    console.log('client is subscribing to timer with interval ', interval);
+    setInterval(() => {
+      client.emit('timer', new Date());
+    }, interval);
+  });
+});
+const ioPort = 8000;
+io.listen(ioPort);
+console.log('Socket.io listening on port ', ioPort);
 
 app.get('/api/getAccountCount', (req, res) => {
   mongoClient.connect(uri, (err, db) => {
@@ -80,7 +93,6 @@ app.get('/api/getAccountByApartmentId', (request, response) => {
           response.send( { success: false, message: "Error by querying accounts." });
           throw err;
         } else {
-          console.log(document);
           response.send( { success: true, account: JSON.stringify(document) });
         }
     });

@@ -15,6 +15,7 @@ import ApartmentDetails from '../components/Apartment/ApartmentDetails';
 import ContractApi from '../api/ContractApi';
 import { Widget } from 'react-chat-widget';
 import 'react-chat-widget/lib/styles.css';
+import openSocket from 'socket.io-client';
 
 const PrimaryButton = styled(Button)`
   margin-top: 15px;
@@ -35,6 +36,10 @@ const StyledSpan = styled.span`
 export class ApartmentDetailsTenantView extends React.Component {
   constructor(props) {
     super(props);
+    
+    const socket = openSocket('http://localhost:8000');
+    socket.on('timer', timestamp => console.log(timestamp));
+    socket.emit('subscribeToTimer', 1000);
 
     var account = UserManager.getCurrentAccount();
     var balanceInEur = ContractApi.getBalanceInEur(account.address);
@@ -51,6 +56,7 @@ export class ApartmentDetailsTenantView extends React.Component {
 
     this.rentApartment = this.rentApartment.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
+
   }
 
   handleNewUserMessage = (newMessage) => {

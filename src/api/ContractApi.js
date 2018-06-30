@@ -117,7 +117,6 @@ const getCurrentTransactionPrice = (transactionInfo) => {
     getBasePrice('EUR', 'ETH').then(obj => {  
         var currentPriceInEth = obj.price*(transactionInfo.deposit + transactionInfo.rent);
         var priceInWei = currentPriceInEth;
-        console.log(priceInWei);
     }).catch(err => {
         NotificationManager.createNotification('error', err.message, 'Renting an apartment');
     })
@@ -130,8 +129,6 @@ const rentApartment = (transactionInfo) => {
         from: transactionInfo.from,
         value: priceInWei
     };
-    console.log(priceInWei);
-    console.log(web3.eth.getBalance(transactionObject.from));
     ApartmentContract.payRent(transactionInfo.to, transactionObject, function(err, res) {
         if (err) {
             console.error(err);

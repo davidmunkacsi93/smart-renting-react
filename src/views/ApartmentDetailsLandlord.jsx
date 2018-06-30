@@ -11,6 +11,9 @@ import { ErrorHeadline } from '../components/Headlines/MainHeadline'
 import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import NotificationManager from '../manager/NotificationManager';
 import ApartmentDetails from '../components/Apartment/ApartmentDetails';
+import { Widget, addResponseMessage } from 'react-chat-widget';
+import 'react-chat-widget/lib/styles.css';
+import openSocket from 'socket.io-client';
 
 // const PrimaryButton = styled(Button)`
 //   margin-top: 20px;
@@ -24,13 +27,15 @@ export class ApartmentDetailsLandlordView extends React.Component {
   constructor(props) {
     super(props);
 
+    var account = UserManager.getCurrentAccount();
+    const socket = openSocket('http://192.168.0.6:8000?address=' + account.address);
+    socket.on('receiveMessage', message => this.handleReceiveMessage(message));
     this.state = {
-      username: '',
+      account: account,
       apartment: '',
-      isLoggedIn: UserManager.isLoggedIn()
+      isLoggedIn: UserManager.isLoggedIn(),
+      socket: socket
     }
-
-    this.rentApartment = this.rentApartment.bind(this);
   }
 
   componentWillMount() {
@@ -58,10 +63,15 @@ export class ApartmentDetailsLandlordView extends React.Component {
       });
   }
 
-  rentApartment() {
-
+  handleReceiveMessage = (message) => {
+    addResponseMessage(message);
   }
-  
+
+  handleNewUserMessage = (message) => {
+    this.state.socket.emit('sendMessage', 
+      { message: message, address: this.state.apartment.ownerAddress });
+  }
+
   render() {
     return (
       <ViewLayout>
@@ -69,6 +79,11 @@ export class ApartmentDetailsLandlordView extends React.Component {
         { this.state.isLoggedIn
               ?
               <React.Fragment>
+                <Widget 
+                  title="Chat with a possible tenant"
+                  subtitle=""
+                  handleNewUserMessage={this.handleNewUserMessage}
+                  />
                 <MainHeadline>
                   Apartment details
                 </MainHeadline>
@@ -76,6 +91,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
                 <SecondaryHeadline>
                   Apartment history
                 </SecondaryHeadline> 
+
               </React.Fragment>
               :
               <React.Fragment>

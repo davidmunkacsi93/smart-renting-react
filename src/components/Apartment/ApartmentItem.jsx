@@ -83,7 +83,7 @@ export const ApartmentItem = (apartment) => (
     <ContentWrapper>
       <LeftItemCardContent>
         <Thumbnail onClick={() => {
-          history.push(`/landlorddetails/${apartment._id}`);
+          history.push(`/landlorddetails?id=${apartment._id}`);
           window.location.reload();
         }}>
           <img src={getThumbnail(this.key)} alt="apartment thumbnail" width={150} height={150} />
@@ -98,7 +98,7 @@ export const ApartmentItem = (apartment) => (
         </ApartmentDetails>
       </LeftItemCardContent>
       <PrimaryButton secondary="true" onClick={() => {
-          history.push(`/landlorddetails/${apartment._id}`);
+          history.push(`/landlorddetails?id=${apartment._id}`);
           window.location.reload();
         }}>
         <FontAwesomeIcon icon={faEye}/>

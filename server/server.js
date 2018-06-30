@@ -64,6 +64,30 @@ app.get('/api/getAccountWithApartments', (request, response) => {
   });
 });
 
+app.get('/api/getAccountByApartmentId', (request, response) => {
+  var apartmentId = url.parse(request.url, true).query.apartmentId;
+  mongoClient.connect(uri, function(err, db) {
+    if (err) response.send( { success: false, message: connectionErrorMessage });
+    var dbo = db.db(dbName);
+    var query = { apartments: {
+      $elemMatch: { 
+          _id: ObjectId(apartmentId)
+         } 
+       } 
+     };
+    dbo.collection("accounts").findOne(query, function(err, document) {
+        if (err)  {
+          response.send( { success: false, message: "Error by querying accounts." });
+          throw err;
+        } else {
+          console.log(document);
+          response.send( { success: true, account: JSON.stringify(document) });
+        }
+    });
+    db.close();
+  });
+});
+
 app.get('/api/getAccountsWithAvailableApartments', (_, response) => {
   mongoClient.connect(uri, function(err, db) {
     if (err) response.send( { success: false, message: connectionErrorMessage });

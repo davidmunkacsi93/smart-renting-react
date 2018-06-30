@@ -18,10 +18,6 @@ export class ApartmentDetailsView extends React.Component {
     }
   }
   
-  async componentWillMount() {
-    
-  }
-
   render() {
     return (
       <ViewLayout>

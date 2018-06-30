@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { Container, Input, Button, Label } from 'reactstrap';
+import { Container, Input, Button } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import UserManager from '../manager/UserManager';
 import NotificationManager from '../manager/NotificationManager';

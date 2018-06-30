@@ -1,4 +1,5 @@
 const express = require('express');
+const url = require('url');
 const mongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 
@@ -45,21 +46,40 @@ app.get('/api/getAccount', (request, response) => {
   });
 });
 
-app.get('/api/getAccounts', (_, response) => {
+app.get('/api/getAccountWithApartments', (request, response) => {
+  var address = url.parse(request.url, true).query.address;
   mongoClient.connect(uri, function(err, db) {
     if (err) response.send( { success: false, message: connectionErrorMessage });
     var dbo = db.db(dbName);
-    var query = { apartments: { $exists: true } };
-    dbo.collection("accounts").find(query, function(err, documents) {
+    var query = { address: address };
+    dbo.collection("accounts").findOne(query, function(err, document) {
         if (err)  {
           response.send( { success: false, message: "Error by querying accounts." });
           throw err;
         } else {
-          response.send( { success: true, account: documents });
+          response.send( { success: true, account: document });
         }
     });
     db.close();
   });
+});
+
+app.get('/api/getApartments', (request, response) => {
+  // var address = url.parse(request.url, true).query.address;
+  // mongoClient.connect(uri, function(err, db) {
+  //   if (err) response.send( { success: false, message: connectionErrorMessage });
+  //   var dbo = db.db(dbName);
+  //   var query = { address: address };
+  //   dbo.collection("accounts").find(query, {}).toArray(function(err, documents) {
+  //       if (err)  {
+  //         response.send( { success: false, message: "Error by querying accounts." });
+  //         throw err;
+  //       } else {
+  //         response.send( { success: true, account: JSON.stringify(documents) });
+  //       }
+  //   });
+  //   db.close();
+  // });
 });
 
 app.post('/api/createUser', (request, response) => {

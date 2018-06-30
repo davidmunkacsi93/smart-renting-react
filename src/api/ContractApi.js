@@ -78,12 +78,8 @@ const createApartment = (account, apartment) => {
     if (apartment == null) {
         throw new Error("Apartment can not be null.");
     } else {
-        var amountOfGas = getTransactionPriceInWei(apartment.deposit, apartment.rent);
-        console.log(amountOfGas.toString());
-        console.log(web3.eth.getBalance(account.address).toString());
         const transactionObject = {
             from: account.address,
-            gasPrice: "200000"
         };
         ApartmentContract.createApartmentDetail.sendTransaction(apartment._id, apartment.deposit, apartment.rent, transactionObject, (error, result) => {
             if(error) {

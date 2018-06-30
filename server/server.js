@@ -45,6 +45,23 @@ app.get('/api/getAccount', (request, response) => {
   });
 });
 
+app.get('/api/getAccounts', (_, response) => {
+  mongoClient.connect(uri, function(err, db) {
+    if (err) response.send( { success: false, message: connectionErrorMessage });
+    var dbo = db.db(dbName);
+    var query = { apartments: { $exists: true } };
+    dbo.collection("accounts").find(query, function(err, documents) {
+        if (err)  {
+          response.send( { success: false, message: "Error by querying accounts." });
+          throw err;
+        } else {
+          response.send( { success: true, account: documents });
+        }
+    });
+    db.close();
+  });
+});
+
 app.post('/api/createUser', (request, response) => {
   mongoClient.connect(uri, function(err, db) {
     if (err) response.send( { success: false, message: connectionErrorMessage });

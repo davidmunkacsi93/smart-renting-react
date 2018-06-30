@@ -17,6 +17,10 @@ export class MyApartments extends React.Component {
       isLoggedIn: UserManager.isLoggedIn()
     }
   }
+  
+  async componentWillMount() {
+
+  }
 
   render() {
     return (
@@ -26,7 +30,7 @@ export class MyApartments extends React.Component {
               ?
               <React.Fragment>
                 <MainHeadline>
-                  My Rents
+                  My Apartments
                 </MainHeadline>
               </React.Fragment>
               :

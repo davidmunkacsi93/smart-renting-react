@@ -1,12 +1,14 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { Container, Input, Button } from 'reactstrap';
+import { Container, Input, Button, Label } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import UserManager from '../manager/UserManager';
 import NotificationManager from '../manager/NotificationManager';
 import { withRouter } from 'react-router-dom';
 import { MainHeadline, ErrorHeadline } from '../components/Headlines/MainHeadline'
 import ContractApi from '../api/ContractApi';
+import createBrowserHistory from 'history/createBrowserHistory';
+
 
 const PrimaryButton = styled(Button)`
   margin-top: 20px;
@@ -20,6 +22,7 @@ const StyledInput = styled(Input)`
   margin-top: 10px;
   display: block;
 `
+
 const StyledSpan = styled.span`
  margin-top: 30px;
  color:white;
@@ -36,6 +39,7 @@ export class NewApartmentView extends React.Component {
         street: '',
         houseNumber: '',
         floor: '',
+        description: '',
         deposit: '',
         rent: '',
         depositEth: '',
@@ -70,6 +74,7 @@ export class NewApartmentView extends React.Component {
             street: this.state.street,
             houseNumber: parseInt(this.state.houseNumber, 10),
             floor: parseInt(this.state.floor, 10),
+            descripton: this.state.description,
             deposit: parseInt(this.state.deposit, 10),
             rent: parseInt(this.state.rent, 10)
         }
@@ -93,7 +98,12 @@ export class NewApartmentView extends React.Component {
             NotificationManager.createNotification('error', err.message, 'Creating apartment');
             return;
         }
-        NotificationManager.createNotification('success', "Apartment created successfully.", 'Creating apartment');
+        NotificationManager.createNotification('success', "Apartment created successfully. You'll be soon redirected.", 'Creating apartment');
+        setTimeout(function () {
+            const history = createBrowserHistory();
+            history.push('/apartments');
+            window.location.reload();
+         }, 2000);
     }
   }
  
@@ -116,6 +126,7 @@ export class NewApartmentView extends React.Component {
                     <StyledInput placeholder="Street" name="street" value={this.state.street} onChange={this.handleChange}/>
                     <StyledInput placeholder="House number" name="houseNumber" type="number" value={this.state.houseNumber} onChange={this.handleChange}/>
                     <StyledInput placeholder="Floor" name="floor" type="number" value={this.state.floor} onChange={this.handleChange}/>
+                    <StyledInput type="textarea" placeholder="Description" name="description" value={this.state.description} onChange={this.handleChange} />
                 </div>
 
                 <div className="col-md-4">

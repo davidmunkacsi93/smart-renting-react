@@ -88,11 +88,13 @@ app.get('/api/getAccountByApartmentId', (request, response) => {
   });
 });
 
-app.get('/api/getAccountsWithAvailableApartments', (_, response) => {
+app.get('/api/getAccountsWithAvailableApartments', (request, response) => {
+  var address = url.parse(request.url, true).query.address;
   mongoClient.connect(uri, function(err, db) {
     if (err) response.send( { success: false, message: connectionErrorMessage });
     var dbo = db.db(dbName);
-    var query = { apartments: {
+    var query = { address: { $ne: address },
+    apartments: {
        $elemMatch: { 
            isRented: false
           } 

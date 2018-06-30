@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
-import { string, object } from 'prop-types';
-import { Container, Button } from 'reactstrap';
+import { Container } from 'reactstrap';
 import thumbnail from '../../assets/thumbnail3.jpg';
 
 const ContentWrapper = styled.div`
@@ -67,10 +66,5 @@ export const ApartmentDetails = (apartment) => (
     </ContentWrapper>
   </Container>
 );
-
-ApartmentDetails.propTypes = {
-  _id: string.isRequired,
-  history: object.isRequired,
-};
 
 export default withRouter(ApartmentDetails);

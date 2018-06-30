@@ -25,7 +25,7 @@ export class BrowseView extends React.Component {
   }
 
   componentWillMount() {
-    fetch('/api/getAccountsWithAvailableApartments')
+    fetch('/api/getAccountsWithAvailableApartments?address=' + this.state.account.address)
       .then(response => {
         if (response.status !== 200) throw Error("Error during querying apartments.");
         return response.json()

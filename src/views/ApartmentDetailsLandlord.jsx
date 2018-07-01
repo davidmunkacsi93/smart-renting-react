@@ -69,6 +69,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
 
   handleHandshake = (data) => {
     this.setState({ tenantName: data.username, tenantAddress: data.from });
+    NotificationManager.createNotification('info', data.username + ' is currently looking at your apartment.')
   }
 
   handleReceiveMessage = (message) => {

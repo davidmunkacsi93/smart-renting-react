@@ -8,7 +8,7 @@ import { withRouter } from 'react-router-dom';
 import UserManager from '../manager/UserManager';
 import { ErrorHeadline } from '../components/Headlines/MainHeadline'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCoins, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faCoins, faUnlock } from '@fortawesome/free-solid-svg-icons';
 import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import NotificationManager from '../manager/NotificationManager';
 import ApartmentDetails from '../components/Apartment/ApartmentDetails';
@@ -22,7 +22,7 @@ const PrimaryButton = styled(Button)`
   margin-left: 10px;
   background-color: #1f3651;
   color: #ffffff;
-  width: 180px;
+  width: 275px;
 `;
 
 const StyledSpan = styled.span`
@@ -136,8 +136,8 @@ export class ApartmentDetailsTenantView extends React.Component {
                   subtitle=""
                   handleNewUserMessage={this.handleNewUserMessage}
                   />
-                <PrimaryButton secondary="true" onClick={() => { this.sendMessage() }}>
-                  SEND MESSAGE<FontAwesomeIcon className="margin-left-10" icon={faEnvelope}/>
+                <PrimaryButton secondary="true" onClick={() => { this.requestPermission() }}>
+                  REQUEST PERMISSION TO PAY<FontAwesomeIcon className="margin-left-10" icon={faUnlock}/>
                 </PrimaryButton>  
                 <PrimaryButton secondary="true" onClick={() => { this.rentApartment() }}>
                   RENT APARTMENT<FontAwesomeIcon className="margin-left-10" icon={faCoins}/>

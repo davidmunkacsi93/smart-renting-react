@@ -6,6 +6,7 @@ import ViewLayout from '../components/ViewLayout';
 import { MainHeadline } from '../components/Headlines/MainHeadline';
 import { withRouter } from 'react-router-dom';
 import UserManager from '../manager/UserManager';
+import { NotificationManager } from 'react-notifications';
 
 const PrimaryButton = styled(Button)`
   margin-top: 20px;
@@ -45,12 +46,14 @@ export class HomeView extends React.Component {
     this.setState({ [evt.target.name]: evt.target.value });
   }
 
-  async login() {
-    var result = await UserManager.login(this.state.username, this.state.password);
-    if (result) {
-      window.location.reload();
+   login = async () => {
+      var result = await UserManager.login(this.state.username, this.state.password);
+      if (result) {
+        window.location.reload();
+      } else {
+        NotificationManager.createNotification('error', 'Login failed.', 'Login');
+      }
     }
-  }
 
   render() {
     return (

@@ -6,16 +6,11 @@
       "inputs": [
         {
           "name": "_password",
-          "type": "bytes"
+          "type": "bytes32"
         }
       ],
       "name": "createUserPassword",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
+      "outputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
       "type": "function"
@@ -40,20 +35,20 @@
       "type": "function"
     }
   ],
-  "bytecode": "0x608060405234801561001057600080fd5b50610266806100206000396000f30060806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680635704069e146100515780639eb3c2a31461009a575b600080fd5b34801561005d57600080fd5b50610080600480360381019080803560001916906020019092919050505061011b565b604051808215151515815260200191505060405180910390f35b3480156100a657600080fd5b50610101600480360381019080803590602001908201803590602001908080601f016020809104026020016040519081016040528093929190818152602001838380828437820191505050505050919291929050505061018a565b604051808215151515815260200191505060405180910390f35b6000816040518082600019166000191681526020019150506040518091039020600019166000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205460001916149050919050565b6000816040518082805190602001908083835b6020831015156101c2578051825260208201915060208101905060208303925061019d565b6001836020036101000a03801982511681845116808217855250505050505090500191505060405180910390206000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081600019169055509190505600a165627a7a72305820ca95a665c1126ddd66205a8d4953a889e7e4df29e9314a6b2b1b9d9d8d366e950029",
-  "deployedBytecode": "0x60806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680635704069e146100515780639eb3c2a31461009a575b600080fd5b34801561005d57600080fd5b50610080600480360381019080803560001916906020019092919050505061011b565b604051808215151515815260200191505060405180910390f35b3480156100a657600080fd5b50610101600480360381019080803590602001908201803590602001908080601f016020809104026020016040519081016040528093929190818152602001838380828437820191505050505050919291929050505061018a565b604051808215151515815260200191505060405180910390f35b6000816040518082600019166000191681526020019150506040518091039020600019166000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020016000205460001916149050919050565b6000816040518082805190602001908083835b6020831015156101c2578051825260208201915060208101905060208303925061019d565b6001836020036101000a03801982511681845116808217855250505050505090500191505060405180910390206000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002081600019169055509190505600a165627a7a72305820ca95a665c1126ddd66205a8d4953a889e7e4df29e9314a6b2b1b9d9d8d366e950029",
-  "sourceMap": "28:360:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;28:360:0;;;;;;;",
-  "deployedSourceMap": "28:360:0:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;242:143;;8:9:-1;5:2;;;30:1;27;20:12;5:2;242:143:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;100:134;;8:9:-1;5:2;;;30:1;27;20:12;5:2;100:134:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;242:143;304:4;367:9;357:20;;;;;;;;;;;;;;;;;;;;;;;;328:49;;;:13;:25;342:10;328:25;;;;;;;;;;;;;;;;:49;;;;321:56;;242:143;;;:::o;100:134::-;161:4;216:9;206:20;;;;;;;;;;;;;36:153:-1;66:2;61:3;58:11;51:19;36:153;;;182:3;176:10;171:3;164:23;98:2;93:3;89:12;82:19;;123:2;118:3;114:12;107:19;;148:2;143:3;139:12;132:19;;36:153;;;274:1;267:3;263:2;259:12;254:3;250:22;246:30;315:4;311:9;305:3;299:10;295:26;356:4;350:3;344:10;340:21;389:7;380;377:20;372:3;365:33;3:399;;;206:20:0;;;;;;;;;;;;;;;;178:13;:25;192:10;178:25;;;;;;;;;;;;;;;:48;;;;;;;100:134;;;:::o",
-  "source": "pragma solidity ^0.4.23;\r\n\r\ncontract User {\r\n    mapping (address => bytes32) userPasswords;\r\n\r\n    function createUserPassword(bytes _password) public returns (bool) {\r\n        userPasswords[msg.sender] = keccak256(_password);\r\n    }\r\n\r\n    function authenticate(bytes32 _password) public view returns (bool) {\r\n        return userPasswords[msg.sender] == keccak256(_password);\r\n    }\r\n}",
+  "bytecode": "0x608060405234801561001057600080fd5b50610193806100206000396000f30060806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680630d6929ef146100515780635704069e14610082575b600080fd5b34801561005d57600080fd5b5061008060048036038101908080356000191690602001909291905050506100cb565b005b34801561008e57600080fd5b506100b16004803603810190808035600019169060200190929190505050610115565b604051808215151515815260200191505060405180910390f35b806000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020816000191690555050565b600081600019166000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054600019161490509190505600a165627a7a7230582004bcd56b485918b103c0052e4f24047f32bb319a49328d9923e79d047b1443c40029",
+  "deployedBytecode": "0x60806040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680630d6929ef146100515780635704069e14610082575b600080fd5b34801561005d57600080fd5b5061008060048036038101908080356000191690602001909291905050506100cb565b005b34801561008e57600080fd5b506100b16004803603810190808035600019169060200190929190505050610115565b604051808215151515815260200191505060405180910390f35b806000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001908152602001600020816000191690555050565b600081600019166000803373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054600019161490509190505600a165627a7a7230582004bcd56b485918b103c0052e4f24047f32bb319a49328d9923e79d047b1443c40029",
+  "sourceMap": "28:325:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;28:325:0;;;;;;;",
+  "deployedSourceMap": "28:325:0:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;100:110;;8:9:-1;5:2;;;30:1;27;20:12;5:2;100:110:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;218:132;;8:9:-1;5:2;;;30:1;27;20:12;5:2;218:132:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;100:110;193:9;165:13;:25;179:10;165:25;;;;;;;;;;;;;;;:37;;;;;;;100:110;:::o;218:132::-;280:4;333:9;304:38;;;:13;:25;318:10;304:25;;;;;;;;;;;;;;;;:38;;;;297:45;;218:132;;;:::o",
+  "source": "pragma solidity ^0.4.23;\r\n\r\ncontract User {\r\n    mapping (address => bytes32) userPasswords;\r\n\r\n    function createUserPassword(bytes32 _password) public {\r\n        userPasswords[msg.sender] = _password;\r\n    }\r\n\r\n    function authenticate(bytes32 _password) public view returns (bool) {\r\n        return userPasswords[msg.sender] == _password;\r\n    }\r\n}",
   "sourcePath": "C:\\Users\\david.munkacsi\\smart-renting\\ethereum\\contracts\\User.sol",
   "ast": {
     "absolutePath": "/C/Users/david.munkacsi/smart-renting/ethereum/contracts/User.sol",
     "exportedSymbols": {
       "User": [
-        40
+        34
       ]
     },
-    "id": 41,
+    "id": 35,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -73,9 +68,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 40,
+        "id": 34,
         "linearizedBaseContracts": [
-          40
+          34
         ],
         "name": "User",
         "nodeType": "ContractDefinition",
@@ -85,7 +80,7 @@
             "id": 5,
             "name": "userPasswords",
             "nodeType": "VariableDeclaration",
-            "scope": 40,
+            "scope": 34,
             "src": "49:42:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -127,14 +122,14 @@
           },
           {
             "body": {
-              "id": 21,
+              "id": 17,
               "nodeType": "Block",
-              "src": "167:67:0",
+              "src": "154:56:0",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 19,
+                    "id": 15,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -143,34 +138,34 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 12,
+                        "id": 10,
                         "name": "userPasswords",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 5,
-                        "src": "178:13:0",
+                        "src": "165:13:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_bytes32_$",
                           "typeString": "mapping(address => bytes32)"
                         }
                       },
-                      "id": 15,
+                      "id": 13,
                       "indexExpression": {
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13,
+                          "id": 11,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 55,
-                          "src": "192:3:0",
+                          "referencedDeclaration": 49,
+                          "src": "179:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 14,
+                        "id": 12,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -178,7 +173,7 @@
                         "memberName": "sender",
                         "nodeType": "MemberAccess",
                         "referencedDeclaration": null,
-                        "src": "192:10:0",
+                        "src": "179:10:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -189,7 +184,7 @@
                       "isPure": false,
                       "lValueRequested": true,
                       "nodeType": "IndexAccess",
-                      "src": "178:25:0",
+                      "src": "165:25:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
@@ -199,67 +194,31 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "arguments": [
-                        {
-                          "argumentTypes": null,
-                          "id": 17,
-                          "name": "_password",
-                          "nodeType": "Identifier",
-                          "overloadedDeclarations": [],
-                          "referencedDeclaration": 7,
-                          "src": "216:9:0",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_bytes_memory_ptr",
-                            "typeString": "bytes memory"
-                          }
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": [
-                          {
-                            "typeIdentifier": "t_bytes_memory_ptr",
-                            "typeString": "bytes memory"
-                          }
-                        ],
-                        "id": 16,
-                        "name": "keccak256",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 49,
-                        "src": "206:9:0",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
-                          "typeString": "function () pure returns (bytes32)"
-                        }
-                      },
-                      "id": 18,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "kind": "functionCall",
-                      "lValueRequested": false,
-                      "names": [],
-                      "nodeType": "FunctionCall",
-                      "src": "206:20:0",
+                      "id": 14,
+                      "name": "_password",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 7,
+                      "src": "193:9:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "src": "178:48:0",
+                    "src": "165:37:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     }
                   },
-                  "id": 20,
+                  "id": 16,
                   "nodeType": "ExpressionStatement",
-                  "src": "178:48:0"
+                  "src": "165:37:0"
                 }
               ]
             },
             "documentation": null,
-            "id": 22,
+            "id": 18,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -275,75 +234,48 @@
                   "id": 7,
                   "name": "_password",
                   "nodeType": "VariableDeclaration",
-                  "scope": 22,
-                  "src": "128:15:0",
+                  "scope": 18,
+                  "src": "128:17:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_bytes_memory_ptr",
-                    "typeString": "bytes"
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
                   },
                   "typeName": {
                     "id": 6,
-                    "name": "bytes",
+                    "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "128:5:0",
+                    "src": "128:7:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_bytes_storage_ptr",
-                      "typeString": "bytes"
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
                     }
                   },
                   "value": null,
                   "visibility": "internal"
                 }
               ],
-              "src": "127:17:0"
+              "src": "127:19:0"
             },
             "payable": false,
             "returnParameters": {
-              "id": 11,
+              "id": 9,
               "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 10,
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 22,
-                  "src": "161:4:0",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_bool",
-                    "typeString": "bool"
-                  },
-                  "typeName": {
-                    "id": 9,
-                    "name": "bool",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "161:4:0",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bool",
-                      "typeString": "bool"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "160:6:0"
+              "parameters": [],
+              "src": "154:0:0"
             },
-            "scope": 40,
-            "src": "100:134:0",
+            "scope": 34,
+            "src": "100:110:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 38,
+              "id": 32,
               "nodeType": "Block",
-              "src": "310:75:0",
+              "src": "286:64:0",
               "statements": [
                 {
                   "expression": {
@@ -352,7 +284,7 @@
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     },
-                    "id": 36,
+                    "id": 30,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -361,34 +293,34 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 29,
+                        "id": 25,
                         "name": "userPasswords",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 5,
-                        "src": "328:13:0",
+                        "src": "304:13:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_bytes32_$",
                           "typeString": "mapping(address => bytes32)"
                         }
                       },
-                      "id": 32,
+                      "id": 28,
                       "indexExpression": {
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 30,
+                          "id": 26,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 55,
-                          "src": "342:3:0",
+                          "referencedDeclaration": 49,
+                          "src": "318:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 31,
+                        "id": 27,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -396,7 +328,7 @@
                         "memberName": "sender",
                         "nodeType": "MemberAccess",
                         "referencedDeclaration": null,
-                        "src": "342:10:0",
+                        "src": "318:10:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -407,7 +339,7 @@
                       "isPure": false,
                       "lValueRequested": false,
                       "nodeType": "IndexAccess",
-                      "src": "328:25:0",
+                      "src": "304:25:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
@@ -417,68 +349,32 @@
                     "operator": "==",
                     "rightExpression": {
                       "argumentTypes": null,
-                      "arguments": [
-                        {
-                          "argumentTypes": null,
-                          "id": 34,
-                          "name": "_password",
-                          "nodeType": "Identifier",
-                          "overloadedDeclarations": [],
-                          "referencedDeclaration": 24,
-                          "src": "367:9:0",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_bytes32",
-                            "typeString": "bytes32"
-                          }
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": [
-                          {
-                            "typeIdentifier": "t_bytes32",
-                            "typeString": "bytes32"
-                          }
-                        ],
-                        "id": 33,
-                        "name": "keccak256",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 49,
-                        "src": "357:9:0",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
-                          "typeString": "function () pure returns (bytes32)"
-                        }
-                      },
-                      "id": 35,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "kind": "functionCall",
-                      "lValueRequested": false,
-                      "names": [],
-                      "nodeType": "FunctionCall",
-                      "src": "357:20:0",
+                      "id": 29,
+                      "name": "_password",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 20,
+                      "src": "333:9:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "src": "328:49:0",
+                    "src": "304:38:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 28,
-                  "id": 37,
+                  "functionReturnParameters": 24,
+                  "id": 31,
                   "nodeType": "Return",
-                  "src": "321:56:0"
+                  "src": "297:45:0"
                 }
               ]
             },
             "documentation": null,
-            "id": 39,
+            "id": 33,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -486,16 +382,16 @@
             "name": "authenticate",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 25,
+              "id": 21,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 24,
+                  "id": 20,
                   "name": "_password",
                   "nodeType": "VariableDeclaration",
-                  "scope": 39,
-                  "src": "264:17:0",
+                  "scope": 33,
+                  "src": "240:17:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -503,10 +399,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 23,
+                    "id": 19,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "264:7:0",
+                    "src": "240:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -516,20 +412,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "263:19:0"
+              "src": "239:19:0"
             },
             "payable": false,
             "returnParameters": {
-              "id": 28,
+              "id": 24,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27,
+                  "id": 23,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 39,
-                  "src": "304:4:0",
+                  "scope": 33,
+                  "src": "280:4:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -537,10 +433,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 26,
+                    "id": 22,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "304:4:0",
+                    "src": "280:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -550,29 +446,29 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "303:6:0"
+              "src": "279:6:0"
             },
-            "scope": 40,
-            "src": "242:143:0",
+            "scope": 34,
+            "src": "218:132:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 41,
-        "src": "28:360:0"
+        "scope": 35,
+        "src": "28:325:0"
       }
     ],
-    "src": "0:388:0"
+    "src": "0:353:0"
   },
   "legacyAST": {
     "absolutePath": "/C/Users/david.munkacsi/smart-renting/ethereum/contracts/User.sol",
     "exportedSymbols": {
       "User": [
-        40
+        34
       ]
     },
-    "id": 41,
+    "id": 35,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -592,9 +488,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 40,
+        "id": 34,
         "linearizedBaseContracts": [
-          40
+          34
         ],
         "name": "User",
         "nodeType": "ContractDefinition",
@@ -604,7 +500,7 @@
             "id": 5,
             "name": "userPasswords",
             "nodeType": "VariableDeclaration",
-            "scope": 40,
+            "scope": 34,
             "src": "49:42:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -646,14 +542,14 @@
           },
           {
             "body": {
-              "id": 21,
+              "id": 17,
               "nodeType": "Block",
-              "src": "167:67:0",
+              "src": "154:56:0",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 19,
+                    "id": 15,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -662,34 +558,34 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 12,
+                        "id": 10,
                         "name": "userPasswords",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 5,
-                        "src": "178:13:0",
+                        "src": "165:13:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_bytes32_$",
                           "typeString": "mapping(address => bytes32)"
                         }
                       },
-                      "id": 15,
+                      "id": 13,
                       "indexExpression": {
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 13,
+                          "id": 11,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 55,
-                          "src": "192:3:0",
+                          "referencedDeclaration": 49,
+                          "src": "179:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 14,
+                        "id": 12,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -697,7 +593,7 @@
                         "memberName": "sender",
                         "nodeType": "MemberAccess",
                         "referencedDeclaration": null,
-                        "src": "192:10:0",
+                        "src": "179:10:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -708,7 +604,7 @@
                       "isPure": false,
                       "lValueRequested": true,
                       "nodeType": "IndexAccess",
-                      "src": "178:25:0",
+                      "src": "165:25:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
@@ -718,67 +614,31 @@
                     "operator": "=",
                     "rightHandSide": {
                       "argumentTypes": null,
-                      "arguments": [
-                        {
-                          "argumentTypes": null,
-                          "id": 17,
-                          "name": "_password",
-                          "nodeType": "Identifier",
-                          "overloadedDeclarations": [],
-                          "referencedDeclaration": 7,
-                          "src": "216:9:0",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_bytes_memory_ptr",
-                            "typeString": "bytes memory"
-                          }
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": [
-                          {
-                            "typeIdentifier": "t_bytes_memory_ptr",
-                            "typeString": "bytes memory"
-                          }
-                        ],
-                        "id": 16,
-                        "name": "keccak256",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 49,
-                        "src": "206:9:0",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
-                          "typeString": "function () pure returns (bytes32)"
-                        }
-                      },
-                      "id": 18,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "kind": "functionCall",
-                      "lValueRequested": false,
-                      "names": [],
-                      "nodeType": "FunctionCall",
-                      "src": "206:20:0",
+                      "id": 14,
+                      "name": "_password",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 7,
+                      "src": "193:9:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "src": "178:48:0",
+                    "src": "165:37:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     }
                   },
-                  "id": 20,
+                  "id": 16,
                   "nodeType": "ExpressionStatement",
-                  "src": "178:48:0"
+                  "src": "165:37:0"
                 }
               ]
             },
             "documentation": null,
-            "id": 22,
+            "id": 18,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -794,75 +654,48 @@
                   "id": 7,
                   "name": "_password",
                   "nodeType": "VariableDeclaration",
-                  "scope": 22,
-                  "src": "128:15:0",
+                  "scope": 18,
+                  "src": "128:17:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_bytes_memory_ptr",
-                    "typeString": "bytes"
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
                   },
                   "typeName": {
                     "id": 6,
-                    "name": "bytes",
+                    "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "128:5:0",
+                    "src": "128:7:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_bytes_storage_ptr",
-                      "typeString": "bytes"
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
                     }
                   },
                   "value": null,
                   "visibility": "internal"
                 }
               ],
-              "src": "127:17:0"
+              "src": "127:19:0"
             },
             "payable": false,
             "returnParameters": {
-              "id": 11,
+              "id": 9,
               "nodeType": "ParameterList",
-              "parameters": [
-                {
-                  "constant": false,
-                  "id": 10,
-                  "name": "",
-                  "nodeType": "VariableDeclaration",
-                  "scope": 22,
-                  "src": "161:4:0",
-                  "stateVariable": false,
-                  "storageLocation": "default",
-                  "typeDescriptions": {
-                    "typeIdentifier": "t_bool",
-                    "typeString": "bool"
-                  },
-                  "typeName": {
-                    "id": 9,
-                    "name": "bool",
-                    "nodeType": "ElementaryTypeName",
-                    "src": "161:4:0",
-                    "typeDescriptions": {
-                      "typeIdentifier": "t_bool",
-                      "typeString": "bool"
-                    }
-                  },
-                  "value": null,
-                  "visibility": "internal"
-                }
-              ],
-              "src": "160:6:0"
+              "parameters": [],
+              "src": "154:0:0"
             },
-            "scope": 40,
-            "src": "100:134:0",
+            "scope": 34,
+            "src": "100:110:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 38,
+              "id": 32,
               "nodeType": "Block",
-              "src": "310:75:0",
+              "src": "286:64:0",
               "statements": [
                 {
                   "expression": {
@@ -871,7 +704,7 @@
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     },
-                    "id": 36,
+                    "id": 30,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -880,34 +713,34 @@
                       "argumentTypes": null,
                       "baseExpression": {
                         "argumentTypes": null,
-                        "id": 29,
+                        "id": 25,
                         "name": "userPasswords",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 5,
-                        "src": "328:13:0",
+                        "src": "304:13:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_mapping$_t_address_$_t_bytes32_$",
                           "typeString": "mapping(address => bytes32)"
                         }
                       },
-                      "id": 32,
+                      "id": 28,
                       "indexExpression": {
                         "argumentTypes": null,
                         "expression": {
                           "argumentTypes": null,
-                          "id": 30,
+                          "id": 26,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 55,
-                          "src": "342:3:0",
+                          "referencedDeclaration": 49,
+                          "src": "318:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
                             "typeString": "msg"
                           }
                         },
-                        "id": 31,
+                        "id": 27,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -915,7 +748,7 @@
                         "memberName": "sender",
                         "nodeType": "MemberAccess",
                         "referencedDeclaration": null,
-                        "src": "342:10:0",
+                        "src": "318:10:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -926,7 +759,7 @@
                       "isPure": false,
                       "lValueRequested": false,
                       "nodeType": "IndexAccess",
-                      "src": "328:25:0",
+                      "src": "304:25:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
@@ -936,68 +769,32 @@
                     "operator": "==",
                     "rightExpression": {
                       "argumentTypes": null,
-                      "arguments": [
-                        {
-                          "argumentTypes": null,
-                          "id": 34,
-                          "name": "_password",
-                          "nodeType": "Identifier",
-                          "overloadedDeclarations": [],
-                          "referencedDeclaration": 24,
-                          "src": "367:9:0",
-                          "typeDescriptions": {
-                            "typeIdentifier": "t_bytes32",
-                            "typeString": "bytes32"
-                          }
-                        }
-                      ],
-                      "expression": {
-                        "argumentTypes": [
-                          {
-                            "typeIdentifier": "t_bytes32",
-                            "typeString": "bytes32"
-                          }
-                        ],
-                        "id": 33,
-                        "name": "keccak256",
-                        "nodeType": "Identifier",
-                        "overloadedDeclarations": [],
-                        "referencedDeclaration": 49,
-                        "src": "357:9:0",
-                        "typeDescriptions": {
-                          "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
-                          "typeString": "function () pure returns (bytes32)"
-                        }
-                      },
-                      "id": 35,
-                      "isConstant": false,
-                      "isLValue": false,
-                      "isPure": false,
-                      "kind": "functionCall",
-                      "lValueRequested": false,
-                      "names": [],
-                      "nodeType": "FunctionCall",
-                      "src": "357:20:0",
+                      "id": 29,
+                      "name": "_password",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 20,
+                      "src": "333:9:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "src": "328:49:0",
+                    "src": "304:38:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 28,
-                  "id": 37,
+                  "functionReturnParameters": 24,
+                  "id": 31,
                   "nodeType": "Return",
-                  "src": "321:56:0"
+                  "src": "297:45:0"
                 }
               ]
             },
             "documentation": null,
-            "id": 39,
+            "id": 33,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": true,
@@ -1005,16 +802,16 @@
             "name": "authenticate",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 25,
+              "id": 21,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 24,
+                  "id": 20,
                   "name": "_password",
                   "nodeType": "VariableDeclaration",
-                  "scope": 39,
-                  "src": "264:17:0",
+                  "scope": 33,
+                  "src": "240:17:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1022,10 +819,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 23,
+                    "id": 19,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "264:7:0",
+                    "src": "240:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -1035,20 +832,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "263:19:0"
+              "src": "239:19:0"
             },
             "payable": false,
             "returnParameters": {
-              "id": 28,
+              "id": 24,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27,
+                  "id": 23,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 39,
-                  "src": "304:4:0",
+                  "scope": 33,
+                  "src": "280:4:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1056,10 +853,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 26,
+                    "id": 22,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "304:4:0",
+                    "src": "280:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -1069,20 +866,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "303:6:0"
+              "src": "279:6:0"
             },
-            "scope": 40,
-            "src": "242:143:0",
+            "scope": 34,
+            "src": "218:132:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 41,
-        "src": "28:360:0"
+        "scope": 35,
+        "src": "28:325:0"
       }
     ],
-    "src": "0:388:0"
+    "src": "0:353:0"
   },
   "compiler": {
     "name": "solc",
@@ -1148,8 +945,20 @@
       "links": {},
       "address": "0x52a86dd705eb0add7aeec116057f0db6d058cf42",
       "transactionHash": "0x82ae4b685d1868cb99f446cf3f262d8884c2bd090c5cf6ce6319101aefa9dcba"
+    },
+    "1530452610288": {
+      "events": {},
+      "links": {},
+      "address": "0x1edacd9c756725a1e383c9f2e7b2db41159fc9ce",
+      "transactionHash": "0x82ae4b685d1868cb99f446cf3f262d8884c2bd090c5cf6ce6319101aefa9dcba"
+    },
+    "1530453528906": {
+      "events": {},
+      "links": {},
+      "address": "0x03e5f3d2aa6da7102615bbc42f9685a211d4582a",
+      "transactionHash": "0x42c769692bf2861ac437b173f68c2b3235018975f61f57758f80591986420900"
     }
   },
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-07-01T13:40:34.698Z"
+  "updatedAt": "2018-07-01T13:59:50.535Z"
 }

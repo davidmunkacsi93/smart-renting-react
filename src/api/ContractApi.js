@@ -90,12 +90,11 @@ const createApartment = (account, apartment) => {
     }
 }
 
-const authenticate = (account, password) => {
+const authenticate = (address, password) => {
     const transactionObject = {
-        from: account.address
+        from: address
     };
-
-    return UserContract.authenticate.call(password, transactionObject);
+    return UserContract.authenticate.call(password.toString(), transactionObject);
 }
 
 const getBalanceInEur = (address) => {

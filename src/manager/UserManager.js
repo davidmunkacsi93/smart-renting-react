@@ -46,9 +46,13 @@ const login = async (username, password) => {
     const response = await fetch('/api/getAccountByUsername?username=' + username);
     const json = await response.json();
     if (!json.success) return false;
-    var account = ContractApi.authenticate(MD5(json.account.address), MD5(password));
-    setCurrentAccount(account);
-    return account;
+    var result = ContractApi.authenticate(json.account.address, MD5(password));
+    if (result) {
+        setCurrentAccount(json.account);
+    } else {
+        NotificationManager.createNotification('error', 'Login failed.', 'Login');
+    }
+    return result;
 }
 
 const isLoggedIn = () => {

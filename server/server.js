@@ -40,6 +40,25 @@ io.on('connection', (client) => {
       }
       client.broadcast.to(clientDict[data.to]).emit('handshake', data);
   });
+  client.on('requestPermissionToPay', (data) => {
+    if (!clientDict[data.to]) {
+      console.log("Client with address " + data.to + " not found");
+      return;
+    }
+    client.broadcast.to(clientDict[data.to]).emit('requestPermissionToPay', data);
+  });
+  client.on('permissionDenied', (data) => {
+
+  });
+  client.on('permissionGranted', (data) => {
+
+  });
+  client.on('depositTransferred', (data) => {
+
+  });
+  client.on('rentTransferred', (data) => {
+
+  });
 });
 
 app.get('/api/getAccountCount', (req, res) => {

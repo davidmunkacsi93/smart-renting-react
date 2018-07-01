@@ -23,15 +23,8 @@ const PrimaryButton = styled(Button)`
   background-color: #1f3651;
   color: #ffffff;
   width: 275px;
+  display:block;
 `;
-
-const StyledSpan = styled.span`
- display:block;
- margin-top: 20px;
- margin-bottom: 20px;
- color:white;
-`
-
 // const history = createBrowserHistory();
 export class ApartmentDetailsTenantView extends React.Component {
   constructor(props) {
@@ -55,8 +48,7 @@ export class ApartmentDetailsTenantView extends React.Component {
     }
 
     this.rentApartment = this.rentApartment.bind(this);
-    this.sendMessage = this.sendMessage.bind(this);
-
+    this.requestPermission = this.requestPermission.bind(this);
   }
 
   handleReceiveMessage = (message) => {
@@ -110,8 +102,11 @@ export class ApartmentDetailsTenantView extends React.Component {
     this.setState({balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)});
   }
 
-  sendMessage() {
-
+  requestPermission() {
+    this.state.socket.emit('requestPermissionToPay', { 
+      from: this.state.account.address, 
+      to: this.state.apartment.ownerAddress,
+      username: this.state.account.user.username })
   }
   
   render() {
@@ -124,13 +119,14 @@ export class ApartmentDetailsTenantView extends React.Component {
                 <MainHeadline>
                   Apartment details
                 </MainHeadline>
+                <SecondaryHeadline>
+                  Your current balance is: {this.state.balanceInEur} EUR ({this.state.balanceInEth} ETH)
+                </SecondaryHeadline>
                 <ApartmentDetails {...this.state.apartment}/>
                 <SecondaryHeadline>
                   Apartment history
                 </SecondaryHeadline>
-                <StyledSpan>
-                  Your current balance is: {this.state.balanceInEur} EUR ({this.state.balanceInEth} ETH)
-                </StyledSpan>
+
                 <Widget 
                   title={this.state.apartment.username}
                   subtitle=""

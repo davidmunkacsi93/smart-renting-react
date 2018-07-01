@@ -31,6 +31,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
     const socket = openSocket('http://192.168.0.6:8000?address=' + account.address);
     socket.on('receiveMessage', message => this.handleReceiveMessage(message));
     socket.on('handshake', data => this.handleHandshake(data));
+    socket.on('requestPermissionToPay', data => this.handleRequestPermission(data));
 
     this.state = {
       account: account,
@@ -71,6 +72,10 @@ export class ApartmentDetailsLandlordView extends React.Component {
     this.setState({ tenantName: data.username, tenantAddress: data.from });
     NotificationManager.createNotification('info', data.username + ' is currently looking at your apartment.')
   }
+  
+  handleRequestPermission = (data) => {
+    NotificationManager.createNotification('info', data.username + ' wants to rent your apartment. You can accept or decline his/her request.')
+  }
 
   handleReceiveMessage = (message) => {
     addResponseMessage(message);
@@ -81,6 +86,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
     this.state.socket.emit('sendMessage', 
       { message: message, address: this.state.tenantAddress });
   }
+
 
   render() {
     return (

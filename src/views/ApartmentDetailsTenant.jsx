@@ -126,15 +126,42 @@ export class ApartmentDetailsTenantView extends React.Component {
       });
   }
 
-  rentApartment() {
+  getTransactionsById = async (apartmentId) => {
+    var transactionUrl = '/api/getTransactionsByApartmentId?apartmentId=' + apartmentId;
+    fetch(transactionUrl)
+      .then(response => {
+        if (response.status !== 200) throw Error("Error during querying transactions.");
+        return response.json();
+      })
+      .then(body => {
+        let parsedTransacitions = JSON.parse(body.transactions);
+        var transactions = [];
+        console.log(parsedTransacitions);
+        parsedTransacitions.forEach(t => {
+          ContractApi.verifyTransaction(t, this.state.account.address);
+          transactions.push(t);
+        });
+        this.setState({ apartmentTransactions: transactions});
+        if (transactions.length > 0) {
+          this.setState({ showApartmentTransactions: true });
+        }
+      })
+      .catch(err => {
+        NotificationManager.createNotification('error', err.message, 'Querying transactions')
+      });
+  }
+
+  rentApartment = async () => {
     const transactionInfo = {
       apartmentId: this.state.apartment._id,
       deposit: this.state.apartment.deposit,
+      username: this.state.account.user.username,
       rent: this.state.apartment.rent,
       from: this.state.account.address,
       to: this.state.apartment.ownerAddress
     };
     ContractApi.rentApartment(transactionInfo);
+    await this.getTransactionsById(this.state.apartment._id);
     this.setState({balanceInEur: ContractApi.getBalanceInEur(this.state.account.address)});
     this.setState({balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)});
   }

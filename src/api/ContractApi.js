@@ -121,6 +121,35 @@ const createApartment = async (account, apartment) => {
     }
 }
 
+const createApartmentTransaction = (transactionInfo, transactionMessage) => {
+    var hashedTimestamp = MD5(new Date().getTime().toString());
+    var hashedMessage = MD5(transactionMessage);
+    const transactionObject = {
+        from: transactionInfo.from,
+    };
+    ApartmentContract.createApartmentTransaction.call(hashedMessage, hashedTimestamp, transactionObject, (error, result) => {
+        if(error) {
+            NotificationManager.createNotification('error', "Error during transaction.", 'Create apartment transaction');
+            console.error(error.message);
+            return;
+        }
+        const data = {
+            apartmentId: transactionInfo.apartmentId,
+            address: transactionInfo.from,
+            transactionMessage: transactionMessage,
+            transactionHash: hashedTimestamp
+        };
+        fetch('/api/createApartmentTransaction', {
+            body: JSON.stringify(data),
+            cache: 'no-cache',
+            headers: {
+                'content-type': 'application/json'
+            },
+            method: 'POST'
+        });
+    });
+}
+
 const verifyTransaction = (transaction, address) => {
     const transactionObject = {
         from: address
@@ -159,7 +188,7 @@ const getBalanceInEth = (address) => {
 //     })
 // }
 
-const rentApartment = (transactionInfo) => {
+const rentApartment = async (transactionInfo) => {
     var depositPrice = web3.toWei(transactionInfo.deposit/fallbackPrice, 'ether');
     var rentPrice = web3.toWei(transactionInfo.rent/fallbackPrice, 'ether');
     const transactionObject = {
@@ -174,14 +203,14 @@ const rentApartment = (transactionInfo) => {
             NotificationManager.createNotification('error', 'Error during transferring deposit.', 'Transferirng deposit')
         } else {
             console.log(res);
+            createApartmentTransaction(transactionInfo, transactionInfo.username + " paid the " + transactionInfo.deposit + " € deposit.")
             NotificationManager.createNotification('success', 'Deposit successfully transferred.', 'Transferring deposit')
-
             transactionObject["value"] = rentPrice;
             web3.eth.sendTransaction(transactionObject, function(err, res) {
                 if (err) {
                     NotificationManager.createNotification('error', 'Error during transferring rent.', 'Transferring rent')
                 } else {
-                    
+                    createApartmentTransaction(transactionInfo, transactionInfo.username + " paid the " + transactionInfo.rent + " € rent.")
                     NotificationManager.createNotification('success', 'Rent successfully transferred.', 'Transferring rent')
                 }
             });

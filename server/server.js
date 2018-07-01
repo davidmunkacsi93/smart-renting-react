@@ -22,10 +22,23 @@ const io = require('socket.io').listen(ioPort);
 var clientDict = {};
 io.on('connection', (client) => {
   var address = client.request._query["address"];
+  console.log("[" + address + "] connected.")
   clientDict[address] = client.id;
   client.on('sendMessage', (data) => {
-      console.log("Sending message to " + data.address)
+      if (!clientDict[data.address]) {
+        console.log("Client " + data.address + " not found");
+        return;
+      }
+      console.log("Message to " + data.address);
       client.broadcast.to(clientDict[data.address]).emit('receiveMessage', data.message);
+  });
+  client.on('handshake', (data) => {
+      console.log("Handshake with " + data.to);
+      if (!clientDict[data.to]) {
+        console.log("Client with address " + data.to + " not found");
+        return;
+      }
+      client.broadcast.to(clientDict[data.to]).emit('handshake', data);
   });
 });
 

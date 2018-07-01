@@ -88,6 +88,10 @@ export class ApartmentDetailsTenantView extends React.Component {
           apartment = a;
         });
         this.setState({apartment: apartment});
+        this.state.socket.emit('handshake', { 
+          from: this.state.account.address, 
+          to: this.state.apartment.ownerAddress,
+          username: this.state.account.user.username })
       })
       .catch(err => {
         NotificationManager.createNotification('error', err.message, 'Querying apartment')
@@ -128,8 +132,8 @@ export class ApartmentDetailsTenantView extends React.Component {
                   Your current balance is: {this.state.balanceInEur} EUR ({this.state.balanceInEth} ETH)
                 </StyledSpan>
                 <Widget 
-                  title="Chat with the owner of the apartment"
-                  subtitle={this.state.apartment.username}
+                  title={this.state.apartment.username}
+                  subtitle=""
                   handleNewUserMessage={this.handleNewUserMessage}
                   />
                 <PrimaryButton secondary="true" onClick={() => { this.sendMessage() }}>

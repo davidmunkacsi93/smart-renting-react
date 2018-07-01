@@ -1,7 +1,6 @@
 import Web3 from 'web3';
 import NotificationManager from '../manager/NotificationManager';
 import UserManager from '../manager/UserManager';
-import { getBasePrice } from 'crypto-price';
 
 const fallbackPrice = 352.70;
 
@@ -113,14 +112,14 @@ const getBalanceInEth = (address) => {
     return web3.fromWei(web3.eth.getBalance(address)).toFixed(2);
 }
 
-const getCurrentTransactionPrice = (transactionInfo) => {
-    getBasePrice('EUR', 'ETH').then(obj => {  
-        var currentPriceInEth = obj.price*(transactionInfo.deposit + transactionInfo.rent);
-        var priceInWei = currentPriceInEth;
-    }).catch(err => {
-        NotificationManager.createNotification('error', err.message, 'Renting an apartment');
-    })
-}
+// const getCurrentTransactionPrice = (transactionInfo) => {
+//     getBasePrice('EUR', 'ETH').then(obj => {  
+//         var currentPriceInEth = obj.price*(transactionInfo.deposit + transactionInfo.rent);
+//         var priceInWei = currentPriceInEth;
+//     }).catch(err => {
+//         NotificationManager.createNotification('error', err.message, 'Renting an apartment');
+//     })
+// }
 
 const rentApartment = (transactionInfo) => {
     var currentPriceInEth = (transactionInfo.deposit + transactionInfo.rent)/fallbackPrice;

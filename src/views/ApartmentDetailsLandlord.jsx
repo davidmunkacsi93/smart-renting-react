@@ -30,8 +30,12 @@ export class ApartmentDetailsLandlordView extends React.Component {
     var account = UserManager.getCurrentAccount();
     const socket = openSocket('http://192.168.0.6:8000?address=' + account.address);
     socket.on('receiveMessage', message => this.handleReceiveMessage(message));
+    socket.on('handshake', data => this.handleHandshake(data));
+
     this.state = {
       account: account,
+      tenantName: '',
+      tenantAddress: '',
       apartment: '',
       isLoggedIn: UserManager.isLoggedIn(),
       socket: socket
@@ -63,13 +67,18 @@ export class ApartmentDetailsLandlordView extends React.Component {
       });
   }
 
+  handleHandshake = (data) => {
+    this.setState({ tenantName: data.username, tenantAddress: data.from });
+  }
+
   handleReceiveMessage = (message) => {
     addResponseMessage(message);
   }
 
   handleNewUserMessage = (message) => {
+    if (this.state.tenantAddress === '') return;
     this.state.socket.emit('sendMessage', 
-      { message: message, address: this.state.apartment.ownerAddress });
+      { message: message, address: this.state.tenantAddress });
   }
 
   render() {
@@ -80,7 +89,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
               ?
               <React.Fragment>
                 <Widget 
-                  title="Chat with a possible tenant"
+                  title={this.state.tenantName}
                   subtitle=""
                   handleNewUserMessage={this.handleNewUserMessage}
                   />

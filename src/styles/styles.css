@@ -33,3 +33,11 @@
     background-color:  #1f3651 !important;
     color: white !important;
 }
+
+.color-red {
+    color: red !important;
+}
+
+.color-green {
+    color: green !important;
+}

@@ -1,26 +1,17 @@
 import React from 'react';
-// import styled from 'styled-components';
-import { Container } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import { MainHeadline } from '../components/Headlines/MainHeadline';
-// import createBrowserHistory from 'history/createBrowserHistory';
 import { withRouter } from 'react-router-dom';
 import UserManager from '../manager/UserManager';
 import { ErrorHeadline } from '../components/Headlines/MainHeadline'
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SecondaryHeadline } from '../components/Headlines/SecondaryHeadline';
 import NotificationManager from '../manager/NotificationManager';
 import ApartmentDetails from '../components/Apartment/ApartmentDetails';
 import { Widget, addResponseMessage } from 'react-chat-widget';
 import 'react-chat-widget/lib/styles.css';
 import openSocket from 'socket.io-client';
-
-// const PrimaryButton = styled(Button)`
-//   margin-top: 20px;
-//   background-color: #1f3651;
-//   color: #ffffff;
-//   width: 180px;
-// `;
+import PermissionRequest from '../components/Request/PermissionRequest';
 
 // const history = createBrowserHistory();
 export class ApartmentDetailsLandlordView extends React.Component {
@@ -39,7 +30,11 @@ export class ApartmentDetailsLandlordView extends React.Component {
       tenantAddress: '',
       apartment: '',
       isLoggedIn: UserManager.isLoggedIn(),
-      socket: socket
+      socket: socket,
+      showPermissionRequest: false,
+      permissionRequests: [],
+      showApartmentTransactions: false,
+      apartmentTransactions: []
     }
   }
 
@@ -74,7 +69,23 @@ export class ApartmentDetailsLandlordView extends React.Component {
   }
   
   handleRequestPermission = (data) => {
+    this.state.permissionRequests.push(data);
+    this.setState({ showPermissionRequest: true });
     NotificationManager.createNotification('info', data.username + ' wants to rent your apartment. You can accept or decline his/her request.')
+  }
+
+  handleAccept = () => {
+    this.state.socket.emit('permissionGranted', { address: this.state.tenantAddress });
+  }
+
+  handleDecline = () => {
+    var array = [...this.state.permissionRequests]; // make a separate copy of the array
+    array.splice(0, 1);
+    this.setState({permissionRequests: array});
+    if (array.length === 0) {
+      this.setState({ showPermissionRequest: false });
+    }
+    this.state.socket.emit('permissionDenied', { address: this.state.tenantAddress });
   }
 
   handleReceiveMessage = (message) => {
@@ -104,10 +115,24 @@ export class ApartmentDetailsLandlordView extends React.Component {
                   Apartment details
                 </MainHeadline>
                 <ApartmentDetails {...this.state.apartment}/>
-                <SecondaryHeadline>
-                  Apartment history
-                </SecondaryHeadline> 
-
+                { this.state.apartmentTransactions.length > 0 
+                  ? 
+                    <React.Fragment>
+                      <SecondaryHeadline>Apartment history</SecondaryHeadline>
+                    </React.Fragment>
+                  : null
+                }
+                { this.state.showPermissionRequest
+                  ? 
+                    <React.Fragment>
+                      <SecondaryHeadline>Permission requests</SecondaryHeadline>
+                      <Row>
+                        <Col>{this.state.permissionRequests.map((request, i) => <PermissionRequest {...request}
+                         handleAccept={this.handleAccept} handleDecline={this.handleDecline} key={i}/>)}</Col>
+                      </Row>
+                    </React.Fragment>
+                  : null
+                }
               </React.Fragment>
               :
               <React.Fragment>

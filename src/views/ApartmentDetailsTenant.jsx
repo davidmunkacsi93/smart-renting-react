@@ -34,6 +34,8 @@ export class ApartmentDetailsTenantView extends React.Component {
 
     const socket = openSocket('http://192.168.0.6:8000?address=' + account.address);
     socket.on('receiveMessage', message => this.handleReceiveMessage(message));
+    socket.on('permissionGranted', data => this.handlePermissionGranted(data));
+    socket.on('permissionDenied', data => this.handlePermissionDenied(data));
 
     var balanceInEur = ContractApi.getBalanceInEur(account.address);
     var balanceInEth = ContractApi.getBalanceInEth(account.address);
@@ -44,7 +46,9 @@ export class ApartmentDetailsTenantView extends React.Component {
       balanceInEth: balanceInEth,
       apartment: '',
       socket: socket,
-      isLoggedIn: UserManager.isLoggedIn()
+      showPayRent: false,
+      isLoggedIn: UserManager.isLoggedIn(),
+      apartmentTransactions: []
     }
 
     this.rentApartment = this.rentApartment.bind(this);
@@ -53,6 +57,16 @@ export class ApartmentDetailsTenantView extends React.Component {
 
   handleReceiveMessage = (message) => {
     addResponseMessage(message);
+  }
+
+  handlePermissionDenied = (_) => {
+    NotificationManager.createNotification('error', 'The owner of the apartment denied your request.', 'Permission to pay');
+    this.setState({ showPayRent: false });
+  }
+
+  handlePermissionGranted = (_) => {
+    NotificationManager.createNotification('success', 'The owner of the apartment accepted your request. You can now pay.', 'Permission to pay');
+    this.setState({ showPayRent: true });
   }
 
   handleNewUserMessage = (message) => {
@@ -123,10 +137,13 @@ export class ApartmentDetailsTenantView extends React.Component {
                   Your current balance is: {this.state.balanceInEur} EUR ({this.state.balanceInEth} ETH)
                 </SecondaryHeadline>
                 <ApartmentDetails {...this.state.apartment}/>
-                <SecondaryHeadline>
-                  Apartment history
-                </SecondaryHeadline>
-
+                { this.state.apartmentTransactions.length > 0 
+                  ? 
+                    <React.Fragment>
+                      <SecondaryHeadline>Apartment history</SecondaryHeadline>
+                    </React.Fragment>
+                  : null
+                }
                 <Widget 
                   title={this.state.apartment.username}
                   subtitle=""
@@ -134,10 +151,16 @@ export class ApartmentDetailsTenantView extends React.Component {
                   />
                 <PrimaryButton secondary="true" onClick={() => { this.requestPermission() }}>
                   REQUEST PERMISSION TO PAY<FontAwesomeIcon className="margin-left-10" icon={faUnlock}/>
-                </PrimaryButton>  
-                <PrimaryButton secondary="true" onClick={() => { this.rentApartment() }}>
-                  RENT APARTMENT<FontAwesomeIcon className="margin-left-10" icon={faCoins}/>
-                </PrimaryButton>  
+                </PrimaryButton>
+                { this.state.showPayRent
+                ? 
+                  <React.Fragment>
+                    <PrimaryButton secondary="true" onClick={() => { this.rentApartment() }}>
+                      RENT APARTMENT<FontAwesomeIcon className="margin-left-10" icon={faCoins}/>
+                    </PrimaryButton>  
+                  </React.Fragment>
+                : null
+                }  
               </React.Fragment>
               :
               <React.Fragment>

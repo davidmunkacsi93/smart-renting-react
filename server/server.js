@@ -48,16 +48,32 @@ io.on('connection', (client) => {
     client.broadcast.to(clientDict[data.to]).emit('requestPermissionToPay', data);
   });
   client.on('permissionDenied', (data) => {
-
+    if (!clientDict[data.address]) {
+      console.log("Client with address " + data.address + " not found");
+      return;
+    }
+    client.broadcast.to(clientDict[data.address]).emit('permissionDenied', data);
   });
   client.on('permissionGranted', (data) => {
-
+    if (!clientDict[data.address]) {
+      console.log("Client with address " + data.address + " not found");
+      return;
+    }
+    client.broadcast.to(clientDict[data.address]).emit('permissionGranted', data);
   });
   client.on('depositTransferred', (data) => {
-
+    if (!clientDict[data.to]) {
+      console.log("Client with address " + data.to + " not found");
+      return;
+    }
+    client.broadcast.to(clientDict[data.to]).emit('depositTransferred', data);
   });
   client.on('rentTransferred', (data) => {
-
+    if (!clientDict[data.to]) {
+      console.log("Client with address " + data.to + " not found");
+      return;
+    }
+    client.broadcast.to(clientDict[data.to]).emit('rentTransferred', data);
   });
 });
 

@@ -1,22 +1,13 @@
 pragma solidity ^0.4.23;
 
 contract User {
-    mapping (address => bytes32) userPasswordMapping;
+    mapping (address => bytes32) userPasswords;
 
-    function getBalance(address user) public view returns (uint256) {
-        return user.balance;
+    function createUserPassword(bytes _password) public returns (bool) {
+        userPasswords[msg.sender] = keccak256(_password);
     }
 
-    function createUserPasswordMapping(string password) public returns (bool) {
-        bytes32 passwordHash = keccak256(password);
-        userPasswordMapping[msg.sender] = passwordHash;
+    function authenticate(bytes32 _password) public view returns (bool) {
+        return userPasswords[msg.sender] == keccak256(_password);
     }
-
-    function authenticate(string password) public view returns (bool) {
-        bytes32 storedHash = userPasswordMapping[msg.sender];
-        return storedHash == keccak256(password);
-
-    }
-
-    event Log(string, bytes32);
 }

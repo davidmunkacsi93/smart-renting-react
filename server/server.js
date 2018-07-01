@@ -77,7 +77,7 @@ io.on('connection', (client) => {
   });
 });
 
-app.get('/api/getAccountCount', (req, res) => {
+app.get('/api/getAccountCount', (_, res) => {
   mongoClient.connect(uri, (err, db) => {
     if (err) throw err;
     var dbo = db.db(dbName);
@@ -100,6 +100,24 @@ app.get('/api/getAccount', (request, response) => {
           throw err;
         } else {
           response.send( { success: true, message: "User created successfully.", account: document });
+        }
+    });
+    db.close();
+  });
+});
+
+app.get('/api/getAccountByUsername', (request, response) => {
+  var username = url.parse(request.url, true).query.username;
+  mongoClient.connect(uri, function(err, db) {
+    if (err) response.send( { success: false, message: connectionErrorMessage });
+    var dbo = db.db(dbName);
+    var query = { user: { username: username } };
+    dbo.collection("accounts").findOne(query, function(err, document) {
+        if (err)  {
+          response.send( { success: false, message: "Error by querying accounts." });
+          throw err;
+        } else {
+          response.send( { success: true, account: document });
         }
     });
     db.close();

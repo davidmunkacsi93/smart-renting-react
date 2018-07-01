@@ -19,16 +19,6 @@ export class MyHomeView extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  componentDidMount() {
-    this.callApi()
-      .then(res => this.setState({ response: res.express }))
-      .catch(err => console.log(err));
-  }
-
-  callApi = async () => {
-
-  };
-
   handleChange(evt) {
     this.setState({ [evt.target.name]: evt.target.value });
   }

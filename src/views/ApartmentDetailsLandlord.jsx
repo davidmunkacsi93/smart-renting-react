@@ -75,6 +75,12 @@ export class ApartmentDetailsLandlordView extends React.Component {
   }
 
   handleAccept = () => {
+    var array = [...this.state.permissionRequests]; // make a separate copy of the array
+    array.splice(0, 1);
+    this.setState({permissionRequests: array});
+    if (array.length === 0) {
+      this.setState({ showPermissionRequest: false });
+    }
     this.state.socket.emit('permissionGranted', { address: this.state.tenantAddress });
   }
 

@@ -1,6 +1,5 @@
 import Web3 from 'web3';
 import NotificationManager from '../manager/NotificationManager';
-import UserManager from '../manager/UserManager';
 
 const fallbackPrice = 352.70;
 
@@ -62,7 +61,7 @@ const createUser = (address, password) => {
             from: address
         };
 
-        UserContract.createUserPasswordMapping.sendTransaction(password, transactionObject, (error, result) => {
+        UserContract.createUserPassword.sendTransaction(password, transactionObject, (error, _) => {
             if(error) {
                 throw new Error(error);
             }
@@ -86,22 +85,17 @@ const createApartment = (account, apartment) => {
                 console.error(error.message);
                 return;
             }
-            console.log(result);
+            return result;
         });
     }
 }
 
-const authenticate = (_, password) => {
-    var account = UserManager.getCurrentAccount();
-    if (account === null) {
-        NotificationManager.createNotification('error', 'Current user could not be identified.', 'Login')
-        return null;
-    }
+const authenticate = (account, password) => {
     const transactionObject = {
         from: account.address
     };
 
-    return UserContract.authenticate.call(password, transactionObject) ? account : null;
+    return UserContract.authenticate.call(password, transactionObject);
 }
 
 const getBalanceInEur = (address) => {

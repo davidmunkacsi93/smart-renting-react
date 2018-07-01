@@ -45,8 +45,8 @@ export class HomeView extends React.Component {
     this.setState({ [evt.target.name]: evt.target.value });
   }
 
-  login() {
-    var result = UserManager.login(this.state.username, this.state.password);
+  async login() {
+    var result = await UserManager.login(this.state.username, this.state.password);
     if (result) {
       window.location.reload();
     }

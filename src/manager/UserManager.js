@@ -1,5 +1,6 @@
 import ContractApi from '../api/ContractApi';
 import NotificationManager from '../manager/NotificationManager';
+import { MD5 } from 'object-hash'
 
 const currentAccountKey = "currentAccount";
 
@@ -21,10 +22,10 @@ const createUser = async (username, password) => {
         NotificationManager.createNotification('error', body.message, 'Creating user');
     } else {
         try {
-            ContractApi.createUser(body.account.address, password);
+            ContractApi.createUser(body.account.address, MD5(password));
             localStorage[currentAccountKey] = JSON.stringify(body.account);
         } catch (error) {
-            NotificationManager.createNotification('error', "User could not be created.", 'Creating user');
+            throw Error("User could not be created.");
         }
         NotificationManager.createNotification('success', "User created successfully.", 'Creating user');
     }
@@ -41,11 +42,13 @@ const getCurrentAccount = () => {
     return null;
 }
 
-const login = (username, password) => {
-    var account = ContractApi.authenticate(username, password);
+const login = async (username, password) => {
+    const response = await fetch('/api/getAccountByUsername?username=' + username);
+    const json = await response.json();
+    if (!json.success) return false;
+    var account = ContractApi.authenticate(MD5(json.account.address), MD5(password));
     setCurrentAccount(account);
     return account;
-
 }
 
 const isLoggedIn = () => {

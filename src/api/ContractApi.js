@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import NotificationManager from '../manager/NotificationManager';
+import { MD5 } from 'object-hash';
 
 const fallbackPrice = 352.70;
 
@@ -69,7 +70,7 @@ const createUser = (address, password) => {
     }
 }
 
-const createApartment = (account, apartment) => {
+const createApartment = async (account, apartment) => {
     if (account.address == null) {
         throw new Error("Account could not be identified.");
     }
@@ -79,15 +80,59 @@ const createApartment = (account, apartment) => {
         const transactionObject = {
             from: account.address,
         };
-        ApartmentContract.createApartmentDetail.sendTransaction(apartment._id, apartment.deposit, apartment.rent, transactionObject, (error, result) => {
+        ApartmentContract.createRent.sendTransaction(apartment._id, apartment.rent, transactionObject, (error, _) => {
             if(error) {
-                NotificationManager.createNotification('error', "Error during transaction.", 'Create apartment');
+                NotificationManager.createNotification('error', "Error during transaction.", 'Create rent');
                 console.error(error.message);
                 return;
             }
-            return result;
+        });
+        ApartmentContract.createDeposit.sendTransaction(apartment._id, apartment.deposit, transactionObject, (error, _) => {
+            if(error) {
+                NotificationManager.createNotification('error', "Error during transaction.", 'Create deposit');
+                console.error(error.message);
+                return;
+            }
+        });
+        var transactionMessage = "Apartment created with " + apartment.rent + " € rent and " + apartment.deposit + " €."
+        var hashedTimestamp = MD5(new Date().getTime().toString());
+        var hashedMessage = MD5(transactionMessage);
+        ApartmentContract.createApartmentTransaction.call(hashedMessage, hashedTimestamp, transactionObject, (error, result) => {
+            if(error) {
+                NotificationManager.createNotification('error', "Error during transaction.", 'Create apartment transaction');
+                console.error(error.message);
+                return;
+            }
+            const data = {
+                apartmentId: apartment._id,
+                address: account.address,
+                transactionMessage: transactionMessage,
+                transactionHash: hashedTimestamp
+            };
+            fetch('/api/createApartmentTransaction', {
+                body: JSON.stringify(data),
+                cache: 'no-cache',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                method: 'POST'
+            });
         });
     }
+}
+
+const verifyTransaction = (transaction, address) => {
+    const transactionObject = {
+        from: address
+    }
+    var hashedMessage = MD5(transaction.transactionMessage);
+    ApartmentContract.verifyTransaction.call(transaction.transactionHash, hashedMessage, transactionObject, (error, result) => {
+        if(error) {
+            NotificationManager.createNotification('error', "Error during transaction.", 'Reading apartment transaction');
+            console.error(error.message);
+        }
+        console.log(result);
+    });
 }
 
 const authenticate = (address, password) => {
@@ -115,19 +160,31 @@ const getBalanceInEth = (address) => {
 // }
 
 const rentApartment = (transactionInfo) => {
-    var currentPriceInEth = (transactionInfo.deposit + transactionInfo.rent)/fallbackPrice;
-    var priceInWei = web3.toWei(currentPriceInEth, 'ether');
+    var depositPrice = web3.toWei(transactionInfo.deposit/fallbackPrice, 'ether');
+    var rentPrice = web3.toWei(transactionInfo.rent/fallbackPrice, 'ether');
     const transactionObject = {
         from: transactionInfo.from,
-        value: priceInWei
+        to: transactionInfo.to,
+        value: depositPrice
     };
-    ApartmentContract.payRent(transactionInfo.to, transactionObject, function(err, res) {
+    console.log("From: " + transactionInfo.from + " To: " + transactionInfo.to);
+    web3.eth.sendTransaction(transactionObject, function(err, res) {
         if (err) {
             console.error(err);
-            NotificationManager.createNotification('error', 'Error during transfering deposit.', 'Transfering deposit')
+            NotificationManager.createNotification('error', 'Error during transferring deposit.', 'Transferirng deposit')
         } else {
             console.log(res);
-            NotificationManager.createNotification('success', 'Deposit successfully transferred.', 'Transfering deposit')
+            NotificationManager.createNotification('success', 'Deposit successfully transferred.', 'Transferring deposit')
+
+            transactionObject["value"] = rentPrice;
+            web3.eth.sendTransaction(transactionObject, function(err, res) {
+                if (err) {
+                    NotificationManager.createNotification('error', 'Error during transferring rent.', 'Transferring rent')
+                } else {
+                    
+                    NotificationManager.createNotification('success', 'Rent successfully transferred.', 'Transferring rent')
+                }
+            });
         }
     });
 };
@@ -137,6 +194,7 @@ const ContractApi = {
     getAccounts: getAccounts,
     getBalanceInEth: getBalanceInEth,
     getBalanceInEur: getBalanceInEur,
+    verifyTransaction: verifyTransaction,
     createApartment: createApartment,
     createUser: createUser,
     authenticate: authenticate,

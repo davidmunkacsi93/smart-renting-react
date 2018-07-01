@@ -28,12 +28,12 @@ const Thumbnail = styled.div`
 export const ApartmentDetails = (apartment) => (
   <Container>
     <Row>
-      <Col className="margin-top-10" sm="12" md="4">
+      <Col className="margin-top-10" sm="12" md="5" lg="4" xl="3">
         <Thumbnail>
           <img src={thumbnail} alt="apartment thumbnail" width={250} height={250} />
         </Thumbnail>
       </Col>
-      <Col className="margin-top-10" sm="12" md="8">
+      <Col className="margin-top-10" sm="12" md="7" lg="8" xl="9">
         <TitleHeadline>Owner: {apartment.username}</TitleHeadline>
         <TitleHeadline>{apartment.postCode} {apartment.city}</TitleHeadline>
         <MediumHeadline>{apartment.street} {apartment.houseNumber}</MediumHeadline>

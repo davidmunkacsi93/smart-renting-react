@@ -27,15 +27,15 @@ export class PermissionRequest extends React.Component {
         return (
             <Container>
                 <Row>
-                <Col className="margin-top-10" md="4">
+                <Col className="margin-top-10" sm="10" md="4">
                     <DescriptionHeadline>{this.props.username} wants to rent your apartment.</DescriptionHeadline>
                 </Col>
-                <Col className="margin-top-10" md="1">
+                <Col className="margin-top-10" sm="1" md="1">
                     <IconButton onClick={this.props.handleAccept}>
                         <FontAwesomeIcon className="color-green" size="2x" icon={faCheck}/>
                     </IconButton>
                 </Col>
-                <Col className="margin-top-10" md="1">
+                <Col className="margin-top-10" sm="1" md="1">
                     <IconButton onClick={this.props.handleDecline}>
                         <FontAwesomeIcon className="color-red" size="2x" icon={faTimes}/>
                     </IconButton>

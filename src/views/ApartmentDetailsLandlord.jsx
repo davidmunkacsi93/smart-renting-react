@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col } from 'reactstrap';
+import { Container } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import { MainHeadline } from '../components/Headlines/MainHeadline';
 import { withRouter } from 'react-router-dom';
@@ -12,6 +12,8 @@ import { Widget, addResponseMessage } from 'react-chat-widget';
 import 'react-chat-widget/lib/styles.css';
 import openSocket from 'socket.io-client';
 import PermissionRequest from '../components/Request/PermissionRequest';
+import ContractApi from '../api/ContractApi';
+import HistoryItem from '../components/History/HistoryItem';
 
 // const history = createBrowserHistory();
 export class ApartmentDetailsLandlordView extends React.Component {
@@ -24,11 +26,15 @@ export class ApartmentDetailsLandlordView extends React.Component {
     socket.on('handshake', data => this.handleHandshake(data));
     socket.on('requestPermissionToPay', data => this.handleRequestPermission(data));
 
+    var balanceInEur = ContractApi.getBalanceInEur(account.address);
+    var balanceInEth = ContractApi.getBalanceInEth(account.address);
     this.state = {
       account: account,
       tenantName: '',
       tenantAddress: '',
       apartment: '',
+      balanceInEur: balanceInEur,
+      balanceInEth: balanceInEth,
       isLoggedIn: UserManager.isLoggedIn(),
       socket: socket,
       showPermissionRequest: false,
@@ -51,12 +57,32 @@ export class ApartmentDetailsLandlordView extends React.Component {
         var apartment;
         parsedAccount.apartments.forEach(a => {
           if (a._id === apartmentId) {
-
+            a["username"] = parsedAccount.user.username;
+            apartment = a;
           }
-          a["username"] = parsedAccount.user.username;
-          apartment = a;
         });
-        this.setState({apartment: apartment});
+        this.setState({ apartment: apartment });
+        var transactionUrl = '/api/getTransactionsByApartmentId?apartmentId=' + apartment._id;
+        fetch(transactionUrl)
+          .then(response => {
+            if (response.status !== 200) throw Error("Error during querying transactions.");
+            return response.json();
+          })
+          .then(body => {
+            let parsedTransacitions = JSON.parse(body.transactions);
+            var transactions = [];
+            parsedTransacitions.forEach(t => {
+              ContractApi.verifyTransaction(t, this.state.account.address);
+              transactions.push(t);
+            });
+            this.setState({ apartmentTransactions: transactions});
+            if (transactions.length > 0) {
+              this.setState({ showApartmentTransactions: true });
+            }
+          })
+          .catch(err => {
+            NotificationManager.createNotification('error', err.message, 'Querying transactions')
+          });
       })
       .catch(err => {
         NotificationManager.createNotification('error', err.message, 'Querying apartment')
@@ -120,11 +146,15 @@ export class ApartmentDetailsLandlordView extends React.Component {
                 <MainHeadline>
                   Apartment details
                 </MainHeadline>
+                <SecondaryHeadline>
+                  Your current balance is: {this.state.balanceInEur} EUR ({this.state.balanceInEth} ETH)
+                </SecondaryHeadline>
                 <ApartmentDetails {...this.state.apartment}/>
                 { this.state.apartmentTransactions.length > 0 
                   ? 
                     <React.Fragment>
-                      <SecondaryHeadline>Apartment history</SecondaryHeadline>
+                      <SecondaryHeadline>Apartment transaction history</SecondaryHeadline>
+                      {this.state.apartmentTransactions.map((transaction, i) => <HistoryItem {...transaction}  key={i}/>)}
                     </React.Fragment>
                   : null
                 }
@@ -132,10 +162,8 @@ export class ApartmentDetailsLandlordView extends React.Component {
                   ? 
                     <React.Fragment>
                       <SecondaryHeadline>Permission requests</SecondaryHeadline>
-                      <Row>
-                        <Col>{this.state.permissionRequests.map((request, i) => <PermissionRequest {...request}
-                         handleAccept={this.handleAccept} handleDecline={this.handleDecline} key={i}/>)}</Col>
-                      </Row>
+                        {this.state.permissionRequests.map((request, i) => <PermissionRequest {...request}
+                         handleAccept={this.handleAccept} handleDecline={this.handleDecline} key={i}/>)}
                     </React.Fragment>
                   : null
                 }

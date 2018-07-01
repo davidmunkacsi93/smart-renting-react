@@ -16,6 +16,7 @@ import ContractApi from '../api/ContractApi';
 import { Widget, addResponseMessage } from 'react-chat-widget';
 import 'react-chat-widget/lib/styles.css';
 import openSocket from 'socket.io-client';
+import HistoryItem from '../components/History/HistoryItem';
 
 const PrimaryButton = styled(Button)`
   margin-top: 15px;
@@ -94,6 +95,27 @@ export class ApartmentDetailsTenantView extends React.Component {
           apartment = a;
         });
         this.setState({apartment: apartment});
+        var transactionUrl = '/api/getTransactionsByApartmentId?apartmentId=' + apartment._id;
+        fetch(transactionUrl)
+          .then(response => {
+            if (response.status !== 200) throw Error("Error during querying transactions.");
+            return response.json();
+          })
+          .then(body => {
+            let parsedTransacitions = JSON.parse(body.transactions);
+            var transactions = [];
+            parsedTransacitions.forEach(t => {
+              ContractApi.verifyTransaction(t, this.state.account.address);
+              transactions.push(t);
+            });
+            this.setState({ apartmentTransactions: transactions});
+            if (transactions.length > 0) {
+              this.setState({ showApartmentTransactions: true });
+            }
+          })
+          .catch(err => {
+            NotificationManager.createNotification('error', err.message, 'Querying transactions')
+          });
         this.state.socket.emit('handshake', { 
           from: this.state.account.address, 
           to: this.state.apartment.ownerAddress,
@@ -106,6 +128,7 @@ export class ApartmentDetailsTenantView extends React.Component {
 
   rentApartment() {
     const transactionInfo = {
+      apartmentId: this.state.apartment._id,
       deposit: this.state.apartment.deposit,
       rent: this.state.apartment.rent,
       from: this.state.account.address,
@@ -131,7 +154,7 @@ export class ApartmentDetailsTenantView extends React.Component {
               ?
               <React.Fragment>
                 <MainHeadline>
-                  Apartment details
+                  Apartment transaction details
                 </MainHeadline>
                 <SecondaryHeadline>
                   Your current balance is: {this.state.balanceInEur} EUR ({this.state.balanceInEth} ETH)
@@ -139,9 +162,10 @@ export class ApartmentDetailsTenantView extends React.Component {
                 <ApartmentDetails {...this.state.apartment}/>
                 { this.state.apartmentTransactions.length > 0 
                   ? 
-                    <React.Fragment>
-                      <SecondaryHeadline>Apartment history</SecondaryHeadline>
-                    </React.Fragment>
+                  <React.Fragment>
+                    <SecondaryHeadline>Apartment history</SecondaryHeadline>
+                    {this.state.apartmentTransactions.map((transaction, i) => <HistoryItem {...transaction}  key={i}/>)}
+                  </React.Fragment>
                   : null
                 }
                 <Widget 

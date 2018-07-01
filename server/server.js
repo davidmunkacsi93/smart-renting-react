@@ -189,6 +189,25 @@ app.get('/api/getAccountsWithAvailableApartments', (request, response) => {
   });
 });
 
+app.get('/api/getTransactionsByApartmentId', (request, response) => {
+  var apartmentId = url.parse(request.url, true).query.apartmentId;
+  mongoClient.connect(uri, function(err, db) {
+    if (err) response.send( { success: false, message: connectionErrorMessage });
+    var dbo = db.db(dbName);
+    console.log(apartmentId);
+    var query = { apartmentId: apartmentId };
+    dbo.collection("transactions").find(query, {}).toArray(function(err, documents) {
+        if (err)  {
+          response.send( { success: false, message: "Error by querying transactions." });
+          throw err;
+        } else {
+          response.send( { success: true, transactions: JSON.stringify(documents) });
+        }
+    });
+    db.close();
+  });
+});
+
 app.post('/api/createUser', (request, response) => {
   mongoClient.connect(uri, function(err, db) {
     if (err) response.send( { success: false, message: connectionErrorMessage });
@@ -229,6 +248,29 @@ app.post('/api/createApartment', (request, response) => {
         }
     });
     db.close();
+  });
+});
+
+
+app.post('/api/createApartmentTransaction', (request, response) => {
+  mongoClient.connect(uri, function(err, db) {
+    if (err) response.send( { success: false, message: connectionErrorMessage });
+    var dbo = db.db(dbName);
+    const obj = {
+      apartmentId: request.body.apartmentId,
+      address: request.body.address,
+      transactionMessage: request.body.transactionMessage,
+      transactionHash: request.body.transactionHash
+    }
+    console.log(obj);
+    dbo.collection("transactions").insert(obj, (err, _) => {
+      if (err) {
+        response.send( { success: false, message: "Transaction could not be created." });
+      } else {
+        response.send( { success: true, message: "Transaction created." });
+      }
+  });
+  db.close();
   });
 });
 

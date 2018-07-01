@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { Container, Input, Button } from 'reactstrap';
+import { Container, Input, Button, Row, Col } from 'reactstrap';
 import ViewLayout from '../components/ViewLayout';
 import UserManager from '../manager/UserManager';
 import NotificationManager from '../manager/NotificationManager';
@@ -18,7 +18,6 @@ const PrimaryButton = styled(Button)`
 `;
 
 const StyledInput = styled(Input)`
-  width: 40%;
   margin-top: 10px;
   display: block;
 `
@@ -86,7 +85,7 @@ export class NewApartmentView extends React.Component {
         },
         method: 'POST'
     });
-    const body = await response.json();
+    var body = await response.json();
     if (response.status !== 200) throw Error("Error during creating apartment.");
     if (!body.success) {
         NotificationManager.createNotification('error', body.message, 'Creating apartment');
@@ -119,21 +118,41 @@ export class NewApartmentView extends React.Component {
                 <StyledSpan>
                     Here you can create a new apartment. It will be displayed under "My Apartments".
                 </StyledSpan>
-                <div className="col-sm-12">
-                    <StyledInput placeholder="Post code" name="postCode" type="number" value={this.state.postCode} onChange={this.handleChange}/>
-                    <StyledInput placeholder="City" name="city" value={this.state.city} onChange={this.handleChange}/>
-                    <StyledInput placeholder="Street" name="street" value={this.state.street} onChange={this.handleChange}/>
-                    <StyledInput placeholder="House number" name="houseNumber" type="number" value={this.state.houseNumber} onChange={this.handleChange}/>
-                    <StyledInput placeholder="Floor" name="floor" type="number" value={this.state.floor} onChange={this.handleChange}/>
-                    <StyledInput type="textarea" placeholder="Description" name="description" value={this.state.description} onChange={this.handleChange} />
-                </div>
+                <Row>
+                    <Col sm="6" md="3">
+                        <StyledInput placeholder="Post code" name="postCode" type="number" value={this.state.postCode} onChange={this.handleChange}/>
+                    </Col>
+                    <Col sm="12" md="3">
+                        <StyledInput placeholder="City" name="city" value={this.state.city} onChange={this.handleChange}/>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="12" md="4">
+                        <StyledInput placeholder="Street" name="street" value={this.state.street} onChange={this.handleChange}/>
+                    </Col>
+                    <Col sm="6" md="2">
+                        <StyledInput placeholder="House number" name="houseNumber" type="number" value={this.state.houseNumber} onChange={this.handleChange}/>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="6" md="2">
+                        <StyledInput placeholder="Floor" name="floor" type="number" value={this.state.floor} onChange={this.handleChange}/>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="12" md="6">
+                        <StyledInput type="textarea" placeholder="Description" name="description" value={this.state.description} onChange={this.handleChange} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="6" md="3">
+                        <StyledInput placeholder="Rent" name="rent" type="number" value={this.state.rent} onChange={this.handleChange}/>
+                    </Col>
+                    <Col sm="6" md="3">
+                        <StyledInput placeholder="Deposit" name="deposit" type="number" value={this.state.deposit} onChange={this.handleChange}/>
+                    </Col>
+                </Row>
 
-                <div className="col-md-4">
-                    <StyledInput className="display-inline" placeholder="Deposit" name="deposit" type="number" value={this.state.deposit} onChange={this.handleChange}/>
-                </div>
-                <div className="col-md-4">
-                    <StyledInput className="display-inline" placeholder="Rent" name="rent" type="number" value={this.state.rent} onChange={this.handleChange}/>
-                </div>
                 <PrimaryButton onClick={() => this.createApartment() }>
                     CREATE
                 </PrimaryButton>

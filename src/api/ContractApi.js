@@ -26,40 +26,37 @@ const ApartmentContract = web3.eth.contract(apartmentABI).at(apartmentAddress);
 const UserContract = web3.eth.contract(userABI).at(userAddress);
 
 const initializeAccounts = async () => {
-  let accounts = [];
-  getAccounts().forEach(acc => {
-    accounts.push({ address: acc });
-  });
-  var response = await fetch("/api/getAccountCount");
-  const body = await response.json();
-  if (response.status !== 200)
-    throw Error("Error during initializing accounts.");
-  if (body.count === 0) {
-    console.log("Creating accounts...");
-    response = await fetch("/api/createAccounts", {
-      body: JSON.stringify(accounts),
-      cache: "no-cache",
-      headers: {
-        "content-type": "application/json"
-      },
-      method: "POST"
+  try {
+    var accounts = [];
+    getAccounts().forEach(acc => {
+      accounts.push(acc);
     });
-    const body = await response.json();
-    if (response.status !== 200)
-      throw Error("Error during initializing accounts.");
-    if (!body.success) {
-      NotificationManager.createNotification(
-        "error",
-        body.message,
-        "Creating accounts"
-      );
-    } else {
-      NotificationManager.createNotification(
-        "success",
-        "Accounts created successfully.",
-        "Creating accounts"
-      );
-    }
+    UserContract.initializeAccounts.sendTransaction(
+      accounts,
+      { from: web3.eth.accounts[0], gas: 2000000 },
+      function(err, res) {
+        if (err) throw Error(err.message);
+        console.log(res);
+      }
+    );
+    console.log(accounts);
+    accounts.forEach(acc => {
+      UserContract.isAccountAvailable.call({ from: acc }, function(err, res) {
+        if (err) throw Error(err.message);
+        console.log(res);
+      });
+    });
+    NotificationManager.createNotification(
+      "success",
+      "Accounts created successfully.",
+      "Creating accounts"
+    );
+  } catch (err) {
+    NotificationManager.createNotification(
+      "error",
+      err.message,
+      "Creating accounts"
+    );
   }
 };
 
@@ -231,7 +228,7 @@ const verifyTransaction = (transaction, address) => {
   );
 };
 
-const authenticate = (address, password) => {
+const authenticate = (address, username, password) => {
   const transactionObject = {
     from: address
   };

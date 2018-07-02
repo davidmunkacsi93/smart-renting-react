@@ -7,6 +7,7 @@ import { withRouter } from 'react-router-dom';
 import UserManager from '../manager/UserManager';
 import ApartmentItem from '../components/Apartment/ApartmentItem';
 import NotificationManager from '../manager/NotificationManager';
+import ContractApi from '../api/ContractApi';
 
 const HeadlineWrapper = styled.div`
   text-align: left;
@@ -25,16 +26,10 @@ export class MyApartments extends React.Component {
   }
 
   componentWillMount() {
-    fetch('/api/getAccountWithApartments?address=' + this.state.account.address)
-      .then(response => {
-        if (response.status !== 200) throw Error("Error during querying apartments.");
-        return response.json()
-      })
-      .then(body => {
-        this.setState({apartments: body.account.apartments});
-      })
-      .catch(err => {
-        NotificationManager.createNotification('error', err.message, 'Querying apartments')
+    ContractApi.getApartments(this.state.account.address)
+      .then(apartments => {
+        console.log(apartments)
+        this.setState({ apartments: apartments });
       });
   }
 

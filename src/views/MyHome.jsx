@@ -12,7 +12,6 @@ export class MyHomeView extends React.Component {
   constructor(props) {
     super(props);
     var account = UserManager.getCurrentAccount();
-    console.log(account);
     this.state = {
       account: account,
       isLoggedIn: account != null

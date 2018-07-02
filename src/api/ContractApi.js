@@ -53,20 +53,26 @@ const createUser = async (address, username, password) => {
 };
 
 const createApartment = async (account, apartment) => {
-  if (account.address == null) {
-    throw new Error("Account could not be identified.");
-  }
-  if (apartment == null) {
-    throw new Error("Apartment can not be null.");
-  } else {
     const transactionObject = {
-      from: account.address
+      from: account.address,
+      gas: 2000000
     };
-    ApartmentContract.createRent.sendTransaction(
-      apartment._id,
+    console.log(apartment);
+    console.log(apartment.rent);
+    var transactionMessage = "Apartment created with " + apartment["rent"] + " € rent and " + + apartment["deposit"] + " € deposit.";
+    console.log(transactionMessage);
+    ApartmentContract.createApartment.sendTransaction(
+      apartment.postCode,
+      apartment.city,
+      apartment.street,
+      apartment.houseNumber,
+      apartment.floor,
+      apartment.description,
       apartment.rent,
+      apartment.deposit,
+      transactionMessage,
       transactionObject,
-      (error, _) => {
+      (error, result) => {
         if (error) {
           NotificationManager.createNotification(
             "error",
@@ -76,63 +82,9 @@ const createApartment = async (account, apartment) => {
           console.error(error.message);
           return;
         }
+        console.log(result);
       }
     );
-    ApartmentContract.createDeposit.sendTransaction(
-      apartment._id,
-      apartment.deposit,
-      transactionObject,
-      (error, _) => {
-        if (error) {
-          NotificationManager.createNotification(
-            "error",
-            "Error during transaction.",
-            "Create deposit"
-          );
-          console.error(error.message);
-          return;
-        }
-      }
-    );
-    var transactionMessage =
-      "Apartment created with " +
-      apartment.rent +
-      " € rent and " +
-      apartment.deposit +
-      " €.";
-    var hashedTimestamp = MD5(new Date().getTime().toString());
-    var hashedMessage = MD5(transactionMessage);
-    ApartmentContract.createApartmentTransaction.call(
-      hashedMessage,
-      hashedTimestamp,
-      transactionObject,
-      (error, result) => {
-        if (error) {
-          NotificationManager.createNotification(
-            "error",
-            "Error during transaction.",
-            "Create apartment transaction"
-          );
-          console.error(error.message);
-          return;
-        }
-        const data = {
-          apartmentId: apartment._id,
-          address: account.address,
-          transactionMessage: transactionMessage,
-          transactionHash: hashedTimestamp
-        };
-        fetch("/api/createApartmentTransaction", {
-          body: JSON.stringify(data),
-          cache: "no-cache",
-          headers: {
-            "content-type": "application/json"
-          },
-          method: "POST"
-        });
-      }
-    );
-  }
 };
 
 const createApartmentTransaction = (transactionInfo, transactionMessage) => {

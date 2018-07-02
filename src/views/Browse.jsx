@@ -35,7 +35,7 @@ export class BrowseView extends React.Component {
         let apartments = [];
         parsed.forEach(account => {
             account.apartments.forEach(apartment => {
-                apartment["username"] = account.user.username;
+                apartment["username"] = account.username;
                 apartments.push(apartment);
             });
         });

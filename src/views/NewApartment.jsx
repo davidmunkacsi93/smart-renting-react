@@ -64,46 +64,30 @@ export class NewApartmentView extends React.Component {
 
   createApartment = async () => {
     const apartment = {
-        account: this.state.account,
-        apartment: {
-            postCode: parseInt(this.state.postCode, 10),
-            city: this.state.city,
-            street: this.state.street,
-            houseNumber: parseInt(this.state.houseNumber, 10),
-            floor: parseInt(this.state.floor, 10),
-            description: this.state.description,
-            deposit: parseInt(this.state.deposit, 10),
-            rent: parseInt(this.state.rent, 10),
-            isRented: false
-        }
+        postCode: parseInt(this.state.postCode, 10),
+        city: this.state.city,
+        street: this.state.street,
+        houseNumber: parseInt(this.state.houseNumber, 10),
+        floor: parseInt(this.state.floor, 10),
+        description: this.state.description,
+        deposit: parseInt(this.state.deposit, 10),
+        rent: parseInt(this.state.rent, 10),
+        isRented: false
+    };
+    try {
+        const result = await ContractApi.createApartment(this.state.account, apartment);
+        console.log(result);
+    } catch (err) {
+        NotificationManager.createNotification('error', err.message, 'Creating apartment');
+        return;
     }
-    var response = await fetch('/api/createApartment', {
-        body: JSON.stringify(apartment),
-        cache: 'no-cache',
-        headers: {
-            'content-type': 'application/json'
-        },
-        method: 'POST'
-    });
-    var body = await response.json();
-    if (response.status !== 200) throw Error("Error during creating apartment.");
-    if (!body.success) {
-        NotificationManager.createNotification('error', body.message, 'Creating apartment');
-    } else {
-        try {
-            ContractApi.createApartment(body.account, body.apartment);
-        } catch (err) {
-            NotificationManager.createNotification('error', err.message, 'Creating apartment');
-            return;
-        }
-        NotificationManager.createNotification('success', "Apartment created successfully. You'll be soon redirected.", 'Creating apartment');
-        setTimeout(function () {
-            const history = createBrowserHistory();
-            history.push('/apartments');
-            window.location.reload();
-         }, 2000);
+    // NotificationManager.createNotification('success', "Apartment created successfully. You'll be soon redirected.", 'Creating apartment');
+    // setTimeout(function () {
+    //     const history = createBrowserHistory();
+    //     history.push('/apartments');
+    //     window.location.reload();
+    //     }, 2000);
     }
-  }
  
   render() {
     return (

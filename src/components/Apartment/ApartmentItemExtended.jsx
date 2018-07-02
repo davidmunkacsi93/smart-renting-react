@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
-import { string, object } from 'prop-types';
 import { Container, Button } from 'reactstrap';
 import thumbnail1 from '../../assets/thumbnail1.jpg';
 import thumbnail2 from '../../assets/thumbnail2.jpg';
@@ -83,7 +82,7 @@ export const ApartmentItemExtended = (apartment) => (
     <ContentWrapper>
       <LeftItemCardContent>
         <Thumbnail onClick={() => {
-          history.push(`/tenantdetails/${apartment._id}`);
+          history.push(`/tenantdetails/${apartment.id}`);
           window.location.reload();
         }}>
           <img src={getThumbnail(this.key)} alt="apartment thumbnail" width={150} height={150} />
@@ -99,7 +98,7 @@ export const ApartmentItemExtended = (apartment) => (
         </ApartmentDetails>
       </LeftItemCardContent>
       <PrimaryButton secondary="true" onClick={() => {
-          history.push(`/tenantdetails/${apartment._id}`);
+          history.push(`/tenantdetails/${apartment.id}`);
           window.location.reload();
         }}>
         <FontAwesomeIcon icon={faEye}/>
@@ -107,10 +106,5 @@ export const ApartmentItemExtended = (apartment) => (
     </ContentWrapper>
   </Container>
 );
-
-ApartmentItemExtended.propTypes = {
-  _id: string.isRequired,
-  history: object.isRequired,
-};
 
 export default withRouter(ApartmentItemExtended);

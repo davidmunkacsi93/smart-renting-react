@@ -14,6 +14,7 @@ contract Apartment {
         uint32 id;
         uint32 apartmentId;
         string message;
+        uint timestamp;
     }
 
     struct ApartmentDetails {
@@ -35,13 +36,16 @@ contract Apartment {
         return counter++;
     }
 
-    function createApartment(uint32 _postCode, string _city, string _street,
-            uint32 _houseNumber, uint32 _floor, string _description, uint32 _rent, uint32 _deposit, string _transactionMessage) public {
+    function createApartment(
+        uint32 _postCode, string _city, string _street,
+        uint32 _houseNumber, uint32 _floor, string _description, uint32 _rent,
+        uint32 _deposit, string _transactionMessage) public {
         uint32 apartmentId = getId();
         uint32 transactionId = getId();
-        ApartmentDetails memory apartment = ApartmentDetails(apartmentId, msg.sender, address(0),
+        ApartmentDetails memory apartment = ApartmentDetails(
+            apartmentId, msg.sender, address(0),
             _postCode, _city, _street, _houseNumber, _floor, _description, _rent, _deposit, false);
-        ApartmentTransaction memory transaction = ApartmentTransaction(transactionId, apartmentId, _transactionMessage);
+        ApartmentTransaction memory transaction = ApartmentTransaction(transactionId, apartmentId, _transactionMessage, now);
 
         apartments[msg.sender].push(apartmentId);
         apartmentTransactionMappings[apartmentId].push(transactionId);
@@ -49,13 +53,23 @@ contract Apartment {
         apartmentTransactions[transactionId] = transaction;
     }
 
-    function getApartmentById(uint32 apartmentId) public view returns(uint32 _postCode, string _city, string _street,
-            uint32 _houseNumber, uint32 _floor, string _description, uint32 _rent, uint32 _deposit, bool _isRented) {
-        ApartmentDetails storage a = apartmentDetails[apartmentId];
-        return (a.postCode, a.city, a.street, a.houseNumber, a.floor, a.description, a.rent, a.deposit, a.isRented);
-    }
-
     function getApartments() public view returns(uint32[]) {
         return apartments[msg.sender];
+    }
+    
+    function getTransactionIds(uint32 apartmentId) public view returns(uint32[]) {
+        return apartmentTransactionMappings[apartmentId];
+    }
+
+    function getTransactionById(uint32 transactionId) public view returns(uint32 _id, uint32 _apartmentId, string _message, uint _timestamp) {
+        ApartmentTransaction storage t = apartmentTransactions[transactionId];
+        return (t.id, t.apartmentId, t.message, t.timestamp);
+    }
+
+    function getApartmentById(uint32 apartmentId) public view returns(uint32 _id, address _owner, address _tenant,
+        uint32 _postCode, string _city, string _street,
+        uint32 _houseNumber, uint32 _floor, string _description, uint32 _rent, uint32 _deposit, bool _isRented) {
+        ApartmentDetails storage a = apartmentDetails[apartmentId];
+        return (a.id, a.owner, a.tenant, a.postCode, a.city, a.street, a.houseNumber, a.floor, a.description, a.rent, a.deposit, a.isRented);
     }
 }

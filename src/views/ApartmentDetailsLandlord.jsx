@@ -23,6 +23,10 @@ export class ApartmentDetailsLandlordView extends React.Component {
     super(props);
 
     var account = UserManager.getCurrentAccount();
+
+    var balanceInEur = ContractApi.getBalanceInEur(account.address);
+    var balanceInEth = ContractApi.getBalanceInEth(account.address);
+    
     const socket = openSocket(
       "http://" + host + ":8000?address=" + account.address
     );
@@ -32,13 +36,11 @@ export class ApartmentDetailsLandlordView extends React.Component {
       this.handleRequestPermission(data)
     );
 
-    var balanceInEur = ContractApi.getBalanceInEur(account.address);
-    var balanceInEth = ContractApi.getBalanceInEth(account.address);
     this.state = {
       account: account,
       tenantName: "",
       tenantAddress: "",
-      apartment: "",
+      apartment: '',
       balanceInEur: balanceInEur,
       balanceInEth: balanceInEth,
       isLoggedIn: UserManager.isLoggedIn(),
@@ -48,62 +50,20 @@ export class ApartmentDetailsLandlordView extends React.Component {
       showApartmentTransactions: false,
       apartmentTransactions: []
     };
-  }
 
-  componentWillMount() {
     var apartmentId = window.location.href.split("/")[4];
-    var fetchUrl = "/api/getAccountByApartmentId?apartmentId=" + apartmentId;
-    fetch(fetchUrl)
-      .then(response => {
-        if (response.status !== 200)
-          throw Error("Error during querying apartments.");
-        return response.json();
-      })
-      .then(body => {
-        let parsedAccount = JSON.parse(body.account);
-        var apartment;
-        parsedAccount.apartments.forEach(a => {
-          if (a._id === apartmentId) {
-            a["username"] = parsedAccount.username;
-            apartment = a;
-          }
-        });
-        this.setState({ apartment: apartment });
-        var transactionUrl =
-          "/api/getTransactionsByApartmentId?apartmentId=" + apartment._id;
-        fetch(transactionUrl)
-          .then(response => {
-            if (response.status !== 200)
-              throw Error("Error during querying transactions.");
-            return response.json();
-          })
-          .then(body => {
-            let parsedTransacitions = JSON.parse(body.transactions);
-            var transactions = [];
-            parsedTransacitions.forEach(t => {
-              ContractApi.verifyTransaction(t, this.state.account.address);
-              transactions.push(t);
-            });
-            this.setState({ apartmentTransactions: transactions });
-            if (transactions.length > 0) {
-              this.setState({ showApartmentTransactions: true });
-            }
-          })
-          .catch(err => {
-            NotificationManager.createNotification(
-              "error",
-              err.message,
-              "Querying transactions"
-            );
-          });
-      })
-      .catch(err => {
-        NotificationManager.createNotification(
-          "error",
-          err.message,
-          "Querying apartment"
-        );
+    ContractApi.getApartmentById(this.state.account.address, apartmentId)
+    .then(apartment => {
+      this.setState({
+        apartment: apartment,
+        apartmentTransactions: apartment.transactions
       });
+      this.state.socket.emit("handshake", {
+        from: this.state.account.address,
+        to: this.state.apartment.owner,
+        username: this.state.account.username
+      });
+    });
   }
 
   handleHandshake = data => {

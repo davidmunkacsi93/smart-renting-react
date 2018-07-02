@@ -7,26 +7,31 @@ import { faEye } from '@fortawesome/free-solid-svg-icons';
 
 const DescriptionHeadline = styled.h6`
   color: #ffffff;
+  margin-left: 15px;
 `;
 
-export class PermissionRequest extends React.Component {
+export class HistoryItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
 
         };
     }
-
+    convertTimestamp = (timestamp) => {
+        var parsed = new Date(timestamp*1000);
+        return parsed.toLocaleDateString() + " " + parsed.toLocaleTimeString();
+    }
     render() {
         return (
             <Container>
                 <Row>
                     <FontAwesomeIcon color="white" icon={faEye}/>
-                    <DescriptionHeadline className="margin-left-10">{this.props.transactionMessage}</DescriptionHeadline>
+                    <DescriptionHeadline>[{this.convertTimestamp(this.props.timestamp)}]</DescriptionHeadline>
+                    <DescriptionHeadline className="margin-left-10">{this.props.message}</DescriptionHeadline>
                 </Row>
             </Container>
         );
     }
 }
 
-export default withRouter(PermissionRequest);
+export default withRouter(HistoryItem);

@@ -1,6 +1,5 @@
 import Web3 from "web3";
 import NotificationManager from "../manager/NotificationManager";
-import { MD5 } from "object-hash";
 
 const fallbackPrice = 352.7;
 const host = require("../../package.json").host;
@@ -57,10 +56,7 @@ const createApartment = async (account, apartment) => {
       from: account.address,
       gas: 2000000
     };
-    console.log(apartment);
-    console.log(apartment.rent);
     var transactionMessage = "Apartment created with " + apartment["rent"] + " € rent and " + + apartment["deposit"] + " € deposit.";
-    console.log(transactionMessage);
     ApartmentContract.createApartment.sendTransaction(
       apartment.postCode,
       apartment.city,
@@ -82,7 +78,6 @@ const createApartment = async (account, apartment) => {
           console.error(error.message);
           return;
         }
-        console.log(result);
       }
     );
 };
@@ -97,17 +92,41 @@ const getApartments = async address => {
   return apartments;
 }
 
+const getApartmentById = async (address, apartmentId) => {
+  var apartmentResult = await ApartmentContract.getApartmentById.call(apartmentId, { from: address });
+  var apartment = parseApartment(apartmentResult);
+  apartment.transactions = [];
+  var transactionIds = await ApartmentContract.getTransactionIds.call(apartmentId, { from: address });
+  for (const id of transactionIds) {
+    const transaction = await ApartmentContract.getTransactionById.call(id.toNumber(), { from: address });
+    apartment.transactions.push(parseTransaction(transaction));
+  }
+  return apartment;
+}
+
 const parseApartment = apartment => {
   return {
-    postCode: apartment[0].toNumber(),
-    city: apartment[1],
-    street: apartment[2],
-    houseNumber: apartment[3].toNumber(),
-    floor: apartment[4].toNumber(),
-    description: apartment[5],
-    deposit: apartment[6].toNumber(),
-    rent: apartment[7].toNumber(),
-    isRented: apartment[8]
+    id: apartment[0].toNumber(),
+    owner: apartment[1],
+    tenant: apartment[2],
+    postCode: apartment[3].toNumber(),
+    city: apartment[4],
+    street: apartment[5],
+    houseNumber: apartment[6].toNumber(),
+    floor: apartment[7].toNumber(),
+    description: apartment[8],
+    deposit: apartment[9].toNumber(),
+    rent: apartment[10].toNumber(),
+    isRented: apartment[11]
+  }
+}
+
+const parseTransaction = transaction => {
+  return {
+    id: transaction[0].toNumber(),
+    apartmentId: transaction[1].toNumber(),
+    message: transaction[2],
+    timestamp: transaction[3].toNumber()
   }
 }
 
@@ -182,6 +201,7 @@ const rentApartment = async transactionInfo => {
 
 const ContractApi = {
   getAccounts: getAccounts,
+  getApartmentById: getApartmentById,
   getApartments: getApartments,
   getBalanceInEth: getBalanceInEth,
   getBalanceInEur: getBalanceInEur,

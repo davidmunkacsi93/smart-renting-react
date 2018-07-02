@@ -81,12 +81,12 @@ export class NewApartmentView extends React.Component {
         NotificationManager.createNotification('error', err.message, 'Creating apartment');
         return;
     }
-    // NotificationManager.createNotification('success', "Apartment created successfully. You'll be soon redirected.", 'Creating apartment');
-    // setTimeout(function () {
-    //     const history = createBrowserHistory();
-    //     history.push('/apartments');
-    //     window.location.reload();
-    //     }, 2000);
+    NotificationManager.createNotification('success', "Apartment created successfully. You'll be soon redirected.", 'Creating apartment');
+    setTimeout(function () {
+        const history = createBrowserHistory();
+        history.push('/apartments');
+        window.location.reload();
+        }, 2000);
     }
  
   render() {

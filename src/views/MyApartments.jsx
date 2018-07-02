@@ -6,7 +6,6 @@ import { MainHeadline, ErrorHeadline } from '../components/Headlines/MainHeadlin
 import { withRouter } from 'react-router-dom';
 import UserManager from '../manager/UserManager';
 import ApartmentItem from '../components/Apartment/ApartmentItem';
-import NotificationManager from '../manager/NotificationManager';
 import ContractApi from '../api/ContractApi';
 
 const HeadlineWrapper = styled.div`

@@ -27,7 +27,6 @@ export class MyApartments extends React.Component {
   componentWillMount() {
     ContractApi.getApartments(this.state.account.address)
       .then(apartments => {
-        console.log(apartments)
         this.setState({ apartments: apartments });
       });
   }

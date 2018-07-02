@@ -61,11 +61,6 @@ export class ApartmentDetailsTenantView extends React.Component {
     ContractApi.getApartmentById(this.state.account.address, apartmentId)
     .then(apartment => {
       this.setState({apartment: apartment});
-      this.state.socket.emit("handshake", {
-        from: this.state.account.address,
-        to: this.state.apartment.owner,
-        username: this.state.account.username
-      });
     });
 
     this.rentApartment = this.rentApartment.bind(this);
@@ -95,6 +90,7 @@ export class ApartmentDetailsTenantView extends React.Component {
   };
 
   handleNewUserMessage = message => {
+    ContractApi.handshake(this.state.account.address, this.state.apartment.owner, this.state.account.username);
     this.state.socket.emit("sendMessage", {
       message: message,
       address: this.state.apartment.ownerAddress

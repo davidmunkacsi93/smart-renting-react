@@ -72,4 +72,6 @@ contract Apartment {
         ApartmentDetails storage a = apartmentDetails[apartmentId];
         return (a.id, a.owner, a.tenant, a.postCode, a.city, a.street, a.houseNumber, a.floor, a.description, a.rent, a.deposit, a.isRented);
     }
+
+
 }

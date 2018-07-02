@@ -39,17 +39,18 @@ const StyledDiv = styled.div`
 export class RegisterView extends React.Component {
   constructor(props) {
     super(props);
-    let accounts = [];
-    ContractApi.getAccounts().forEach(acc => {
-      accounts.push(acc);
-    });
 
     this.state = {
       selectedAccount: '',
-      accounts: accounts,
+      accounts: '',
       username: '',
       password: ''
     }
+
+    ContractApi.getAvailableAccounts().then(res => {
+      this.setState({ accounts: res });
+    });
+
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
     this.onSelect = this.onSelect.bind(this);

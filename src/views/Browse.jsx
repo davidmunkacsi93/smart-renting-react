@@ -6,7 +6,7 @@ import { MainHeadline, ErrorHeadline } from '../components/Headlines/MainHeadlin
 import { withRouter } from 'react-router-dom';
 import UserManager from '../manager/UserManager';
 import ApartmentItemExtended from '../components/Apartment/ApartmentItemExtended';
-import NotificationManager from '../manager/NotificationManager';
+import ContractApi from '../api/ContractApi';
 
 const HeadlineWrapper = styled.div`
   text-align: left;
@@ -17,6 +17,7 @@ export class BrowseView extends React.Component {
   constructor(props) {
     super(props);
     var account = UserManager.getCurrentAccount();
+
     this.state = {
       account: account,
       apartments: [],
@@ -25,26 +26,17 @@ export class BrowseView extends React.Component {
   }
 
   componentWillMount() {
-    fetch('/api/getAccountsWithAvailableApartments?address=' + this.state.account.address)
-      .then(response => {
-        if (response.status !== 200) throw Error("Error during querying apartments.");
-        return response.json()
-      })
-      .then(body => {
-        let parsed = JSON.parse(body.accounts);
-        let apartments = [];
-        parsed.forEach(account => {
-            account.apartments.forEach(apartment => {
-                apartment["username"] = account.username;
-                apartments.push(apartment);
-            });
+    ContractApi.getAccounts().forEach(account => {
+      if (account !== this.state.account.address) {
+        ContractApi.getApartments(account).then(apartments => {
+          var resultApartments = [];
+          apartments.forEach(apartment => {
+            resultApartments.push(apartment);
+          });
+          this.setState({apartments: resultApartments});
         });
-        console.log(apartments);
-        this.setState({apartments: apartments});
-      })
-      .catch(err => {
-        NotificationManager.createNotification('error', err.message, 'Querying apartments')
-      });
+      }
+    });
   }
 
   render() {

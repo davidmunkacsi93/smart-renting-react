@@ -31,10 +31,11 @@ export class ApartmentDetailsLandlordView extends React.Component {
       "http://" + host + ":8000?address=" + account.address
     );
     socket.on("receiveMessage", message => this.handleReceiveMessage(message));
-    socket.on("handshake", data => this.handleHandshake(data));
     socket.on("requestPermissionToPay", data =>
       this.handleRequestPermission(data)
     );
+
+    ContractApi.Handshake.watch((err, res) => this.handleHandshake(err, res));
 
     this.state = {
       account: account,
@@ -66,12 +67,13 @@ export class ApartmentDetailsLandlordView extends React.Component {
     });
   }
 
-  handleHandshake = data => {
-    this.setState({ tenantName: data.username, tenantAddress: data.from });
-    NotificationManager.createNotification(
-      "info",
-      data.username + " is currently looking at your apartment."
-    );
+  handleHandshake = (err, res) => {
+    console.log("I can't believe this.");
+    // this.setState({ tenantName: data.username, tenantAddress: data.from });
+    // NotificationManager.createNotification(
+    //   "info",
+    //   data.username + " is currently looking at your apartment."
+    // );
   };
 
   handleRequestPermission = data => {

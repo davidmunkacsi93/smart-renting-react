@@ -23,9 +23,22 @@ const web3 = new Web3(
 );
 const ApartmentContract = web3.eth.contract(apartmentABI).at(apartmentAddress);
 const UserContract = web3.eth.contract(userABI).at(userAddress);
+const Handshake = UserContract.Handshake();
 
 const getAccounts = () => {
   return web3.eth.accounts;
+};
+
+const getAvailableAccounts = async () => {
+  let result = [];
+  for (const account of web3.eth.accounts) {
+    const taken = await UserContract.isAccountTaken.call({ from: account });
+    console.log(account + " " + taken);
+    if (!taken) {
+      result.push(account);
+    }
+  }
+  return result;
 };
 
 const authenticate = async (address, password) => {
@@ -87,7 +100,10 @@ const getApartments = async address => {
   let apartments = [];
   for (const id of apartmentIds) {
     const apartment = await ApartmentContract.getApartmentById.call(id.toNumber(), { from: address });
-    apartments.push(parseApartment(apartment));
+    const username = await UserContract.getUsername.call({ from: apartment.owner });
+    var result = parseApartment(apartment);
+    result.username = username;
+    apartments.push(result);
   }
   return apartments;
 }
@@ -95,13 +111,22 @@ const getApartments = async address => {
 const getApartmentById = async (address, apartmentId) => {
   var apartmentResult = await ApartmentContract.getApartmentById.call(apartmentId, { from: address });
   var apartment = parseApartment(apartmentResult);
+  const username = await UserContract.getUsername.call({ from: apartment.owner });
+  apartment.username = username;
   apartment.transactions = [];
+  const transactions = await ContractApi.getTransactions(address, apartmentId);
+  transactions.forEach(t => apartment.transactions.push(t));
+  return apartment;
+}
+
+const getTransactions = async (address, apartmentId) => {
+  let result = [];
   var transactionIds = await ApartmentContract.getTransactionIds.call(apartmentId, { from: address });
   for (const id of transactionIds) {
     const transaction = await ApartmentContract.getTransactionById.call(id.toNumber(), { from: address });
-    apartment.transactions.push(parseTransaction(transaction));
+    result.push(parseTransaction(transaction));
   }
-  return apartment;
+  return result;
 }
 
 const parseApartment = apartment => {
@@ -137,6 +162,13 @@ const getBalanceInEur = address => {
 const getBalanceInEth = address => {
   return web3.fromWei(web3.eth.getBalance(address)).toFixed(2);
 };
+
+const handshake = async (from, to, username) => {
+  console.log(from + " "+ to + " " +  username)
+  UserContract.handshake.call(to, username, { from: from }, function (err, res) {
+    console.log(err);
+  });
+}
 
 const rentApartment = async transactionInfo => {
   // var depositPrice = web3.toWei(
@@ -201,14 +233,18 @@ const rentApartment = async transactionInfo => {
 
 const ContractApi = {
   getAccounts: getAccounts,
+  getAvailableAccounts: getAvailableAccounts,
   getApartmentById: getApartmentById,
   getApartments: getApartments,
   getBalanceInEth: getBalanceInEth,
   getBalanceInEur: getBalanceInEur,
+  getTransactions: getTransactions,
   createApartment: createApartment,
   createUser: createUser,
   authenticate: authenticate,
-  rentApartment: rentApartment
+  rentApartment: rentApartment,
+  handshake: handshake,
+  Handshake: Handshake
 };
 
 export default ContractApi;

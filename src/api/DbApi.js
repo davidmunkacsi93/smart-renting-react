@@ -22,7 +22,7 @@ const getCurrentAccount = () => {
 const setCurrentAccount = (account) => {
   db.currentAccount.clear();
   if (account) {
-    return db.currentAccount.add({name: account.user.username, address: account.address});
+    return db.currentAccount.add({name: account.username, address: account.address});
   }
 }
 

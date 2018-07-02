@@ -64,7 +64,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
         var apartment;
         parsedAccount.apartments.forEach(a => {
           if (a._id === apartmentId) {
-            a["username"] = parsedAccount.user.username;
+            a["username"] = parsedAccount.username;
             apartment = a;
           }
         });

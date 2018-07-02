@@ -25,63 +25,31 @@ const web3 = new Web3(
 const ApartmentContract = web3.eth.contract(apartmentABI).at(apartmentAddress);
 const UserContract = web3.eth.contract(userABI).at(userAddress);
 
-const initializeAccounts = async () => {
-  try {
-    var accounts = [];
-    getAccounts().forEach(acc => {
-      accounts.push(acc);
-    });
-    UserContract.initializeAccounts.sendTransaction(
-      accounts,
-      { from: web3.eth.accounts[0], gas: 2000000 },
-      function(err, res) {
-        if (err) throw Error(err.message);
-        console.log(res);
-      }
-    );
-    console.log(accounts);
-    accounts.forEach(acc => {
-      UserContract.isAccountAvailable.call({ from: acc }, function(err, res) {
-        if (err) throw Error(err.message);
-        console.log(res);
-      });
-    });
-    NotificationManager.createNotification(
-      "success",
-      "Accounts created successfully.",
-      "Creating accounts"
-    );
-  } catch (err) {
-    NotificationManager.createNotification(
-      "error",
-      err.message,
-      "Creating accounts"
-    );
-  }
-};
-
 const getAccounts = () => {
   return web3.eth.accounts;
 };
 
-const createUser = (address, password) => {
-  if (address == null) {
-    throw new Error("Account could not be identified.");
-  } else {
-    const transactionObject = {
-      from: address
-    };
+const authenticate = async (address, password) => {
+  const transactionObject = {
+    from: address
+  };
+  const result = await UserContract.authenticate.call(password.toString(), transactionObject);
+  return result;
+};
 
-    UserContract.createUserPassword.sendTransaction(
-      password,
-      transactionObject,
-      (error, _) => {
-        if (error) {
-          throw new Error(error);
-        }
+const createUser = async (address, username, password) => {
+  const transactionObject = {
+    from: address
+  };
+  UserContract.createUser.sendTransaction(
+    username, password,
+    transactionObject,
+    (error, result) => {
+      if (error) {
+        console.error(error);
       }
-    );
-  }
+    }
+  );
 };
 
 const createApartment = async (account, apartment) => {
@@ -228,12 +196,7 @@ const verifyTransaction = (transaction, address) => {
   );
 };
 
-const authenticate = (address, username, password) => {
-  const transactionObject = {
-    from: address
-  };
-  return UserContract.authenticate.call(password.toString(), transactionObject);
-};
+
 
 const getBalanceInEur = address => {
   return web3.fromWei(web3.eth.getBalance(address)).toFixed(2) * fallbackPrice;
@@ -314,7 +277,6 @@ const rentApartment = async transactionInfo => {
 };
 
 const ContractApi = {
-  initializeAccounts: initializeAccounts,
   getAccounts: getAccounts,
   getBalanceInEth: getBalanceInEth,
   getBalanceInEur: getBalanceInEur,

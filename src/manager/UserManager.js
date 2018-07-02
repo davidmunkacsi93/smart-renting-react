@@ -4,40 +4,9 @@ import { MD5 } from "object-hash";
 
 const currentAccountKey = "currentAccount";
 
-const createUser = async (username, password) => {
-  const data = {
-    username: username
-  };
-  var response = await fetch("/api/createUser", {
-    body: JSON.stringify(data),
-    cache: "no-cache",
-    headers: {
-      "content-type": "application/json"
-    },
-    method: "POST"
-  });
-  const body = await response.json();
-  if (response.status !== 200)
-    throw Error("Error during initializing accounts.");
-  if (!body.success) {
-    NotificationManager.createNotification(
-      "error",
-      body.message,
-      "Creating user"
-    );
-  } else {
-    try {
-      ContractApi.createUser(body.account.address, MD5(password));
-      localStorage[currentAccountKey] = JSON.stringify(body.account);
-    } catch (error) {
-      throw Error("User could not be created.");
-    }
-    NotificationManager.createNotification(
-      "success",
-      "User created successfully.",
-      "Creating user"
-    );
-  }
+const createUser = async (selectedAccount, username, password) => {
+    var hashedPassword = MD5(password);
+    ContractApi.createUser(selectedAccount, username, hashedPassword);
 };
 
 const setCurrentAccount = user => {
@@ -51,15 +20,15 @@ const getCurrentAccount = () => {
   return null;
 };
 
-const login = async (username, password) => {
-  //   var result = ContractApi.authenticate(json.account.address, MD5(password));
-  //   if (result) {
-  //     console.log(result);
-  //     setCurrentAccount(json.account);
-  //   } else {
-  //     NotificationManager.createNotification("error", "Login failed.", "Login");
-  //   }
-  //   return result;
+const login = async (address, username, password) => {
+  var hashedPassword = MD5(password);
+  const authenticated = await ContractApi.authenticate(address, hashedPassword);
+  if (authenticated) {
+    setCurrentAccount({ address: address, username: username });
+  } else {
+    NotificationManager.createNotification('error', 'Login failed.', "Login");
+  }
+  return authenticated;
 };
 
 const isLoggedIn = () => {

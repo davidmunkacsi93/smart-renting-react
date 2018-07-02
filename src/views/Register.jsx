@@ -7,6 +7,9 @@ import UserManager from '../manager/UserManager';
 import NotificationManager from '../manager/NotificationManager';
 import { withRouter } from 'react-router-dom';
 import createBrowserHistory from 'history/createBrowserHistory';
+import ContractApi from '../api/ContractApi';
+import Dropdown from "react-dropdown";
+import 'react-dropdown/style.css'
 
 const PrimaryButton = styled(Button)`
   margin-top: 20px;
@@ -15,25 +18,45 @@ const PrimaryButton = styled(Button)`
   width: 150px;
 `;
 
+const StyledDropdown = styled(Dropdown)`
+  width: 50%;
+`
+
 const StyledInput = styled(Input)`
-  width: 40%;
+  width: 50%;
   margin-top: 10px;
   display: block;
 `
 const StyledSpan = styled.span`
- margin-top: 30px;
+ margin-bottom: 20px;
  color:white;
+`
+
+const StyledDiv = styled.div`
+  margin-top: 20px;
 `
 
 export class RegisterView extends React.Component {
   constructor(props) {
     super(props);
+    let accounts = [];
+    ContractApi.getAccounts().forEach(acc => {
+      accounts.push(acc);
+    });
+
     this.state = {
+      selectedAccount: '',
+      accounts: accounts,
       username: '',
       password: ''
     }
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
+    this.onSelect = this.onSelect.bind(this);
+  }
+
+  onSelect(event) {
+    this.setState({ selectedAccount: event.value });
   }
 
   handleChange(event) {
@@ -41,7 +64,7 @@ export class RegisterView extends React.Component {
   }
 
   submit() {
-    UserManager.createUser(this.state.username, this.state.password).then(() => {  
+    UserManager.createUser(this.state.selectedAccount, this.state.username, this.state.password).then(() => {  
       NotificationManager.createNotification('success', 'Registration successful! You will be soon redirected to the home page.', "Register");
       setTimeout(function () {
         const history = createBrowserHistory();
@@ -57,16 +80,19 @@ export class RegisterView extends React.Component {
     return (
       <ViewLayout>
         <Container>
-          <StyledSpan>
-              Fill out the following form to register:
-          </StyledSpan>
-          <div>
+          <StyledDiv>
+            <StyledSpan>
+                Fill out the following form to register:
+            </StyledSpan>
+          </StyledDiv>
+          <StyledDiv >
+            <StyledDropdown options={this.state.accounts} name="selectedAccount" value={this.state.selectedAccount} onChange={this.onSelect}/>
             <StyledInput placeholder="Username" name="username" value={this.state.username} onChange={this.handleChange}/>
             <StyledInput placeholder="Password" type="password" name="password" value={this.state.password} onChange={this.handleChange}/>
             <PrimaryButton onClick={() => this.submit() }>
                 CREATE
             </PrimaryButton>
-          </div>
+          </StyledDiv>
         </Container>
       </ViewLayout>
     );

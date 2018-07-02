@@ -7,6 +7,9 @@ import { MainHeadline } from '../components/Headlines/MainHeadline';
 import { withRouter } from 'react-router-dom';
 import UserManager from '../manager/UserManager';
 import { NotificationManager } from 'react-notifications';
+import Dropdown from "react-dropdown";
+import 'react-dropdown/style.css';
+import ContractApi from '../api/ContractApi';
 
 const PrimaryButton = styled(Button)`
   margin-top: 20px;
@@ -16,7 +19,7 @@ const PrimaryButton = styled(Button)`
 `;
 
 const StyledInput = styled(Input)`
-  width: 40%;
+  width: 50%;
   margin-top: 10px;
   display: block;
 `
@@ -24,10 +27,22 @@ const StyledInput = styled(Input)`
 const StyledSpan = styled.span`
  color:white;
 `
+const StyledDropdown = styled(Dropdown)`
+  width: 50%;
+`
+
+const StyledDiv = styled.div`
+  margin-top: 20px;
+`
 
 export class HomeView extends React.Component {
   constructor(props) {
     super(props);
+
+    let accounts = [];
+    ContractApi.getAccounts().forEach(acc => {
+      accounts.push(acc);
+    });
 
     var currentAccount = UserManager.getCurrentAccount();
     if (currentAccount != null) {
@@ -35,23 +50,29 @@ export class HomeView extends React.Component {
     }
 
     this.state = {
+      accounts: accounts,
+      selectedAccount: '',
       username: '',
       password: '',
     }
     this.handleChange = this.handleChange.bind(this);
     this.login = this.login.bind(this);
+    this.onSelect = this.onSelect.bind(this);
   }
+
+  onSelect(event) {
+    this.setState({ selectedAccount: event.value });
+  }
+
 
   handleChange(evt) {
     this.setState({ [evt.target.name]: evt.target.value });
   }
 
    login = async () => {
-      var result = await UserManager.login(this.state.username, this.state.password);
-      if (result) {
+      const authenticated = await UserManager.login(this.state.selectedAccount, this.state.username, this.state.password);
+      if (authenticated) {
         window.location.reload();
-      } else {
-        NotificationManager.createNotification('error', 'Login failed.', 'Login');
       }
     }
 
@@ -66,11 +87,14 @@ export class HomeView extends React.Component {
               <StyledSpan>
                 Please log in to continue!
               </StyledSpan>
-              <StyledInput placeholder="Username" name="username" value={this.state.username} onChange={this.handleChange}/>
-              <StyledInput type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.handleChange}/>
-              <PrimaryButton onClick={() => this.login() }>
-                  Login
-              </PrimaryButton>
+              <StyledDiv>
+                <StyledDropdown options={this.state.accounts} name="selectedAccount" value={this.state.selectedAccount} onChange={this.onSelect}/>
+                <StyledInput placeholder="Username" name="username" value={this.state.username} onChange={this.handleChange}/>
+                <StyledInput type="password" name="password" placeholder="Password" value={this.state.password} onChange={this.handleChange}/>
+                <PrimaryButton onClick={() => this.login() }>
+                    Login
+                </PrimaryButton>
+              </StyledDiv>
             </React.Fragment>
         </Container>
       </ViewLayout>

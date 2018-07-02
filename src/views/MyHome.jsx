@@ -12,6 +12,7 @@ export class MyHomeView extends React.Component {
   constructor(props) {
     super(props);
     var account = UserManager.getCurrentAccount();
+    console.log(account);
     this.state = {
       account: account,
       isLoggedIn: account != null
@@ -31,7 +32,7 @@ export class MyHomeView extends React.Component {
             ?
               <React.Fragment>
                 <MainHeadline>
-                  Hello {this.state.account.user.username}! Welcome back!
+                  Hello {this.state.account.username}! Welcome back!
                 </MainHeadline>
                 <SecondaryHeadline>
                   Your current balance is: {ContractApi.getBalanceInEur(this.state.account.address)} EUR ({ContractApi.getBalanceInEth(this.state.account.address)} ETH)

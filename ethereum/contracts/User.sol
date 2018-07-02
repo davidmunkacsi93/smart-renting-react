@@ -30,6 +30,6 @@ contract User {
     }
 
     function handshake(address _to, string _username) public {
-        Handshake(msg.sender, _to, _username);
+        emit Handshake(msg.sender, _to, _username);
     }
 }

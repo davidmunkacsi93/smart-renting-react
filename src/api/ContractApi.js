@@ -165,7 +165,7 @@ const getBalanceInEth = address => {
 
 const handshake = async (from, to, username) => {
   console.log(from + " "+ to + " " +  username)
-  UserContract.handshake.call(to, username, { from: from }, function (err, res) {
+  UserContract.handshake.sendTransaction(to, username, { from: from }, function (err, res) {
     console.log(err);
   });
 }

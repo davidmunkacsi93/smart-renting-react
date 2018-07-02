@@ -2,10 +2,10 @@
   "name": "smart-rent",
   "version": "0.1.0",
   "private": true,
-  "host": "localhost",
+  "host": "192.168.0.6",
   "proxy": {
     "/api": {
-      "target": "http://localhost:5000"
+      "target": "http://192.168.0.6:5000"
     }
   },
   "homepage": "./",

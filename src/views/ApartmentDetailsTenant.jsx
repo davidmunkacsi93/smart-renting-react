@@ -106,7 +106,7 @@ export class ApartmentDetailsTenantView extends React.Component {
           if (a._id === apartmentId) {
           }
           a["ownerAddress"] = parsedAccount.address;
-          a["username"] = parsedAccount.user.username;
+          a["username"] = parsedAccount.username;
           apartment = a;
         });
         this.setState({ apartment: apartment });
@@ -140,7 +140,7 @@ export class ApartmentDetailsTenantView extends React.Component {
         this.state.socket.emit("handshake", {
           from: this.state.account.address,
           to: this.state.apartment.ownerAddress,
-          username: this.state.account.user.username
+          username: this.state.account.username
         });
       })
       .catch(err => {
@@ -187,7 +187,7 @@ export class ApartmentDetailsTenantView extends React.Component {
     const transactionInfo = {
       apartmentId: this.state.apartment._id,
       deposit: this.state.apartment.deposit,
-      username: this.state.account.user.username,
+      username: this.state.account.username,
       rent: this.state.apartment.rent,
       from: this.state.account.address,
       to: this.state.apartment.ownerAddress
@@ -206,7 +206,7 @@ export class ApartmentDetailsTenantView extends React.Component {
     this.state.socket.emit("requestPermissionToPay", {
       from: this.state.account.address,
       to: this.state.apartment.ownerAddress,
-      username: this.state.account.user.username
+      username: this.state.account.username
     });
   }
 

@@ -6,7 +6,6 @@ import ViewLayout from '../components/ViewLayout';
 import { MainHeadline } from '../components/Headlines/MainHeadline';
 import { withRouter } from 'react-router-dom';
 import UserManager from '../manager/UserManager';
-import { NotificationManager } from 'react-notifications';
 import Dropdown from "react-dropdown";
 import 'react-dropdown/style.css';
 import ContractApi from '../api/ContractApi';

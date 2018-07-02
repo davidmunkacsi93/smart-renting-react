@@ -3,7 +3,7 @@ import NotificationManager from "../manager/NotificationManager";
 import { MD5 } from "object-hash";
 
 const fallbackPrice = 352.7;
-const host = "localhost";
+const host = require("../../package.json").host;
 
 var apartmentContractJson = require("../contracts-json/Apartment.json");
 var apartmentABI = apartmentContractJson.abi;

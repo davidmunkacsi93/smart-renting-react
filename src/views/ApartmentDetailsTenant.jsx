@@ -15,7 +15,6 @@ import ApartmentDetails from "../components/Apartment/ApartmentDetails";
 import ContractApi from "../api/ContractApi";
 import { Widget, addResponseMessage } from "react-chat-widget";
 import "react-chat-widget/lib/styles.css";
-import openSocket from "socket.io-client";
 import HistoryItem from "../components/History/HistoryItem";
 
 const PrimaryButton = styled(Button)`
@@ -27,8 +26,6 @@ const PrimaryButton = styled(Button)`
   display: block;
 `;
 
-const host = require("../../package.json").host;
-
 // const history = createBrowserHistory();
 export class ApartmentDetailsTenantView extends React.Component {
   constructor(props) {
@@ -38,12 +35,9 @@ export class ApartmentDetailsTenantView extends React.Component {
     var balanceInEur = ContractApi.getBalanceInEur(account.address);
     var balanceInEth = ContractApi.getBalanceInEth(account.address);
 
-    const socket = openSocket(
-      "http://" + host + ":8000?address=" + account.address
-    );
-    socket.on("receiveMessage", message => this.handleReceiveMessage(message));
-    socket.on("permissionGranted", data => this.handlePermissionGranted(data));
-    socket.on("permissionDenied", data => this.handlePermissionDenied(data));
+    ContractApi.UserContract.PermissionGranted().watch((err, res) => this.handlePermissionGranted(err, res));
+    ContractApi.UserContract.PermissionDenied().watch((err, res) => this.handlePermissionDenied(err, res));
+    ContractApi.UserContract.MessageSent().watch((err, res) => this.handleMessageReceived(err, res));
 
     this.state = {
       username: account.username,
@@ -51,10 +45,10 @@ export class ApartmentDetailsTenantView extends React.Component {
       balanceInEur: balanceInEur,
       balanceInEth: balanceInEth,
       apartment: '',
-      socket: socket,
       showPayRent: false,
       isLoggedIn: UserManager.isLoggedIn(),
-      apartmentTransactions: []
+      apartmentTransactions: [],
+      messageNotificationSent: false
     };
 
     var apartmentId = window.location.href.split("/")[4];
@@ -67,11 +61,8 @@ export class ApartmentDetailsTenantView extends React.Component {
     this.requestPermission = this.requestPermission.bind(this);
   }
 
-  handleReceiveMessage = message => {
-    addResponseMessage(message);
-  };
-
-  handlePermissionDenied = _ => {
+  handlePermissionDenied = (_, res) => {
+    if (res.args.to !== this.state.account.address) return;
     NotificationManager.createNotification(
       "error",
       "The owner of the apartment denied your request.",
@@ -80,7 +71,8 @@ export class ApartmentDetailsTenantView extends React.Component {
     this.setState({ showPayRent: false });
   };
 
-  handlePermissionGranted = _ => {
+  handlePermissionGranted = (_, res) => {
+    if (res.args.to !== this.state.account.address) return;
     NotificationManager.createNotification(
       "success",
       "The owner of the apartment accepted your request. You can now pay.",
@@ -89,12 +81,20 @@ export class ApartmentDetailsTenantView extends React.Component {
     this.setState({ showPayRent: true });
   };
 
+  handleMessageReceived = (_, res) => {
+    if (res.args.to !== this.state.account.address) return;
+    if(!this.state.messageNotificationSent) {
+      NotificationManager.createNotification(
+        "info",
+        res.args.username + " sent you a message."
+      );
+      this.setState({ messageNotificationSent: true });
+    }
+    addResponseMessage(res.args.message);
+  };
+
   handleNewUserMessage = message => {
-    ContractApi.handshake(this.state.account.address, this.state.apartment.owner, this.state.account.username);
-    this.state.socket.emit("sendMessage", {
-      message: message,
-      address: this.state.apartment.ownerAddress
-    });
+    ContractApi.UserContract.sendMessage(this.state.apartment.owner, this.state.account.username, message, { from: this.state.account.address });
   };
 
   rentApartment = async () => {
@@ -117,11 +117,8 @@ export class ApartmentDetailsTenantView extends React.Component {
   };
 
   requestPermission() {
-    this.state.socket.emit("requestPermissionToPay", {
-      from: this.state.account.address,
-      to: this.state.apartment.ownerAddress,
-      username: this.state.account.username
-    });
+    ContractApi.UserContract.requestPermissionToPay(this.state.apartment.owner, this.state.account.username,
+       this.state.account.username + " wants to rent your apartment.", { from: this.state.account.address });
   }
 
   render() {

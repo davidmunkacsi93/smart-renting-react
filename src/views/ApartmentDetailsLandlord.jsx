@@ -10,12 +10,9 @@ import NotificationManager from "../manager/NotificationManager";
 import ApartmentDetails from "../components/Apartment/ApartmentDetails";
 import { Widget, addResponseMessage } from "react-chat-widget";
 import "react-chat-widget/lib/styles.css";
-import openSocket from "socket.io-client";
 import PermissionRequest from "../components/Request/PermissionRequest";
 import ContractApi from "../api/ContractApi";
 import HistoryItem from "../components/History/HistoryItem";
-
-const host = require("../../package.json").host;
 
 // const history = createBrowserHistory();
 export class ApartmentDetailsLandlordView extends React.Component {
@@ -27,20 +24,8 @@ export class ApartmentDetailsLandlordView extends React.Component {
     var balanceInEur = ContractApi.getBalanceInEur(account.address);
     var balanceInEth = ContractApi.getBalanceInEth(account.address);
 
-    const socket = openSocket(
-      "http://" + host + ":8000?address=" + account.address
-    );
-    socket.on("receiveMessage", message => this.handleReceiveMessage(message));
-    socket.on("requestPermissionToPay", data =>
-      this.handleRequestPermission(data)
-    );
-
-    ContractApi.UserContract.MessageSent().watch(function(_, res) {
-      NotificationManager.createNotification(
-        "info",
-        res.args.username + " is currently looking at your apartment."
-      );
-    });
+    ContractApi.UserContract.PermissionRequested().watch((err, res) => this.handleRequestPermission(err, res));
+    ContractApi.UserContract.MessageSent().watch((err, res) => this.handleMessageReceived(err, res));
 
     this.state = {
       account: account,
@@ -50,11 +35,12 @@ export class ApartmentDetailsLandlordView extends React.Component {
       balanceInEur: balanceInEur,
       balanceInEth: balanceInEth,
       isLoggedIn: UserManager.isLoggedIn(),
-      socket: socket,
+      subtitle: '',
       showPermissionRequest: false,
       permissionRequests: [],
       showApartmentTransactions: false,
-      apartmentTransactions: []
+      apartmentTransactions: [],
+      messageNotificationSent: false
     };
 
     var apartmentId = window.location.href.split("/")[4];
@@ -64,68 +50,58 @@ export class ApartmentDetailsLandlordView extends React.Component {
           apartment: apartment,
           apartmentTransactions: apartment.transactions
         });
-        this.state.socket.emit("handshake", {
-          from: this.state.account.address,
-          to: this.state.apartment.owner,
-          username: this.state.account.username
-        });
       }
     );
   }
 
-  // handleHandshake = (err, res) => {
-  //   console.log("I can't believe this.");
-  //   // this.setState({ tenantName: data.username, tenantAddress: data.from });
-  //   // NotificationManager.createNotification(
-  //   //   "info",
-  //   //   data.username + " is currently looking at your apartment."
-  //   // );
-  // };
+  handleAccept = () => {
+    var array = [...this.state.permissionRequests];
+    array.splice(0, 1);
+    this.setState({ permissionRequests: array });
+    if (array.length === 0) {
+      this.setState({ showPermissionRequest: false });
+    }
+    ContractApi.UserContract.grantPermission(this.state.tenantAddress, this.state.account.username, "The owner of the aparment accepted your request.", { from: this.state.account.address });
+  };
 
-  handleRequestPermission = data => {
-    this.state.permissionRequests.push(data);
+  handleDecline = () => {
+    var array = [...this.state.permissionRequests];
+    array.splice(0, 1);
+    this.setState({ permissionRequests: array });
+    if (array.length === 0) {
+      this.setState({ showPermissionRequest: false });
+    }
+    ContractApi.UserContract.denyPermission(this.state.tenantAddress, this.state.account.username,  "The owner of the aparment denied your request.", { from: this.state.account.address });
+  };
+
+  handleRequestPermission = (_, res) => {
+    if (res.args.to !== this.state.account.address) return;
+    this.state.permissionRequests.push({ username: res.args.username });
     this.setState({ showPermissionRequest: true });
+    this.setState({ tenantAddress: res.args.from });
     NotificationManager.createNotification(
       "info",
-      data.username +
+      res.args.username +
         " wants to rent your apartment. You can accept or decline his/her request."
     );
   };
 
-  handleAccept = () => {
-    var array = [...this.state.permissionRequests]; // make a separate copy of the array
-    array.splice(0, 1);
-    this.setState({ permissionRequests: array });
-    if (array.length === 0) {
-      this.setState({ showPermissionRequest: false });
+  handleMessageReceived = (_, res) => {
+    if (res.args.to !== this.state.account.address) return;
+    if(!this.state.messageNotificationSent) {
+      NotificationManager.createNotification(
+        "info",
+        res.args.username + " sent you a message."
+      );
+      this.setState({ messageNotificationSent: true });
     }
-    this.state.socket.emit("permissionGranted", {
-      address: this.state.tenantAddress
-    });
-  };
-
-  handleDecline = () => {
-    var array = [...this.state.permissionRequests]; // make a separate copy of the array
-    array.splice(0, 1);
-    this.setState({ permissionRequests: array });
-    if (array.length === 0) {
-      this.setState({ showPermissionRequest: false });
-    }
-    this.state.socket.emit("permissionDenied", {
-      address: this.state.tenantAddress
-    });
-  };
-
-  handleReceiveMessage = message => {
-    addResponseMessage(message);
+    this.setState({ tenantAddress: res.args.from })
+    addResponseMessage(res.args.message);
   };
 
   handleNewUserMessage = message => {
-    if (this.state.tenantAddress === "") return;
-    this.state.socket.emit("sendMessage", {
-      message: message,
-      address: this.state.tenantAddress
-    });
+    console.log(this.state.tenantAddress)
+    ContractApi.UserContract.sendMessage(this.state.tenantAddress, this.state.account.username, message, { from: this.state.account.address });
   };
 
   render() {

@@ -2,10 +2,10 @@
   "name": "smart-rent",
   "version": "0.1.0",
   "private": true,
-  "host": "localhost",
+  "host": "192.168.0.6",
   "proxy": {
     "/api": {
-      "target": "http://localhost:5000"
+      "target": "http://192.168.0.6:5000"
     }
   },
   "homepage": "./",
@@ -36,7 +36,16 @@
     "web3-utils": "^1.0.0-beta.34"
   },
   "devDependencies": {
-    "concurrently": "^3.5.0"
+    "concurrently": "^3.5.0",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-react": "^7.10.0",
+    "eslint-plugin-standard": "^3.1.0"
   },
   "scripts": {
     "start": "xcopy /F /Y /s \"./ethereum/build/contracts/*.*\" \"./src/contracts-json/\" && react-scripts start",

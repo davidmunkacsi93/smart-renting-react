@@ -189,9 +189,8 @@ const getBalanceInEth = address => {
   return web3.fromWei(web3.eth.getBalance(address)).toFixed(2);
 };
 
-const sendMessage = async (from, to, username) => {
-  console.log(from + " " + to + " " + username);
-  UserContract.sendMessage(to, username, { from: from });
+const sendMessage = async (from, to, username, message) => {
+  UserContract.sendMessage(to, username, message, { from: from });
 };
 
 const rentApartment = async transactionInfo => {

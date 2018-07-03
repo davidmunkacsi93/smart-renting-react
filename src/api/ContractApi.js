@@ -103,6 +103,26 @@ const createApartment = async (account, apartment) => {
   );
 };
 
+const getRentedApartments = async address => {
+  const apartmentIds = await ApartmentContract.getRentedApartments.call({
+    from: address
+  });
+  let apartments = [];
+  for (const id of apartmentIds) {
+    const apartment = await ApartmentContract.getApartmentById.call(
+      id.toNumber(),
+      { from: address }
+    );
+    const username = await UserContract.getUsername.call({
+      from: apartment.owner
+    });
+    var result = parseApartment(apartment);
+    result.username = username;
+    apartments.push(result);
+  }
+  return apartments;
+};
+
 const getApartments = async address => {
   const apartmentIds = await ApartmentContract.getApartments.call({
     from: address
@@ -266,6 +286,7 @@ const ContractApi = {
   getAvailableAccounts: getAvailableAccounts,
   getApartmentById: getApartmentById,
   getApartments: getApartments,
+  getRentedApartments: getRentedApartments,
   getBalanceInEth: getBalanceInEth,
   getBalanceInEur: getBalanceInEur,
   getTransactions: getTransactions,

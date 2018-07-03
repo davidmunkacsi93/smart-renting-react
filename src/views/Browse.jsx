@@ -33,7 +33,7 @@ export class BrowseView extends React.Component {
           apartments.forEach(apartment => {
             if (!apartment.isRented) {
               resultApartments.push(apartment);
-            } else { console.log("This apartment is already rented."); }
+            }
           });
           this.setState({apartments: resultApartments});
         });

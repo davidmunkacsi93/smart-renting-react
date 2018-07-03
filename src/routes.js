@@ -6,6 +6,7 @@ import RegisterView from './views/Register';
 import NewApartmentView from './views/NewApartment';
 import ApartmentDetailsLandlordView from './views/ApartmentDetailsLandlord';
 import ApartmentDetailsTenantView from './views/ApartmentDetailsTenant';
+import MyRentView from './views/MyRent';
 import BrowseView from './views/Browse';
 
 import UserManager from './manager/UserManager';
@@ -41,7 +42,7 @@ export const publicRoutes = [
     {
       path: '/myrent/:id',
       exact: true,
-      page: ApartmentDetailsTenantView,
+      page: MyRentView,
     },
     {
       path: '/browse',

@@ -47,6 +47,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
     var apartmentId = window.location.href.split("/")[4];
     ContractApi.getApartmentById(this.state.account.address, apartmentId).then(
       apartment => {
+        console.log(apartment);
         this.setState({
           apartment: apartment,
           apartmentTransactions: apartment.transactions
@@ -122,7 +123,10 @@ export class ApartmentDetailsLandlordView extends React.Component {
       );
       this.setState({ messageNotificationSent: true });
     }
-    this.setState({ tenantAddress: res.args.from })
+    this.setState({ 
+      tenantAddress: res.args.from,
+      tenantName: res.args.username
+    })
     addResponseMessage(res.args.message);
   };
 

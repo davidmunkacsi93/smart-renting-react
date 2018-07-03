@@ -8,7 +8,7 @@ import { withRouter } from "react-router-dom";
 import UserManager from "../manager/UserManager";
 import { ErrorHeadline } from "../components/Headlines/MainHeadline";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCoins, faUnlock } from "@fortawesome/free-solid-svg-icons";
+import { faCoins, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { SecondaryHeadline } from "../components/Headlines/SecondaryHeadline";
 import NotificationManager from "../manager/NotificationManager";
 import ApartmentDetails from "../components/Apartment/ApartmentDetails";
@@ -26,7 +26,7 @@ const PrimaryButton = styled(Button)`
   display: block;
 `;
 
-export class ApartmentDetailsTenantView extends React.Component {
+export class MyRentView extends React.Component {
   constructor(props) {
     super(props);
 
@@ -37,7 +37,6 @@ export class ApartmentDetailsTenantView extends React.Component {
     ContractApi.UserContract.PermissionGranted().watch((err, res) => this.handlePermissionGranted(err, res));
     ContractApi.UserContract.PermissionDenied().watch((err, res) => this.handlePermissionDenied(err, res));
     ContractApi.UserContract.MessageSent().watch((err, res) => this.handleMessageReceived(err, res));
-    ContractApi.ApartmentContract.PaymentApproved().watch((err, res) => this.handlePaymentApproved(err, res));
 
     this.state = {
       username: account.username,
@@ -54,15 +53,14 @@ export class ApartmentDetailsTenantView extends React.Component {
     var apartmentId = window.location.href.split("/")[4];
     ContractApi.getApartmentById(this.state.account.address, apartmentId)
     .then(apartment => {
-      console.log(apartment);
       this.setState({
         apartment: apartment,
         apartmentTransactions: apartment.transactions
       });
     });
 
-    this.rentApartment = this.rentApartment.bind(this);
-    this.requestPermission = this.requestPermission.bind(this);
+    this.payRent = this.payRent.bind(this);
+    this.breakContract = this.breakContract.bind(this);
   }
 
   handlePermissionDenied = (_, res) => {
@@ -70,7 +68,7 @@ export class ApartmentDetailsTenantView extends React.Component {
     NotificationManager.createNotification(
       "error",
       "The owner of the apartment denied your request.",
-      "Permission to pay"
+      "Permission to break up contract"
     );
     this.setState({ showPayRent: false });
   };
@@ -80,31 +78,9 @@ export class ApartmentDetailsTenantView extends React.Component {
     NotificationManager.createNotification(
       "success",
       "The owner of the apartment accepted your request. You can now pay.",
-      "Permission to pay"
+      "Permission to break up"
     );
     this.setState({ showPayRent: true });
-  };
-
-  handlePaymentApproved = async (_, res) => {
-    console.log("Approved");
-    console.log(res);
-    if (res.args.to !== this.state.account.address) return;
-    if(!this.state.messageNotificationSent) {
-      NotificationManager.createNotification(
-        "info",
-        "The owner approved the payment."
-        );
-      }
-    await ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
-      .then(apartment => {
-        console.log(apartment);
-        this.setState({
-          apartment: apartment,
-          apartmentTransactions: apartment.transactions,
-          balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
-          balanceInEth: ContractApi.getBalanceInEth(this.state.account.address),
-        });
-      });
   };
 
   handleMessageReceived = (_, res) => {
@@ -123,7 +99,7 @@ export class ApartmentDetailsTenantView extends React.Component {
     ContractApi.UserContract.sendMessage(this.state.apartment.owner, this.state.account.username, message, { from: this.state.account.address });
   };
 
-  rentApartment = async () => {
+  payRent = async () => {
     const transactionInfo = {
       apartmentId: this.state.apartment.id,
       deposit: this.state.apartment.deposit,
@@ -132,22 +108,20 @@ export class ApartmentDetailsTenantView extends React.Component {
       from: this.state.account.address,
       to: this.state.apartment.owner
     };
-    await ContractApi.rentApartment(transactionInfo);
+    await ContractApi.payRent(transactionInfo);
     await ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
-        .then(apartment => {
-          console.log(apartment);
-          this.setState({
-            apartment: apartment,
-            apartmentTransactions: apartment.transactions,
-            balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
-            balanceInEth: ContractApi.getBalanceInEth(this.state.account.address),
-          });
+      .then(apartment => {
+        this.setState({
+          apartment: apartment,
+          apartmentTransactions: apartment.transactions,
+          balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
+          balanceInEth: ContractApi.getBalanceInEth(this.state.account.address),
         });
+      });
   };
 
-  requestPermission() {
-    ContractApi.UserContract.requestPermissionToPay(this.state.apartment.owner, this.state.account.username,
-       this.state.account.username + " wants to rent your apartment.", { from: this.state.account.address });
+  breakContract() {
+
   }
 
   render() {
@@ -177,32 +151,32 @@ export class ApartmentDetailsTenantView extends React.Component {
                 subtitle=""
                 handleNewUserMessage={this.handleNewUserMessage}
               />
-              <PrimaryButton
-                secondary="true"
-                onClick={() => {
-                  this.requestPermission();
-                }}
-              >
-                REQUEST PERMISSION TO PAY<FontAwesomeIcon
-                  className="margin-left-10"
-                  icon={faUnlock}
-                />
-              </PrimaryButton>
-              {this.state.showPayRent ? (
-                <React.Fragment>
-                  <PrimaryButton
-                    secondary="true"
-                    onClick={() => {
-                      this.rentApartment();
-                    }}
-                  >
-                    RENT APARTMENT<FontAwesomeIcon
-                      className="margin-left-10"
-                      icon={faCoins}
-                    />
-                  </PrimaryButton>
-                </React.Fragment>
-              ) : null}
+              <React.Fragment>
+                <PrimaryButton
+                  secondary="true"
+                  onClick={() => {
+                    this.payRent();
+                  }}
+                >
+                  PAY RENT<FontAwesomeIcon
+                    className="margin-left-10"
+                    icon={faCoins}
+                  />
+                </PrimaryButton>
+              </React.Fragment>
+              <React.Fragment>
+                <PrimaryButton
+                  secondary="true"
+                  onClick={() => {
+                    this.breakContract();
+                  }}
+                >
+                  BREAK CONTRACT<FontAwesomeIcon
+                    className="margin-left-10"
+                    icon={faTimes}
+                  />
+                </PrimaryButton>
+              </React.Fragment>
             </React.Fragment>
           ) : (
             <React.Fragment>
@@ -218,4 +192,4 @@ export class ApartmentDetailsTenantView extends React.Component {
   }
 }
 
-export default withRouter(ApartmentDetailsTenantView);
+export default withRouter(MyRentView);

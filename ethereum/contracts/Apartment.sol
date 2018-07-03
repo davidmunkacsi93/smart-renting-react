@@ -3,6 +3,7 @@ pragma solidity ^0.4.23;
 contract Apartment {
     uint32 private counter = 0;
     mapping(address => uint32[]) apartments;
+    mapping(address => uint32[]) rentedApartments;
     mapping(uint32 => ApartmentDetails) apartmentDetails;
     mapping(uint32 => uint32[]) apartmentTransactionMappings;
     mapping(uint32 => ApartmentTransaction) apartmentTransactions;
@@ -70,6 +71,7 @@ contract Apartment {
         require(msg.sender == apartmentDetails[_apartmentId].owner);
         apartmentDetails[_apartmentId].tenant = _tenant;
         apartmentDetails[_apartmentId].isRented = true;
+        rentedApartments[_tenant].push(_apartmentId);
         createTransaction(_apartmentId, "The owner approved the rent.");
         emit PaymentApproved(msg.sender, _tenant);
     }
@@ -79,6 +81,10 @@ contract Apartment {
         ApartmentTransaction memory transaction = ApartmentTransaction(transactionId, _apartmentId, _transactionMessage, now);
         apartmentTransactionMappings[_apartmentId].push(transactionId);
         apartmentTransactions[transactionId] = transaction;
+    }
+
+    function getRentedApartments() public view returns(uint32[]) {
+        return rentedApartments[msg.sender];
     }
 
     function getApartments() public view returns(uint32[]) {

@@ -39,6 +39,11 @@ export const publicRoutes = [
       page: ApartmentDetailsTenantView,
     },
     {
+      path: '/myrent/:id',
+      exact: true,
+      page: ApartmentDetailsTenantView,
+    },
+    {
       path: '/browse',
       exact: true,
       page: BrowseView,

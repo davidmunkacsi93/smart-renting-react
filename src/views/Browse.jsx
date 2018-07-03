@@ -31,7 +31,9 @@ export class BrowseView extends React.Component {
         ContractApi.getApartments(account).then(apartments => {
           var resultApartments = [];
           apartments.forEach(apartment => {
-            resultApartments.push(apartment);
+            if (!apartment.isRented) {
+              resultApartments.push(apartment);
+            } else { console.log("This apartment is already rented."); }
           });
           this.setState({apartments: resultApartments});
         });

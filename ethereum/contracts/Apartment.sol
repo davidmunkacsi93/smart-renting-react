@@ -32,6 +32,11 @@ contract Apartment {
         bool isRented;
     }
 
+    event PaymentApproved(
+        address from,
+        address to
+    );
+
     event PaymentReceived(
         address from,
         address to,
@@ -62,10 +67,11 @@ contract Apartment {
     }
 
     function updateApartment(uint32 _apartmentId, address _tenant) public {
-        ApartmentDetails memory apartment = apartmentDetails[_apartmentId];
-        require(msg.sender == apartment.owner);
-        apartment.isRented = true;
-        apartment.tenant = _tenant;
+        require(msg.sender == apartmentDetails[_apartmentId].owner);
+        apartmentDetails[_apartmentId].tenant = _tenant;
+        apartmentDetails[_apartmentId].isRented = true;
+        createTransaction(_apartmentId, "The owner approved the rent.");
+        emit PaymentApproved(msg.sender, _tenant);
     }
 
     function createTransaction(uint32 _apartmentId, string _transactionMessage) public {

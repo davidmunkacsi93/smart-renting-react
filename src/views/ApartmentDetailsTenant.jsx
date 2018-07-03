@@ -26,7 +26,6 @@ const PrimaryButton = styled(Button)`
   display: block;
 `;
 
-// const history = createBrowserHistory();
 export class ApartmentDetailsTenantView extends React.Component {
   constructor(props) {
     super(props);
@@ -38,6 +37,7 @@ export class ApartmentDetailsTenantView extends React.Component {
     ContractApi.UserContract.PermissionGranted().watch((err, res) => this.handlePermissionGranted(err, res));
     ContractApi.UserContract.PermissionDenied().watch((err, res) => this.handlePermissionDenied(err, res));
     ContractApi.UserContract.MessageSent().watch((err, res) => this.handleMessageReceived(err, res));
+    ContractApi.ApartmentContract.PaymentApproved().watch((err, res) => this.handlePaymentApproved(err, res));
 
     this.state = {
       username: account.username,
@@ -54,6 +54,7 @@ export class ApartmentDetailsTenantView extends React.Component {
     var apartmentId = window.location.href.split("/")[4];
     ContractApi.getApartmentById(this.state.account.address, apartmentId)
     .then(apartment => {
+      console.log(apartment);
       this.setState({
         apartment: apartment,
         apartmentTransactions: apartment.transactions
@@ -84,6 +85,28 @@ export class ApartmentDetailsTenantView extends React.Component {
     this.setState({ showPayRent: true });
   };
 
+  handlePaymentApproved = async (_, res) => {
+    console.log("Approved");
+    console.log(res);
+    if (res.args.to !== this.state.account.address) return;
+    if(!this.state.messageNotificationSent) {
+      NotificationManager.createNotification(
+        "info",
+        "The owner approved the payment."
+        );
+      }
+    await ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
+      .then(apartment => {
+        console.log(apartment);
+        this.setState({
+          apartment: apartment,
+          apartmentTransactions: apartment.transactions,
+          balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
+          balanceInEth: ContractApi.getBalanceInEth(this.state.account.address),
+        });
+      });
+  };
+
   handleMessageReceived = (_, res) => {
     if (res.args.to !== this.state.account.address) return;
     if(!this.state.messageNotificationSent) {
@@ -112,11 +135,12 @@ export class ApartmentDetailsTenantView extends React.Component {
     await ContractApi.rentApartment(transactionInfo);
     await ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
         .then(apartment => {
+          console.log(apartment);
           this.setState({
             apartment: apartment,
             apartmentTransactions: apartment.transactions,
             balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
-            balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
+            balanceInEth: ContractApi.getBalanceInEth(this.state.account.address),
           });
         });
   };

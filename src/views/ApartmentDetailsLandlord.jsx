@@ -102,11 +102,13 @@ export class ApartmentDetailsLandlordView extends React.Component {
     );
     await ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
         .then(apartment => {
-          this.setState({
-            apartment: apartment,
-            apartmentTransactions: apartment.transactions,
-            balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
-            balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
+          ContractApi.approveRent(this.state.apartment.id, res.args.to, this.state.account.address).then(() => {
+            this.setState({
+              apartment: apartment,
+              apartmentTransactions: apartment.transactions,
+              balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
+              balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
+            });
           });
         });
   };

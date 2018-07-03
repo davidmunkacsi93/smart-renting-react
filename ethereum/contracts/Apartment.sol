@@ -61,6 +61,13 @@ contract Apartment {
         apartmentTransactions[transactionId] = transaction;
     }
 
+    function updateApartment(uint32 _apartmentId, address _tenant) public {
+        ApartmentDetails memory apartment = apartmentDetails[_apartmentId];
+        require(msg.sender == apartment.owner);
+        apartment.isRented = true;
+        apartment.tenant = _tenant;
+    }
+
     function createTransaction(uint32 _apartmentId, string _transactionMessage) public {
         uint32 transactionId = getId();
         ApartmentTransaction memory transaction = ApartmentTransaction(transactionId, _apartmentId, _transactionMessage, now);

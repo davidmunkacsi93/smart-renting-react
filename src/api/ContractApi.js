@@ -247,6 +247,11 @@ const payDeposit = async transactionInfo => {
   await ApartmentContract.createTransaction.sendTransaction(transactionInfo.apartmentId, message, { from: transactionInfo.from, gas: 2000000 });
 };
 
+const approveRent = async (apartmentId, tenant, owner) => {
+  await ApartmentContract.updateApartment.sendTransaction(apartmentId, tenant, { from: owner, gas: 2000000 });
+  console.log("Rent approved.");
+};
+
 const rentApartment = async (transactionInfo) => {
   await ContractApi.payDeposit(transactionInfo);
   await ContractApi.payRent(transactionInfo);
@@ -267,6 +272,7 @@ const ContractApi = {
   createApartment: createApartment,
   createUser: createUser,
   authenticate: authenticate,
+  approveRent: approveRent,
   payDeposit: payDeposit,
   payRent: payRent,
   rentApartment: rentApartment,

@@ -54,7 +54,10 @@ export class ApartmentDetailsTenantView extends React.Component {
     var apartmentId = window.location.href.split("/")[4];
     ContractApi.getApartmentById(this.state.account.address, apartmentId)
     .then(apartment => {
-      this.setState({apartment: apartment});
+      this.setState({
+        apartment: apartment,
+        apartmentTransactions: apartment.transactions
+      });
     });
 
     this.rentApartment = this.rentApartment.bind(this);
@@ -99,21 +102,23 @@ export class ApartmentDetailsTenantView extends React.Component {
 
   rentApartment = async () => {
     const transactionInfo = {
-      apartmentId: this.state.apartment._id,
+      apartmentId: this.state.apartment.id,
       deposit: this.state.apartment.deposit,
       username: this.state.account.username,
       rent: this.state.apartment.rent,
       from: this.state.account.address,
-      to: this.state.apartment.ownerAddress
+      to: this.state.apartment.owner
     };
-    ContractApi.rentApartment(transactionInfo);
-    await this.getTransactionsById(this.state.apartment._id);
-    this.setState({
-      balanceInEur: ContractApi.getBalanceInEur(this.state.account.address)
-    });
-    this.setState({
-      balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
-    });
+    await ContractApi.rentApartment(transactionInfo);
+    await ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
+        .then(apartment => {
+          this.setState({
+            apartment: apartment,
+            apartmentTransactions: apartment.transactions,
+            balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
+            balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
+          });
+        });
   };
 
   requestPermission() {

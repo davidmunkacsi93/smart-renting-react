@@ -26,6 +26,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
 
     ContractApi.UserContract.PermissionRequested().watch((err, res) => this.handleRequestPermission(err, res));
     ContractApi.UserContract.MessageSent().watch((err, res) => this.handleMessageReceived(err, res));
+    ContractApi.ApartmentContract.PaymentReceived().watch((err, res) => this.handlePaymentReceived(err, res));
 
     this.state = {
       account: account,
@@ -52,6 +53,13 @@ export class ApartmentDetailsLandlordView extends React.Component {
         });
       }
     );
+  }
+
+  refreshBalance = () => {
+    this.setState({
+      balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
+      balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
+    });
   }
 
   handleAccept = () => {
@@ -84,6 +92,23 @@ export class ApartmentDetailsLandlordView extends React.Component {
       res.args.username +
         " wants to rent your apartment. You can accept or decline his/her request."
     );
+  };
+
+  handlePaymentReceived = async (_, res) => {
+    if (res.args.to !== this.state.account.address) return;
+    NotificationManager.createNotification(
+      "info",
+      "[" + res.args.username + "] paid " + res.args.value + " € " + res.args.paymentType + "."
+    );
+    await ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
+        .then(apartment => {
+          this.setState({
+            apartment: apartment,
+            apartmentTransactions: apartment.transactions,
+            balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
+            balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
+          });
+        });
   };
 
   handleMessageReceived = (_, res) => {

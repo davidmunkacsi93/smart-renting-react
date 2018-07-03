@@ -32,7 +32,15 @@ contract Apartment {
         bool isRented;
     }
 
-    function getId() public returns(uint32) {
+    event PaymentReceived(
+        address from,
+        address to,
+        string username,
+        string paymentType,
+        uint32 value
+    );
+
+    function getId() private returns(uint32) {
         return counter++;
     }
 
@@ -50,6 +58,13 @@ contract Apartment {
         apartments[msg.sender].push(apartmentId);
         apartmentTransactionMappings[apartmentId].push(transactionId);
         apartmentDetails[apartmentId] = apartment;
+        apartmentTransactions[transactionId] = transaction;
+    }
+
+    function createTransaction(uint32 _apartmentId, string _transactionMessage) public {
+        uint32 transactionId = getId();
+        ApartmentTransaction memory transaction = ApartmentTransaction(transactionId, _apartmentId, _transactionMessage, now);
+        apartmentTransactionMappings[_apartmentId].push(transactionId);
         apartmentTransactions[transactionId] = transaction;
     }
 
@@ -73,5 +88,7 @@ contract Apartment {
         return (a.id, a.owner, a.tenant, a.postCode, a.city, a.street, a.houseNumber, a.floor, a.description, a.rent, a.deposit, a.isRented);
     }
 
-
+    function firePayment(address _to, string _username, string _paymentType, uint32 _value) public {
+        emit PaymentReceived(msg.sender, _to, _username, _paymentType, _value);
+    }
 }

@@ -89,7 +89,7 @@ const createApartment = async (account, apartment) => {
     apartment.deposit,
     transactionMessage,
     transactionObject,
-    (error, result) => {
+    (error, _) => {
       if (error) {
         NotificationManager.createNotification(
           "error",
@@ -193,65 +193,67 @@ const sendMessage = async (from, to, username, message) => {
   UserContract.sendMessage(to, username, message, { from: from });
 };
 
-const rentApartment = async transactionInfo => {
-  // var depositPrice = web3.toWei(
-  //   transactionInfo.deposit / fallbackPrice,
-  //   "ether"
-  // );
-  // var rentPrice = web3.toWei(transactionInfo.rent / fallbackPrice, "ether");
-  // const transactionObject = {
-  //   from: transactionInfo.from,
-  //   to: transactionInfo.to,
-  //   value: depositPrice
-  // };
-  // console.log("From: " + transactionInfo.from + " To: " + transactionInfo.to);
-  // web3.eth.sendTransaction(transactionObject, function(err, res) {
-  //   if (err) {
-  //     console.error(err);
-  //     NotificationManager.createNotification(
-  //       "error",
-  //       "Error during transferring deposit.",
-  //       "Transferirng deposit"
-  //     );
-  //   } else {
-  //     console.log(res);
-  //     createApartmentTransaction(
-  //       transactionInfo,
-  //       transactionInfo.username +
-  //         " paid the " +
-  //         transactionInfo.deposit +
-  //         " € deposit."
-  //     );
-  //     NotificationManager.createNotification(
-  //       "success",
-  //       "Deposit successfully transferred.",
-  //       "Transferring deposit"
-  //     );
-  //     transactionObject["value"] = rentPrice;
-  //     web3.eth.sendTransaction(transactionObject, function(err, res) {
-  //       if (err) {
-  //         NotificationManager.createNotification(
-  //           "error",
-  //           "Error during transferring rent.",
-  //           "Transferring rent"
-  //         );
-  //       } else {
-  //         createApartmentTransaction(
-  //           transactionInfo,
-  //           transactionInfo.username +
-  //             " paid the " +
-  //             transactionInfo.rent +
-  //             " € rent."
-  //         );
-  //         NotificationManager.createNotification(
-  //           "success",
-  //           "Rent successfully transferred.",
-  //           "Transferring rent"
-  //         );
-  //       }
-  //     });
-  //   }
-  // });
+const payRent = async transactionInfo => {
+  var rentPrice = web3.toWei(transactionInfo.rent / fallbackPrice, "ether");
+  const transactionObject = {
+    from: transactionInfo.from,
+    to: transactionInfo.to,
+    value: rentPrice
+  };
+  await web3.eth.sendTransaction(transactionObject, function(err, _) {
+    if (err) {
+      NotificationManager.createNotification(
+        "error",
+        "Error during transferring rent.",
+        "Transferring rent"
+      );
+    } else {
+      NotificationManager.createNotification(
+        "success",
+        "Rent successfully transferred.",
+        "Transferring rent"
+      );
+    }
+  });
+  var message = transactionInfo.username + " paid the " + transactionInfo.rent + " € rent.";
+  await ApartmentContract.createTransaction.sendTransaction(transactionInfo.apartmentId, message, { from: transactionInfo.from, gas: 2000000 });
+}
+
+const payDeposit = async transactionInfo => {
+  var depositPrice = web3.toWei(transactionInfo.deposit / fallbackPrice, "ether");
+  const transactionObject = {
+    from: transactionInfo.from,
+    to: transactionInfo.to,
+    value: depositPrice
+  };
+  await web3.eth.sendTransaction(transactionObject, function(err, _) {
+    if (err) {
+      NotificationManager.createNotification(
+        "error",
+        "Error during transferring deposit.",
+        "Transferring deposit"
+      );
+    } else {
+      NotificationManager.createNotification(
+        "success",
+        "Deposit successfully transferred.",
+        "Transferring deposit"
+      );
+    }
+  });
+  await ApartmentContract.firePayment(transactionInfo.to, transactionInfo.username, "deposit",
+    transactionInfo.deposit, { from: transactionInfo.from });
+  var message = transactionInfo.username + " paid the " + transactionInfo.deposit + " € deposit.";
+  await ApartmentContract.createTransaction.sendTransaction(transactionInfo.apartmentId, message, { from: transactionInfo.from, gas: 2000000 });
+};
+
+const rentApartment = async (transactionInfo) => {
+  await ContractApi.payDeposit(transactionInfo);
+  await ContractApi.payRent(transactionInfo);
+  await ApartmentContract.firePayment(transactionInfo.to, transactionInfo.username, "deposit",
+    transactionInfo.deposit, { from: transactionInfo.from });
+  await ApartmentContract.firePayment(transactionInfo.to, transactionInfo.username, "rent", 
+    transactionInfo.rent, { from: transactionInfo.from });
 };
 
 const ContractApi = {
@@ -265,8 +267,11 @@ const ContractApi = {
   createApartment: createApartment,
   createUser: createUser,
   authenticate: authenticate,
+  payDeposit: payDeposit,
+  payRent: payRent,
   rentApartment: rentApartment,
   sendMessage: sendMessage,
+  ApartmentContract: ApartmentContract,
   UserContract: UserContract
 };
 

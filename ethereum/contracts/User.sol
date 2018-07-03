@@ -5,10 +5,11 @@ contract User {
     mapping (address => bytes32) accountPassword;
     mapping (address => string) accountUsername;
 
-    event Handshake(
+    event MessageSent(
         address from,
         address to,
-        string username
+        string username,
+        string message
     );
 
     function createUser(string _username, string _password) public {
@@ -29,7 +30,7 @@ contract User {
         return accountPassword[msg.sender] == keccak256(_password);
     }
 
-    function handshake(address _to, string _username) public {
-        emit Handshake(msg.sender, _to, _username);
+    function sendMessage(address _to, string _username, string _message) public {
+        emit MessageSent(msg.sender, _to, _username, _message);
     }
 }

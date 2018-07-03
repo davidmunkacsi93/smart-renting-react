@@ -23,7 +23,6 @@ const web3 = new Web3(
 );
 const ApartmentContract = web3.eth.contract(apartmentABI).at(apartmentAddress);
 const UserContract = web3.eth.contract(userABI).at(userAddress);
-const Handshake = UserContract.Handshake();
 
 const getAccounts = () => {
   return web3.eth.accounts;
@@ -45,7 +44,10 @@ const authenticate = async (address, password) => {
   const transactionObject = {
     from: address
   };
-  const result = await UserContract.authenticate.call(password.toString(), transactionObject);
+  const result = await UserContract.authenticate.call(
+    password.toString(),
+    transactionObject
+  );
   return result;
 };
 
@@ -54,7 +56,8 @@ const createUser = async (address, username, password) => {
     from: address
   };
   UserContract.createUser.sendTransaction(
-    username, password,
+    username,
+    password,
     transactionObject,
     (error, result) => {
       if (error) {
@@ -65,69 +68,92 @@ const createUser = async (address, username, password) => {
 };
 
 const createApartment = async (account, apartment) => {
-    const transactionObject = {
-      from: account.address,
-      gas: 2000000
-    };
-    var transactionMessage = "Apartment created with " + apartment["rent"] + " € rent and " + + apartment["deposit"] + " € deposit.";
-    ApartmentContract.createApartment.sendTransaction(
-      apartment.postCode,
-      apartment.city,
-      apartment.street,
-      apartment.houseNumber,
-      apartment.floor,
-      apartment.description,
-      apartment.rent,
-      apartment.deposit,
-      transactionMessage,
-      transactionObject,
-      (error, result) => {
-        if (error) {
-          NotificationManager.createNotification(
-            "error",
-            "Error during transaction.",
-            "Create rent"
-          );
-          console.error(error.message);
-          return;
-        }
+  const transactionObject = {
+    from: account.address,
+    gas: 2000000
+  };
+  var transactionMessage =
+    "Apartment created with " +
+    apartment["rent"] +
+    " € rent and " +
+    +apartment["deposit"] +
+    " € deposit.";
+  ApartmentContract.createApartment.sendTransaction(
+    apartment.postCode,
+    apartment.city,
+    apartment.street,
+    apartment.houseNumber,
+    apartment.floor,
+    apartment.description,
+    apartment.rent,
+    apartment.deposit,
+    transactionMessage,
+    transactionObject,
+    (error, result) => {
+      if (error) {
+        NotificationManager.createNotification(
+          "error",
+          "Error during transaction.",
+          "Create rent"
+        );
+        console.error(error.message);
+        return;
       }
-    );
+    }
+  );
 };
 
 const getApartments = async address => {
-  const apartmentIds = await ApartmentContract.getApartments.call({ from: address });
+  const apartmentIds = await ApartmentContract.getApartments.call({
+    from: address
+  });
   let apartments = [];
   for (const id of apartmentIds) {
-    const apartment = await ApartmentContract.getApartmentById.call(id.toNumber(), { from: address });
-    const username = await UserContract.getUsername.call({ from: apartment.owner });
+    const apartment = await ApartmentContract.getApartmentById.call(
+      id.toNumber(),
+      { from: address }
+    );
+    const username = await UserContract.getUsername.call({
+      from: apartment.owner
+    });
     var result = parseApartment(apartment);
     result.username = username;
     apartments.push(result);
   }
   return apartments;
-}
+};
 
 const getApartmentById = async (address, apartmentId) => {
-  var apartmentResult = await ApartmentContract.getApartmentById.call(apartmentId, { from: address });
+  var apartmentResult = await ApartmentContract.getApartmentById.call(
+    apartmentId,
+    { from: address }
+  );
   var apartment = parseApartment(apartmentResult);
-  const username = await UserContract.getUsername.call({ from: apartment.owner });
+  const username = await UserContract.getUsername.call({
+    from: apartment.owner
+  });
   apartment.username = username;
   apartment.transactions = [];
   const transactions = await ContractApi.getTransactions(address, apartmentId);
   transactions.forEach(t => apartment.transactions.push(t));
   return apartment;
-}
+};
 
 const getTransactions = async (address, apartmentId) => {
   let result = [];
-  var transactionIds = await ApartmentContract.getTransactionIds.call(apartmentId, { from: address });
+  var transactionIds = await ApartmentContract.getTransactionIds.call(
+    apartmentId,
+    { from: address }
+  );
   for (const id of transactionIds) {
-    const transaction = await ApartmentContract.getTransactionById.call(id.toNumber(), { from: address });
+    const transaction = await ApartmentContract.getTransactionById.call(
+      id.toNumber(),
+      { from: address }
+    );
     result.push(parseTransaction(transaction));
   }
   return result;
-}
+};
 
 const parseApartment = apartment => {
   return {
@@ -143,8 +169,8 @@ const parseApartment = apartment => {
     deposit: apartment[9].toNumber(),
     rent: apartment[10].toNumber(),
     isRented: apartment[11]
-  }
-}
+  };
+};
 
 const parseTransaction = transaction => {
   return {
@@ -152,8 +178,8 @@ const parseTransaction = transaction => {
     apartmentId: transaction[1].toNumber(),
     message: transaction[2],
     timestamp: transaction[3].toNumber()
-  }
-}
+  };
+};
 
 const getBalanceInEur = address => {
   return web3.fromWei(web3.eth.getBalance(address)).toFixed(2) * fallbackPrice;
@@ -163,12 +189,10 @@ const getBalanceInEth = address => {
   return web3.fromWei(web3.eth.getBalance(address)).toFixed(2);
 };
 
-const handshake = async (from, to, username) => {
-  console.log(from + " "+ to + " " +  username)
-  UserContract.handshake.sendTransaction(to, username, { from: from }, function (err, res) {
-    console.log(err);
-  });
-}
+const sendMessage = async (from, to, username) => {
+  console.log(from + " " + to + " " + username);
+  UserContract.sendMessage(to, username, { from: from });
+};
 
 const rentApartment = async transactionInfo => {
   // var depositPrice = web3.toWei(
@@ -243,8 +267,8 @@ const ContractApi = {
   createUser: createUser,
   authenticate: authenticate,
   rentApartment: rentApartment,
-  handshake: handshake,
-  Handshake: Handshake
+  sendMessage: sendMessage,
+  UserContract: UserContract
 };
 
 export default ContractApi;

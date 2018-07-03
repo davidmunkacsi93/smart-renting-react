@@ -26,7 +26,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
 
     var balanceInEur = ContractApi.getBalanceInEur(account.address);
     var balanceInEth = ContractApi.getBalanceInEth(account.address);
-    
+
     const socket = openSocket(
       "http://" + host + ":8000?address=" + account.address
     );
@@ -35,13 +35,18 @@ export class ApartmentDetailsLandlordView extends React.Component {
       this.handleRequestPermission(data)
     );
 
-    ContractApi.Handshake.watch((err, res) => this.handleHandshake(err, res));
+    ContractApi.UserContract.MessageSent().watch(function(_, res) {
+      NotificationManager.createNotification(
+        "info",
+        res.args.username + " is currently looking at your apartment."
+      );
+    });
 
     this.state = {
       account: account,
       tenantName: "",
       tenantAddress: "",
-      apartment: '',
+      apartment: "",
       balanceInEur: balanceInEur,
       balanceInEth: balanceInEth,
       isLoggedIn: UserManager.isLoggedIn(),
@@ -53,28 +58,29 @@ export class ApartmentDetailsLandlordView extends React.Component {
     };
 
     var apartmentId = window.location.href.split("/")[4];
-    ContractApi.getApartmentById(this.state.account.address, apartmentId)
-    .then(apartment => {
-      this.setState({
-        apartment: apartment,
-        apartmentTransactions: apartment.transactions
-      });
-      this.state.socket.emit("handshake", {
-        from: this.state.account.address,
-        to: this.state.apartment.owner,
-        username: this.state.account.username
-      });
-    });
+    ContractApi.getApartmentById(this.state.account.address, apartmentId).then(
+      apartment => {
+        this.setState({
+          apartment: apartment,
+          apartmentTransactions: apartment.transactions
+        });
+        this.state.socket.emit("handshake", {
+          from: this.state.account.address,
+          to: this.state.apartment.owner,
+          username: this.state.account.username
+        });
+      }
+    );
   }
 
-  handleHandshake = (err, res) => {
-    console.log("I can't believe this.");
-    // this.setState({ tenantName: data.username, tenantAddress: data.from });
-    // NotificationManager.createNotification(
-    //   "info",
-    //   data.username + " is currently looking at your apartment."
-    // );
-  };
+  // handleHandshake = (err, res) => {
+  //   console.log("I can't believe this.");
+  //   // this.setState({ tenantName: data.username, tenantAddress: data.from });
+  //   // NotificationManager.createNotification(
+  //   //   "info",
+  //   //   data.username + " is currently looking at your apartment."
+  //   // );
+  // };
 
   handleRequestPermission = data => {
     this.state.permissionRequests.push(data);

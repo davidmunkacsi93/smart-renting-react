@@ -238,8 +238,7 @@ const payRent = async transactionInfo => {
   var message = transactionInfo.username + " paid the " + transactionInfo.rent + " € rent.";
   console.log("Transferring payment")
   console.log(transactionInfo)
-  await ApartmentContract.firePayment(transactionInfo.to, transactionInfo.username,
-    transactionInfo.rent, { from: transactionInfo.from });
+  await ApartmentContract.fireRentPaid(transactionInfo.to, transactionInfo.username, { from: transactionInfo.from });
   await ApartmentContract.createTransaction.sendTransaction(transactionInfo.apartmentId, message, { from: transactionInfo.from, gas: 2000000 });
 }
 
@@ -284,7 +283,6 @@ const approveRent = async (apartmentId, tenant, owner) => {
 const terminateContract = async (transactionInfo) => {
   await ApartmentContract.terminateContract.sendTransaction(transactionInfo.apartmentId,
     transactionInfo.to, transactionInfo.username + " terminated the contract.", { from: transactionInfo.from, gas: 3000000 });
-  console.log("Contract terminated.");
 };
 
 const rentApartment = async (transactionInfo) => {

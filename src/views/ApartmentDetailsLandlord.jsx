@@ -1,5 +1,5 @@
 import React from "react";
-import { Container } from "reactstrap";
+import { Container, Row, Col, Input, Button } from "reactstrap";
 import ViewLayout from "../components/ViewLayout";
 import { MainHeadline } from "../components/Headlines/MainHeadline";
 import { withRouter } from "react-router-dom";
@@ -13,8 +13,21 @@ import "react-chat-widget/lib/styles.css";
 import PermissionRequest from "../components/Request/PermissionRequest";
 import ContractApi from "../api/ContractApi";
 import HistoryItem from "../components/History/HistoryItem";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTicketAlt } from "@fortawesome/free-solid-svg-icons";
+import styled from 'styled-components';
 
-// const history = createBrowserHistory();
+const StyledInput = styled(Input)`
+  margin-top: 10px;
+  display: block;
+`
+const PrimaryButton = styled(Button)`
+  margin-top: 20px;
+  background-color: #1f3651;
+  color: #ffffff;
+  width: 150px;
+`;
+
 export class ApartmentDetailsLandlordView extends React.Component {
   constructor(props) {
     super(props);
@@ -27,6 +40,8 @@ export class ApartmentDetailsLandlordView extends React.Component {
     ContractApi.UserContract.PermissionRequested().watch((err, res) => this.handleRequestPermission(err, res));
     ContractApi.UserContract.MessageSent().watch((err, res) => this.handleMessageReceived(err, res));
     ContractApi.ApartmentContract.PaymentReceived().watch((err, res) => this.handlePaymentReceived(err, res));
+    ContractApi.ApartmentContract.RentPaid().watch((err, res) => this.handleRentPaid(err, res));
+    ContractApi.ApartmentContract.IssueCreated().watch((err, res) => this.handleIssueCreated(err, res));
     ContractApi.ApartmentContract.ContractTerminated().watch((err, res) => this.handleContractTerminated(err, res));
 
     this.state = {
@@ -38,6 +53,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
       balanceInEth: balanceInEth,
       isLoggedIn: UserManager.isLoggedIn(),
       subtitle: '',
+      message: '',
       showPermissionRequest: false,
       permissionRequests: [],
       showApartmentTransactions: false,
@@ -55,6 +71,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
         });
       }
     );
+    this.handleChange = this.handleChange.bind(this);
   }
 
   refreshBalance = () => {
@@ -73,6 +90,11 @@ export class ApartmentDetailsLandlordView extends React.Component {
     }
     ContractApi.UserContract.grantPermission(this.state.tenantAddress, this.state.account.username, "The owner of the aparment accepted your request.", { from: this.state.account.address });
   };
+
+  
+  handleChange(event) {
+    this.setState({ [event.target.name]: event.target.value});
+  }
 
   handleDecline = () => {
     var array = [...this.state.permissionRequests];
@@ -126,11 +148,10 @@ export class ApartmentDetailsLandlordView extends React.Component {
   };
 
   handlePaymentReceived = async (_, res) => {
-    console.log(res);
     if (res.args.to !== this.state.account.address) return;
     NotificationManager.createNotification(
       "info",
-      "[" + res.args.username + "] paid " + res.args.value + " € " + res.args.paymentType + "."
+      "[" + res.args.username + "] paid " + res.args.value + " €."
     );
     ContractApi.approveRent(this.state.apartment.id, res.args.from, this.state.account.address).then(() => {
       ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
@@ -141,6 +162,42 @@ export class ApartmentDetailsLandlordView extends React.Component {
               balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
               balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
         });
+      });
+    });
+  };
+
+  handleRentPaid = async (_, res) => {
+    console.log("Rent paid...")
+    if (res.args.to !== this.state.account.address) return;
+    NotificationManager.createNotification(
+      "info",
+      "[" + res.args.username + "] paid the rent."
+    );
+    ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
+      .then(apartment => {
+          this.setState({
+            apartment: apartment,
+            apartmentTransactions: apartment.transactions,
+            balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
+            balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
+      });
+    });
+  };
+
+  handleIssueCreated = async (_, res) => {
+    console.log("Issue created...")
+    if (res.args.to !== this.state.account.address) return;
+    NotificationManager.createNotification(
+      "info",
+      "[" + res.args.username + "] created an issue."
+    );
+    ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
+      .then(apartment => {
+          this.setState({
+            apartment: apartment,
+            apartmentTransactions: apartment.transactions,
+            balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
+            balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
       });
     });
   };
@@ -162,9 +219,12 @@ export class ApartmentDetailsLandlordView extends React.Component {
   };
 
   handleNewUserMessage = message => {
-    console.log(this.state.tenantAddress)
     ContractApi.UserContract.sendMessage(this.state.tenantAddress, this.state.account.username, message, { from: this.state.account.address });
   };
+
+  solveIssue() {
+
+  }
 
   render() {
     return (
@@ -193,6 +253,22 @@ export class ApartmentDetailsLandlordView extends React.Component {
                   {this.state.apartmentTransactions.map((transaction, i) => (
                     <HistoryItem {...transaction} key={i} />
                   ))}
+                  <Row>
+                      <Col sm="12" md="6">
+                          <StyledInput type="textarea" placeholder="Message" name="message" value={this.state.message} onChange={this.handleChange} />
+                      </Col>
+                  </Row>
+                  <PrimaryButton
+                      secondary="true"
+                      onClick={() => {
+                        this.solveIssue();
+                      }}
+                    >
+                      SOLVE ISSUE<FontAwesomeIcon
+                        className="margin-left-10"
+                        icon={faTicketAlt}
+                      />
+                    </PrimaryButton>
                 </React.Fragment>
               ) : null}
               {this.state.showPermissionRequest ? (

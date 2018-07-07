@@ -51,15 +51,6 @@ export class NewApartmentView extends React.Component {
 
   handleChange(event) {
     this.setState({ [event.target.name]: event.target.value});
-    if (event.target.name === "rent" || event.target.name === "deposit") {  
-        // var value = event.target.value;
-        // var name = event.target.name;
-        // getBasePrice('EUR', 'ETH').then(crypto => { 
-        //     this.setState({[name + "Eth"]: value*crypto.price});
-        // }).catch(err => {
-        //     console.error(err)
-        // })
-    }
   }
 
   createApartment = async () => {

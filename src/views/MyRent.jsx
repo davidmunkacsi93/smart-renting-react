@@ -1,13 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-import { Container, Button } from "reactstrap";
+import { Container, Button, Input, Row, Col } from "reactstrap";
 import ViewLayout from "../components/ViewLayout";
 import { MainHeadline } from "../components/Headlines/MainHeadline";
 import { withRouter } from "react-router-dom";
 import UserManager from "../manager/UserManager";
 import { ErrorHeadline } from "../components/Headlines/MainHeadline";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCoins, faTimes, faLockOpen } from "@fortawesome/free-solid-svg-icons";
+import { faCoins, faTimes, faLockOpen, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { SecondaryHeadline } from "../components/Headlines/SecondaryHeadline";
 import NotificationManager from "../manager/NotificationManager";
 import ApartmentDetails from "../components/Apartment/ApartmentDetails";
@@ -25,6 +25,11 @@ const PrimaryButton = styled(Button)`
   width: 325px;
   display: block;
 `;
+
+const StyledInput = styled(Input)`
+  margin-top: 10px;
+  display: block;
+`
 
 export class MyRentView extends React.Component {
   constructor(props) {
@@ -44,6 +49,7 @@ export class MyRentView extends React.Component {
       balanceInEur: balanceInEur,
       balanceInEth: balanceInEth,
       apartment: '',
+      issueDescription: '',
       showPayRent: true,
       showTerminateContract: false,
       isLoggedIn: UserManager.isLoggedIn(),
@@ -63,8 +69,13 @@ export class MyRentView extends React.Component {
     this.payRent = this.payRent.bind(this);
     this.sendRequestToTerminateContract = this.sendRequestToTerminateContract.bind(this);
     this.terminateContract = this.terminateContract.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
-
+  
+  handleChange(event) {
+    this.setState({ [event.target.name]: event.target.value});
+  }
+  
   handlePermissionDenied = (_, res) => {
     if (res.args.to !== this.state.account.address) return;
     NotificationManager.createNotification(
@@ -143,6 +154,10 @@ export class MyRentView extends React.Component {
     });
   }
 
+  postIssue() {
+
+  }
+
   render() {
     return (
       <ViewLayout>
@@ -163,6 +178,22 @@ export class MyRentView extends React.Component {
                   {this.state.apartmentTransactions.map((transaction, i) => (
                     <HistoryItem {...transaction} key={i} />
                   ))}
+                  <Row>
+                      <Col sm="12" md="6">
+                          <StyledInput type="textarea" placeholder="Issue description" name="description" value={this.state.issueDescription} onChange={this.handleChange} />
+                      </Col>
+                  </Row>
+                  <PrimaryButton
+                      secondary="true"
+                      onClick={() => {
+                        this.postIssue();
+                      }}
+                    >
+                      POST ISSUE<FontAwesomeIcon
+                        className="margin-left-10"
+                        icon={faPencilAlt}
+                      />
+                    </PrimaryButton>
                 </React.Fragment>
               ) : null}
               <Widget

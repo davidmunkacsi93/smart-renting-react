@@ -45,6 +45,18 @@ contract Apartment {
         uint32 value
     );
 
+    event RentPaid(
+        address from,
+        address to,
+        string username
+    );
+
+    event IssueCreated(
+        address from,
+        address to,
+        string username
+    );
+
     event ContractTerminated(
         address from,
         address to,
@@ -88,6 +100,15 @@ contract Apartment {
         apartmentTransactions[transactionId] = transaction;
     }
 
+    function createIssue(uint32 _apartmentId, address _to, string _transactionMessage) public {
+        uint32 transactionId = getId();
+        ApartmentTransaction memory transaction = ApartmentTransaction(transactionId, _apartmentId, _transactionMessage, now);
+        apartmentTransactionMappings[_apartmentId].push(transactionId);
+        apartmentTransactions[transactionId] = transaction;
+        emit IssueCreated(msg.sender, _to, _transactionMessage);
+    }
+
+
     function getRentedApartments() public view returns(uint32[]) {
         return rentedApartments[msg.sender];
     }
@@ -114,6 +135,10 @@ contract Apartment {
 
     function firePayment(address _to, string _username, uint32 _value) public {
         emit PaymentReceived(msg.sender, _to, _username, _value);
+    }
+
+    function fireRentPaid(address _to, string _username) public {
+        emit RentPaid(msg.sender, _to, _username);
     }
 
     function terminateContract(uint32 _apartmentId, address _owner, string _message) public {

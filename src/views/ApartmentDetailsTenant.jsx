@@ -70,7 +70,7 @@ export class ApartmentDetailsTenantView extends React.Component {
     NotificationManager.createNotification(
       "error",
       "The owner of the apartment denied your request.",
-      "Permission to pay"
+      "Permission request"
     );
     this.setState({ showPayRent: false });
   };
@@ -79,8 +79,8 @@ export class ApartmentDetailsTenantView extends React.Component {
     if (res.args.to !== this.state.account.address) return;
     NotificationManager.createNotification(
       "success",
-      "The owner of the apartment accepted your request. You can now pay.",
-      "Permission to pay"
+      "The owner of the apartment accepted your request.",
+      "Permission request"
     );
     this.setState({ showPayRent: true });
   };
@@ -146,7 +146,7 @@ export class ApartmentDetailsTenantView extends React.Component {
   };
 
   requestPermission() {
-    ContractApi.UserContract.requestPermissionToPay(this.state.apartment.owner, this.state.account.username,
+    ContractApi.UserContract.sendPermissionRequest(this.state.apartment.owner, this.state.account.username,
        this.state.account.username + " wants to rent your apartment.", { from: this.state.account.address });
   }
 

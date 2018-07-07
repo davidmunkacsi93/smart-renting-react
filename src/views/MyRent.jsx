@@ -3,12 +3,11 @@ import styled from "styled-components";
 import { Container, Button } from "reactstrap";
 import ViewLayout from "../components/ViewLayout";
 import { MainHeadline } from "../components/Headlines/MainHeadline";
-// import createBrowserHistory from 'history/createBrowserHistory';
 import { withRouter } from "react-router-dom";
 import UserManager from "../manager/UserManager";
 import { ErrorHeadline } from "../components/Headlines/MainHeadline";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCoins, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faCoins, faTimes, faLockOpen } from "@fortawesome/free-solid-svg-icons";
 import { SecondaryHeadline } from "../components/Headlines/SecondaryHeadline";
 import NotificationManager from "../manager/NotificationManager";
 import ApartmentDetails from "../components/Apartment/ApartmentDetails";
@@ -22,7 +21,7 @@ const PrimaryButton = styled(Button)`
   margin-left: 10px;
   background-color: #1f3651;
   color: #ffffff;
-  width: 275px;
+  width: 325px;
   display: block;
 `;
 
@@ -44,7 +43,8 @@ export class MyRentView extends React.Component {
       balanceInEur: balanceInEur,
       balanceInEth: balanceInEth,
       apartment: '',
-      showPayRent: false,
+      showPayRent: true,
+      showTerminateContract: false,
       isLoggedIn: UserManager.isLoggedIn(),
       apartmentTransactions: [],
       messageNotificationSent: false
@@ -60,7 +60,8 @@ export class MyRentView extends React.Component {
     });
 
     this.payRent = this.payRent.bind(this);
-    this.breakContract = this.breakContract.bind(this);
+    this.sendRequestToTerminateContract = this.sendRequestToTerminateContract.bind(this);
+    this.terminateContract = this.terminateContract.bind(this);
   }
 
   handlePermissionDenied = (_, res) => {
@@ -68,19 +69,19 @@ export class MyRentView extends React.Component {
     NotificationManager.createNotification(
       "error",
       "The owner of the apartment denied your request.",
-      "Permission to break up contract"
+      "Permission to terminate the contract"
     );
-    this.setState({ showPayRent: false });
+    this.setState({ showTerminateContract: false });
   };
 
   handlePermissionGranted = (_, res) => {
     if (res.args.to !== this.state.account.address) return;
     NotificationManager.createNotification(
       "success",
-      "The owner of the apartment accepted your request. You can now pay.",
-      "Permission to break up"
+      "The owner of the apartment accepted your request. You can now terminate your contract.",
+      "Permission to terminate the contract"
     );
-    this.setState({ showPayRent: true });
+    this.setState({ showTerminateContract: true });
   };
 
   handleMessageReceived = (_, res) => {
@@ -120,8 +121,20 @@ export class MyRentView extends React.Component {
       });
   };
 
-  breakContract() {
+  sendRequestToTerminateContract() {
+    ContractApi.UserContract.sendPermissionRequest(this.state.apartment.owner, this.state.account.username,
+      this.state.account.username + " wants to terminate the contract.", { from: this.state.account.address });
+  }
 
+  terminateContract() {
+    const transactionInfo = {
+      apartmentId: this.state.apartment.id,
+      username: this.state.account.username,
+      from: this.state.account.address,
+      to: this.state.apartment.owner
+    };
+    ContractApi.terminateContract(transactionInfo).then(() => {
+    });
   }
 
   render() {
@@ -164,19 +177,37 @@ export class MyRentView extends React.Component {
                   />
                 </PrimaryButton>
               </React.Fragment>
-              <React.Fragment>
-                <PrimaryButton
-                  secondary="true"
-                  onClick={() => {
-                    this.breakContract();
-                  }}
-                >
-                  BREAK CONTRACT<FontAwesomeIcon
-                    className="margin-left-10"
-                    icon={faTimes}
-                  />
-                </PrimaryButton>
-              </React.Fragment>
+              { this.state.showTerminateContract 
+                ?
+                  <React.Fragment>
+                    <PrimaryButton
+                      secondary="true"
+                      onClick={() => {
+                        this.terminateContract();
+                      }}
+                    >
+                      TERMINATE CONTRACT<FontAwesomeIcon
+                        className="margin-left-10"
+                        icon={faTimes}
+                      />
+                    </PrimaryButton>
+                  </React.Fragment>
+                :
+                  <React.Fragment>
+                    <PrimaryButton
+                      secondary="true"
+                      onClick={() => {
+                        this.sendRequestToTerminateContract();
+                      }}
+                    >
+                      REQUEST TO TERMINATE CONTRACT<FontAwesomeIcon
+                        className="margin-left-10"
+                        icon={faLockOpen}
+                      />
+                    </PrimaryButton>
+                  </React.Fragment>
+              }
+
             </React.Fragment>
           ) : (
             <React.Fragment>

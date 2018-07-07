@@ -46,6 +46,12 @@ contract Apartment {
         uint32 value
     );
 
+    event ContractTerminated(
+        address from,
+        address to,
+        string message
+    );
+
     function getId() private returns(uint32) {
         return counter++;
     }
@@ -109,5 +115,37 @@ contract Apartment {
 
     function firePayment(address _to, string _username, string _paymentType, uint32 _value) public {
         emit PaymentReceived(msg.sender, _to, _username, _paymentType, _value);
+    }
+
+    function terminateContract(uint32 _apartmentId, address _owner, string _message) public {
+        require(msg.sender == apartmentDetails[_apartmentId].tenant);
+        require(_owner == apartmentDetails[_apartmentId].owner);
+        apartmentDetails[_apartmentId].tenant = address(0);
+        apartmentDetails[_apartmentId].isRented = false;
+        uint32[] memory _apartments = rentedApartments[msg.sender];
+        uint _apartmentIndex;
+        for (uint i = 0; i < _apartments.length; i++) {
+            if (_apartments[i] == _apartmentId) {
+                _apartmentIndex = i;
+            }
+        }
+        rentedApartments[msg.sender] = remove(_apartments, _apartmentIndex);
+        createTransaction(_apartmentId, _message);
+        emit ContractTerminated(msg.sender, _owner, _message);
+    }
+
+    function remove(uint32[] array, uint index) internal pure returns(uint32[] value) {
+        if (index >= array.length) return;
+
+        uint32[] memory arrayNew = new uint32[](array.length-1);
+        for (uint i = 0; i<arrayNew.length; i++){
+            if(i != index && i<index){
+                arrayNew[i] = array[i];
+            } else {
+                arrayNew[i] = array[i+1];
+            }
+        }
+        delete array;
+        return arrayNew;
     }
 }

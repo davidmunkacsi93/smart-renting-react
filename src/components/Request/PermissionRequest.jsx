@@ -28,7 +28,7 @@ export class PermissionRequest extends React.Component {
             <Container>
                 <Row>
                 <Col className="margin-top-10" sm="10" md="4">
-                    <DescriptionHeadline>{this.props.username} wants to rent your apartment.</DescriptionHeadline>
+                    <DescriptionHeadline>{this.props.message}</DescriptionHeadline>
                 </Col>
                 <Col className="margin-top-10" sm="1" md="1">
                     <IconButton onClick={this.props.handleAccept}>

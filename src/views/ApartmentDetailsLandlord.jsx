@@ -27,6 +27,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
     ContractApi.UserContract.PermissionRequested().watch((err, res) => this.handleRequestPermission(err, res));
     ContractApi.UserContract.MessageSent().watch((err, res) => this.handleMessageReceived(err, res));
     ContractApi.ApartmentContract.PaymentReceived().watch((err, res) => this.handlePaymentReceived(err, res));
+    ContractApi.ApartmentContract.ContractTerminated().watch((err, res) => this.handleContractTerminated(err, res));
 
     this.state = {
       account: account,
@@ -85,7 +86,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
 
   handleRequestPermission = (_, res) => {
     if (res.args.to !== this.state.account.address) return;
-    this.state.permissionRequests.push({ username: res.args.username });
+    this.state.permissionRequests.push({ username: res.args.username, message: res.args.message });
     this.setState({ showPermissionRequest: true });
     this.setState({ tenantAddress: res.args.from });
     NotificationManager.createNotification(
@@ -93,6 +94,36 @@ export class ApartmentDetailsLandlordView extends React.Component {
       res.args.username +
         " wants to rent your apartment. You can accept or decline his/her request."
     );
+  };
+
+  handleContractTerminated = async (_, res) => {
+    console.log("Terminated...");
+    console.log(res);
+    if (res.args.to !== this.state.account.address) return;
+    this.setState({ tenantAddress: res.args.from });
+    const transactionInfo = {
+      apartmentId: this.state.apartment.id,
+      deposit: this.state.apartment.deposit,
+      username: this.state.account.username,
+      from: this.state.account.address,
+      to: res.args.from
+    };
+    await ContractApi.payDeposit(transactionInfo);
+    ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
+        .then(apartment => {
+            this.setState({
+              apartment: apartment,
+              apartmentTransactions: apartment.transactions,
+              balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
+              balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
+            });
+            NotificationManager.createNotification(
+              "info",
+              res.args.username +
+                " terminated the contract."
+            );
+      });
+
   };
 
   handlePaymentReceived = async (_, res) => {

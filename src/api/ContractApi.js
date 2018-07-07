@@ -263,13 +263,19 @@ const payDeposit = async transactionInfo => {
   });
   await ApartmentContract.firePayment(transactionInfo.to, transactionInfo.username, "deposit",
     transactionInfo.deposit, { from: transactionInfo.from });
-  var message = transactionInfo.username + " paid the " + transactionInfo.deposit + " € deposit.";
+  var message = transactionInfo.username + " transferred the " + transactionInfo.deposit + " € deposit.";
   await ApartmentContract.createTransaction.sendTransaction(transactionInfo.apartmentId, message, { from: transactionInfo.from, gas: 2000000 });
 };
 
 const approveRent = async (apartmentId, tenant, owner) => {
   await ApartmentContract.updateApartment.sendTransaction(apartmentId, tenant, { from: owner, gas: 2000000 });
   console.log("Rent approved.");
+};
+
+const terminateContract = async (transactionInfo) => {
+  await ApartmentContract.terminateContract.sendTransaction(transactionInfo.apartmentId,
+    transactionInfo.to, transactionInfo.username + " terminated the contract.", { from: transactionInfo.from, gas: 2000000 });
+  console.log("Contract terminated.");
 };
 
 const rentApartment = async (transactionInfo) => {
@@ -298,6 +304,7 @@ const ContractApi = {
   payRent: payRent,
   rentApartment: rentApartment,
   sendMessage: sendMessage,
+  terminateContract: terminateContract,
   ApartmentContract: ApartmentContract,
   UserContract: UserContract
 };

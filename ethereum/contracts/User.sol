@@ -63,7 +63,7 @@ contract User {
         emit PermissionGranted(msg.sender, _to, _username, _message);
     }
 
-    function requestPermissionToPay(address _to, string _username, string _message) public {
+    function sendPermissionRequest(address _to, string _username, string _message) public {
         emit PermissionRequested(msg.sender, _to, _username, _message);
     }
 }

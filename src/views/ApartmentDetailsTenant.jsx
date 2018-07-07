@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { Container, Button } from "reactstrap";
 import ViewLayout from "../components/ViewLayout";
 import { MainHeadline } from "../components/Headlines/MainHeadline";
-// import createBrowserHistory from 'history/createBrowserHistory';
 import { withRouter } from "react-router-dom";
 import UserManager from "../manager/UserManager";
 import { ErrorHeadline } from "../components/Headlines/MainHeadline";
@@ -130,7 +129,8 @@ export class ApartmentDetailsTenantView extends React.Component {
       username: this.state.account.username,
       rent: this.state.apartment.rent,
       from: this.state.account.address,
-      to: this.state.apartment.owner
+      to: this.state.apartment.owner,
+      transferBack: false
     };
     await ContractApi.rentApartment(transactionInfo);
     await ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)

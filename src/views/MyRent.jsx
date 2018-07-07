@@ -15,6 +15,7 @@ import ContractApi from "../api/ContractApi";
 import { Widget, addResponseMessage } from "react-chat-widget";
 import "react-chat-widget/lib/styles.css";
 import HistoryItem from "../components/History/HistoryItem";
+import createBrowserHistory from 'history/createBrowserHistory';
 
 const PrimaryButton = styled(Button)`
   margin-top: 15px;
@@ -103,7 +104,6 @@ export class MyRentView extends React.Component {
   payRent = async () => {
     const transactionInfo = {
       apartmentId: this.state.apartment.id,
-      deposit: this.state.apartment.deposit,
       username: this.state.account.username,
       rent: this.state.apartment.rent,
       from: this.state.account.address,
@@ -134,6 +134,12 @@ export class MyRentView extends React.Component {
       to: this.state.apartment.owner
     };
     ContractApi.terminateContract(transactionInfo).then(() => {
+      NotificationManager.createNotification('success', "Contract terminated. You'll be redirected soon.", 'Terminating contract');
+      setTimeout(function () {
+          const history = createBrowserHistory();
+          history.push('/');
+          window.location.reload();
+          }, 2000);
     });
   }
 

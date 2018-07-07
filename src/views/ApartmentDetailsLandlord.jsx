@@ -97,8 +97,6 @@ export class ApartmentDetailsLandlordView extends React.Component {
   };
 
   handleContractTerminated = async (_, res) => {
-    console.log("Terminated...");
-    console.log(res);
     if (res.args.to !== this.state.account.address) return;
     this.setState({ tenantAddress: res.args.from });
     const transactionInfo = {
@@ -106,9 +104,10 @@ export class ApartmentDetailsLandlordView extends React.Component {
       deposit: this.state.apartment.deposit,
       username: this.state.account.username,
       from: this.state.account.address,
-      to: res.args.from
+      to: res.args.from,
+      transferBack: true
     };
-    await ContractApi.payDeposit(transactionInfo);
+    await ContractApi.transferDeposit(transactionInfo);
     ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
         .then(apartment => {
             this.setState({
@@ -127,6 +126,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
   };
 
   handlePaymentReceived = async (_, res) => {
+    console.log(res);
     if (res.args.to !== this.state.account.address) return;
     NotificationManager.createNotification(
       "info",

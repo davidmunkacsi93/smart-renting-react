@@ -42,7 +42,6 @@ contract Apartment {
         address from,
         address to,
         string username,
-        string paymentType,
         uint32 value
     );
 
@@ -113,13 +112,12 @@ contract Apartment {
         return (a.id, a.owner, a.tenant, a.postCode, a.city, a.street, a.houseNumber, a.floor, a.description, a.rent, a.deposit, a.isRented);
     }
 
-    function firePayment(address _to, string _username, string _paymentType, uint32 _value) public {
-        emit PaymentReceived(msg.sender, _to, _username, _paymentType, _value);
+    function firePayment(address _to, string _username, uint32 _value) public {
+        emit PaymentReceived(msg.sender, _to, _username, _value);
     }
 
     function terminateContract(uint32 _apartmentId, address _owner, string _message) public {
         require(msg.sender == apartmentDetails[_apartmentId].tenant);
-        require(_owner == apartmentDetails[_apartmentId].owner);
         apartmentDetails[_apartmentId].tenant = address(0);
         apartmentDetails[_apartmentId].isRented = false;
         uint32[] memory _apartments = rentedApartments[msg.sender];

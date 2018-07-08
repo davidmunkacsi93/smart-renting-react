@@ -47,6 +47,10 @@ contract User {
         return accountUsername[msg.sender];
     }
 
+    function getUsernameByAddress(address _userAddress) public view returns(string) {
+        return accountUsername[_userAddress];
+    }
+
     function authenticate(string _password) public view returns (bool) {
         return accountPassword[msg.sender] == keccak256(_password);
     }

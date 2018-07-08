@@ -32,7 +32,6 @@ export class BrowseView extends React.Component {
           var resultApartments = [];
           apartments.forEach(apartment => {
             if (!apartment.isRented) {
-              apartment.username = 
               resultApartments.push(apartment);
             }
           });

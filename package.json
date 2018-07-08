@@ -3,11 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "host": "192.168.0.6",
-  "proxy": {
-    "/api": {
-      "target": "http://192.168.0.6:5000"
-    }
-  },
   "homepage": "./",
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.8",
@@ -29,8 +24,6 @@
     "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",
     "reactstrap": "^6.1.0",
-    "socket.io": "^2.1.1",
-    "socket.io-client": "^2.1.1",
     "styled-components": "^3.3.3",
     "web3": "^0.19.1",
     "web3-utils": "^1.0.0-beta.34"

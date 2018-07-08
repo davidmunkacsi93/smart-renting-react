@@ -113,10 +113,10 @@ const getRentedApartments = async address => {
       id.toNumber(),
       { from: address }
     );
-    const username = await UserContract.getUsername.call({
-      from: apartment.owner
-    });
     var result = parseApartment(apartment);
+    const username = await UserContract.getUsernameByAddress.call(result.owner, {
+      from: address
+    });
     result.username = username;
     apartments.push(result);
   }
@@ -133,10 +133,10 @@ const getApartments = async address => {
       id.toNumber(),
       { from: address }
     );
-    const username = await UserContract.getUsername.call({
-      from: apartment.owner
-    });
     var result = parseApartment(apartment);
+    const username = await UserContract.getUsernameByAddress.call(result.owner, {
+      from: address
+    });
     result.username = username;
     apartments.push(result);
   }
@@ -149,8 +149,8 @@ const getApartmentById = async (address, apartmentId) => {
     { from: address }
   );
   var apartment = parseApartment(apartmentResult);
-  const username = await UserContract.getUsername.call({
-    from: apartment.owner
+  const username = await UserContract.getUsernameByAddress.call(apartment.owner, {
+    from: address
   });
   apartment.username = username;
   apartment.transactions = [];

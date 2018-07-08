@@ -15,6 +15,7 @@ import ContractApi from "../api/ContractApi";
 import { Widget, addResponseMessage } from "react-chat-widget";
 import "react-chat-widget/lib/styles.css";
 import HistoryItem from "../components/History/HistoryItem";
+import createBrowserHistory from 'history/createBrowserHistory';
 
 const PrimaryButton = styled(Button)`
   margin-top: 15px;
@@ -135,13 +136,17 @@ export class ApartmentDetailsTenantView extends React.Component {
     await ContractApi.rentApartment(transactionInfo);
     await ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
         .then(apartment => {
-          console.log(apartment);
           this.setState({
             apartment: apartment,
             apartmentTransactions: apartment.transactions,
             balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
             balanceInEth: ContractApi.getBalanceInEth(this.state.account.address),
           });
+          setTimeout(function () {
+            const history = createBrowserHistory();
+            history.push('/rents');
+            window.location.reload();
+            }, 2000);
         });
   };
 

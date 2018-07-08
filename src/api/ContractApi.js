@@ -239,7 +239,7 @@ const payRent = async transactionInfo => {
       );
     }
   });
-  var message = transactionInfo.username + " paid the " + transactionInfo.rent + " € rent.";
+  var message = "[" + transactionInfo.username + "] paid the " + transactionInfo.rent + " € rent.";
   await ApartmentContract.createTransaction.sendTransaction(transactionInfo.apartmentId, message, { from: transactionInfo.from, gas: 2000000 });
   await ApartmentContract.firePayment(transactionInfo.to, transactionInfo.username,
     transactionInfo.rent, { from: transactionInfo.from });
@@ -271,9 +271,9 @@ const transferDeposit = async transactionInfo => {
     transactionInfo.deposit, { from: transactionInfo.from });
   var message;
   if (transactionInfo.transferBack) {
-    message = "Owner transferred the " + transactionInfo.deposit + " € deposit back.";
+    message =  "[" + transactionInfo.username + "] paid the transferred the " + transactionInfo.deposit + " € deposit back.";
   } else {
-    message = transactionInfo.username + " transferred the " + transactionInfo.deposit + " € deposit.";
+    message =  "[" + transactionInfo.username + "] paid the " + transactionInfo.deposit + " € deposit.";
   }
   await ApartmentContract.createTransaction.sendTransaction(transactionInfo.apartmentId, message, { from: transactionInfo.from, gas: 2000000 });
 };

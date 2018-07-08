@@ -152,8 +152,8 @@ export class ApartmentDetailsLandlordView extends React.Component {
       "info",
       "[" + res.args.username + "] paid " + res.args.value + " €."
     );
-    ContractApi.approveRent(this.state.apartment.id, res.args.from, this.state.account.address).then(() => {
-      ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
+    await ContractApi.approveRent(this.state.apartment.id, res.args.from, this.state.account.address);
+    await ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
         .then(apartment => {
             this.setState({
               apartment: apartment,
@@ -162,7 +162,6 @@ export class ApartmentDetailsLandlordView extends React.Component {
               balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
         });
       });
-    });
   };
 
   handleIssueCreated = async (_, res) => {

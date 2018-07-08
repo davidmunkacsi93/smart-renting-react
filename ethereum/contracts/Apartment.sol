@@ -80,9 +80,11 @@ contract Apartment {
 
     function updateApartment(uint32 _apartmentId, address _tenant) public {
         require(msg.sender == apartmentDetails[_apartmentId].owner);
-        apartmentDetails[_apartmentId].tenant = _tenant;
-        apartmentDetails[_apartmentId].isRented = true;
-        rentedApartments[_tenant].push(_apartmentId);
+        if (apartmentDetails[_apartmentId].isRented == false) {
+            apartmentDetails[_apartmentId].tenant = _tenant;
+            apartmentDetails[_apartmentId].isRented = true;
+            rentedApartments[_tenant].push(_apartmentId);
+        }
         createTransaction(_apartmentId, "The owner approved the rent.");
         emit PaymentApproved(msg.sender, _tenant);
     }

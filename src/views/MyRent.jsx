@@ -42,6 +42,7 @@ export class MyRentView extends React.Component {
     ContractApi.UserContract.PermissionGranted().watch((err, res) => this.handlePermissionGranted(err, res));
     ContractApi.UserContract.PermissionDenied().watch((err, res) => this.handlePermissionDenied(err, res));
     ContractApi.UserContract.MessageSent().watch((err, res) => this.handleMessageReceived(err, res));
+    ContractApi.ApartmentContract.IssueCreated().watch((err, res) => this.handleIssueCreated(err, res));
 
     this.state = {
       username: account.username,
@@ -108,6 +109,23 @@ export class MyRentView extends React.Component {
     addResponseMessage(res.args.message);
   };
 
+  handleIssueCreated = async (_, res) => {
+    if (res.args.to !== this.state.account.address) return;
+    NotificationManager.createNotification(
+      "info",
+      "[" + res.args.username + "] posted something."
+    );
+    ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
+      .then(apartment => {
+          this.setState({
+            apartment: apartment,
+            apartmentTransactions: apartment.transactions,
+            balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
+            balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
+      });
+    });
+  };
+
   handleNewUserMessage = message => {
     ContractApi.UserContract.sendMessage(this.state.apartment.owner, this.state.account.username, message, { from: this.state.account.address });
   };
@@ -154,8 +172,16 @@ export class MyRentView extends React.Component {
     });
   }
 
-  postIssue() {
-
+  postIssue = async () => {
+    await ContractApi.createIssue(this.state.apartment.id, this.state.issueDescription, this.state.apartment.owner, this.state.account.address, this.state.account.username);
+    await ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
+    .then(apartment => {
+      NotificationManager.createNotification('success', 'Issue posted.', 'Create an issue');
+      this.setState({
+        apartment: apartment,
+        apartmentTransactions: apartment.transactions,
+      });
+    });
   }
 
   render() {
@@ -179,8 +205,8 @@ export class MyRentView extends React.Component {
                     <HistoryItem {...transaction} key={i} />
                   ))}
                   <Row>
-                      <Col sm="12" md="6">
-                          <StyledInput type="textarea" placeholder="Issue description" name="description" value={this.state.issueDescription} onChange={this.handleChange} />
+                      <Col sm="12" md="12">
+                          <StyledInput type="textarea" placeholder="Issue description" name="issueDescription" value={this.state.issueDescription} onChange={this.handleChange} />
                       </Col>
                   </Row>
                   <PrimaryButton

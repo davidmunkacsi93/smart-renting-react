@@ -14,7 +14,7 @@ import PermissionRequest from "../components/Request/PermissionRequest";
 import ContractApi from "../api/ContractApi";
 import HistoryItem from "../components/History/HistoryItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTicketAlt } from "@fortawesome/free-solid-svg-icons";
+import { faTasks } from "@fortawesome/free-solid-svg-icons";
 import styled from 'styled-components';
 
 const StyledInput = styled(Input)`
@@ -25,7 +25,7 @@ const PrimaryButton = styled(Button)`
   margin-top: 20px;
   background-color: #1f3651;
   color: #ffffff;
-  width: 150px;
+  width: 300px;
 `;
 
 export class ApartmentDetailsLandlordView extends React.Component {
@@ -40,7 +40,6 @@ export class ApartmentDetailsLandlordView extends React.Component {
     ContractApi.UserContract.PermissionRequested().watch((err, res) => this.handleRequestPermission(err, res));
     ContractApi.UserContract.MessageSent().watch((err, res) => this.handleMessageReceived(err, res));
     ContractApi.ApartmentContract.PaymentReceived().watch((err, res) => this.handlePaymentReceived(err, res));
-    ContractApi.ApartmentContract.RentPaid().watch((err, res) => this.handleRentPaid(err, res));
     ContractApi.ApartmentContract.IssueCreated().watch((err, res) => this.handleIssueCreated(err, res));
     ContractApi.ApartmentContract.ContractTerminated().watch((err, res) => this.handleContractTerminated(err, res));
 
@@ -64,7 +63,6 @@ export class ApartmentDetailsLandlordView extends React.Component {
     var apartmentId = window.location.href.split("/")[4];
     ContractApi.getApartmentById(this.state.account.address, apartmentId).then(
       apartment => {
-        console.log(apartment);
         this.setState({
           apartment: apartment,
           apartmentTransactions: apartment.transactions
@@ -72,6 +70,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
       }
     );
     this.handleChange = this.handleChange.bind(this);
+    this.createTransaction = this.createTransaction.bind(this);
   }
 
   refreshBalance = () => {
@@ -166,26 +165,7 @@ export class ApartmentDetailsLandlordView extends React.Component {
     });
   };
 
-  handleRentPaid = async (_, res) => {
-    console.log("Rent paid...")
-    if (res.args.to !== this.state.account.address) return;
-    NotificationManager.createNotification(
-      "info",
-      "[" + res.args.username + "] paid the rent."
-    );
-    ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
-      .then(apartment => {
-          this.setState({
-            apartment: apartment,
-            apartmentTransactions: apartment.transactions,
-            balanceInEur: ContractApi.getBalanceInEur(this.state.account.address),
-            balanceInEth: ContractApi.getBalanceInEth(this.state.account.address)
-      });
-    });
-  };
-
   handleIssueCreated = async (_, res) => {
-    console.log("Issue created...")
     if (res.args.to !== this.state.account.address) return;
     NotificationManager.createNotification(
       "info",
@@ -222,8 +202,16 @@ export class ApartmentDetailsLandlordView extends React.Component {
     ContractApi.UserContract.sendMessage(this.state.tenantAddress, this.state.account.username, message, { from: this.state.account.address });
   };
 
-  solveIssue() {
-
+  createTransaction = async () => {
+    await ContractApi.createIssue(this.state.apartment.id, this.state.message, this.state.apartment.tenant, this.state.account.address, this.state.account.username);
+    await ContractApi.getApartmentById(this.state.account.address, this.state.apartment.id)
+    .then(apartment => {
+      NotificationManager.createNotification('success', 'Issue post.', 'Create an issue');
+      this.setState({
+        apartment: apartment,
+        apartmentTransactions: apartment.transactions,
+      });
+    });
   }
 
   render() {
@@ -254,19 +242,19 @@ export class ApartmentDetailsLandlordView extends React.Component {
                     <HistoryItem {...transaction} key={i} />
                   ))}
                   <Row>
-                      <Col sm="12" md="6">
+                      <Col sm="12" md="12">
                           <StyledInput type="textarea" placeholder="Message" name="message" value={this.state.message} onChange={this.handleChange} />
                       </Col>
                   </Row>
                   <PrimaryButton
                       secondary="true"
                       onClick={() => {
-                        this.solveIssue();
+                        this.createTransaction();
                       }}
                     >
-                      SOLVE ISSUE<FontAwesomeIcon
+                      CREATE TRANSACTION<FontAwesomeIcon
                         className="margin-left-10"
-                        icon={faTicketAlt}
+                        icon={faTasks}
                       />
                     </PrimaryButton>
                 </React.Fragment>

@@ -201,6 +201,10 @@ const parseTransaction = transaction => {
   };
 };
 
+const createIssue = async (apartmentId, message, to, from, username) => {
+  await ApartmentContract.createIssue.sendTransaction(apartmentId, to, "["+ username + "] "+ message, username, { from: from, gas: 2000000 });
+};
+
 const getBalanceInEur = address => {
   return web3.fromWei(web3.eth.getBalance(address)).toFixed(2) * fallbackPrice;
 };
@@ -236,10 +240,9 @@ const payRent = async transactionInfo => {
     }
   });
   var message = transactionInfo.username + " paid the " + transactionInfo.rent + " € rent.";
-  console.log("Transferring payment")
-  console.log(transactionInfo)
-  await ApartmentContract.fireRentPaid(transactionInfo.to, transactionInfo.username, { from: transactionInfo.from });
   await ApartmentContract.createTransaction.sendTransaction(transactionInfo.apartmentId, message, { from: transactionInfo.from, gas: 2000000 });
+  await ApartmentContract.firePayment(transactionInfo.to, transactionInfo.username,
+    transactionInfo.rent, { from: transactionInfo.from });
 }
 
 const transferDeposit = async transactionInfo => {
@@ -305,6 +308,7 @@ const ContractApi = {
   getTransactions: getTransactions,
   createApartment: createApartment,
   createUser: createUser,
+  createIssue: createIssue,
   authenticate: authenticate,
   approveRent: approveRent,
   transferDeposit: transferDeposit,
